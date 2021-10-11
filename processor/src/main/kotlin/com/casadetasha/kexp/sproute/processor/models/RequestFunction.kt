@@ -4,10 +4,11 @@ import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames
 import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
-import com.casadetasha.kexp.sproute.processor.RequestAnnotations.getInstaRequestAnnotation
-import com.casadetasha.kexp.sproute.processor.RequestAnnotations.getRequestMethodName
-import com.casadetasha.kexp.sproute.processor.RequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.RequestAnnotations.shouldIncludeClassRouteSegment
+import com.casadetasha.kexp.sproute.processor.SprouteProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getInstaRequestAnnotation
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRequestMethodName
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRouteSegment
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
@@ -17,13 +18,12 @@ import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
 import io.ktor.routing.*
 import kotlinx.metadata.KmClassifier
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import kotlin.reflect.KClass
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class RequestFunction(
-    private val processingEnv: ProcessingEnvironment,
+    packageName: String,
     methodElement: Element,
     function: ImmutableKmFunction,
     pathRootSegment: String,
@@ -43,8 +43,15 @@ internal class RequestFunction(
     private val authenticatedAnnotation: Authenticated? = methodElement.getAnnotation(Authenticated::class.java)
     private val unauthenticatedAnnotation: Unauthenticated? = methodElement.getAnnotation(Unauthenticated::class.java)
     val authenticationName: String? = authenticatedAnnotation?.apply {
-        checkAuthenticatedAnnotationValidity()
+        validateAuthenticatedAnnotations()
     }?.name
+
+    val isAuthenticationRequested: Boolean by lazy {
+        val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null
+                && defaultAuthenticationStatus == Authenticated::class
+
+        authenticatedAnnotation != null || shouldAuthenticateAsDefault
+    }
 
     val fullRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
@@ -55,7 +62,8 @@ internal class RequestFunction(
 
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
     val requestMethodName: MemberName = MemberName(MemberNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
-    val functionSimpleName: String = function.name
+    val simpleName: String = function.name
+    val memberName: MemberName = MemberName(packageName, simpleName)
     val configurationMethodSimpleName by lazy {
         val formattedRoute = fullRoutePath.removePrefix("/").asMethod()
         val routePrefix = if (formattedRoute.isNotBlank()) "${formattedRoute}_" else ""
@@ -68,23 +76,15 @@ internal class RequestFunction(
         if (receiverType == null) null
         else when (receiverType.classifier) {
             is KmClassifier.Class -> receiverType.toMemberName()
-            else -> processingEnv.printThenThrowError(
+            else -> processingEnvironment.printThenThrowError(
                 "Unable to generate $configurationMethodSimpleName, extension parameter must be a class."
             )
-        }.apply {
-            when (this) {
-                !in VALID_EXTENSION_CLASSES -> {
-                    val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
-                    processingEnv.printThenThrowError("Only [$extensionClasses] are supported as extension" +
-                            " receivers for request methods. Found $this for route $fullRoutePath")
-                }
-            }
-        }
+        }.apply { validateFunctionReceiver(this) }
     }
 
     val isApplicationCallExtensionMethod: Boolean = functionReceiver == ApplicationCall::class.toMemberName()
     val hasReturnValue: Boolean = (function.returnType.toMemberName() != Unit::class.toMemberName()).apply {
-        if (this && isApplicationCallExtensionMethod) processingEnv.printThenThrowError("Route" +
+        if (this && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError("Route" +
                 " $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND have a" +
                 " return type. If you want to access the ApplicationCall and return a value, add the ApplicationCall" +
                 " as a method parameter.")
@@ -92,18 +92,21 @@ internal class RequestFunction(
 
     val functionParams: List<MemberName> = function.valueParameters.convertToMemberNames()
 
-    val isAuthenticationRequested: Boolean by lazy {
-        val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null
-                && defaultAuthenticationStatus == Authenticated::class
-
-        authenticatedAnnotation != null || shouldAuthenticateAsDefault
-    }
-
-    private fun checkAuthenticatedAnnotationValidity() {
+    private fun validateAuthenticatedAnnotations() {
         if (authenticatedAnnotation != null && unauthenticatedAnnotation != null) {
-            processingEnv.printThenThrowError(
+            processingEnvironment.printThenThrowError(
                 "Authenticated and Unauthenticated Annotations cannot be used together."
             )
+        }
+    }
+
+    private fun validateFunctionReceiver(memberName: MemberName) {
+        when (memberName) {
+            !in VALID_EXTENSION_CLASSES -> {
+                val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
+                processingEnvironment.printThenThrowError("Only [$extensionClasses] are supported as extension" +
+                        " receivers for request methods. Found $this for route $fullRoutePath")
+            }
         }
     }
 

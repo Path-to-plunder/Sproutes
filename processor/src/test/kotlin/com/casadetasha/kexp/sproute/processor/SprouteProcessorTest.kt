@@ -7,7 +7,7 @@ import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.*
 import com.tschuchort.compiletesting.SourceFile
 import kotlin.test.Test
 
-class SprouteAnnotationProcessorTest {
+class SprouteProcessorTest {
     private lateinit var compilationResult: KotlinCompilation.Result
 
     @Test
@@ -73,7 +73,7 @@ class SprouteAnnotationProcessorTest {
     private fun compileSource(vararg sourceFiles: SourceFile) {
         compilationResult = KotlinCompilation().apply {
             sources = sourceFiles.toList()
-            annotationProcessors = listOf(RouteAnnotationProcessor())
+            annotationProcessors = listOf(SprouteProcessor())
             inheritClassPath = true
             messageOutputStream = System.out
         }.compile()

@@ -1,6 +1,8 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
-import com.casadetasha.kexp.sproute.processor.RequestAnnotations
+import com.casadetasha.kexp.sproute.annotations.Sproute
+import com.casadetasha.kexp.sproute.processor.SprouteProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.classinspector.elements.ElementsClassInspector
 import com.squareup.kotlinpoet.metadata.*
@@ -9,7 +11,6 @@ import com.squareup.kotlinpoet.metadata.specs.containerData
 import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil
 import kotlinx.metadata.jvm.KotlinClassHeader.Companion.FILE_FACADE_KIND
 import kotlinx.metadata.jvm.KotlinClassMetadata
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -20,8 +21,8 @@ internal fun Element.hasAnnotation(clazz: Class<out Annotation>): Boolean {
 }
 
 @OptIn(KotlinPoetMetadataPreview::class)
-internal fun Element.getClassData(processingEnv: ProcessingEnvironment): ClassData {
-    val classInspector = ElementsClassInspector.create(processingEnv.elementUtils, processingEnv.typeUtils)
+internal fun Element.getClassData(): ClassData {
+    val classInspector = ElementsClassInspector.create(processingEnvironment.elementUtils, processingEnvironment.typeUtils)
     val containerData = classInspector.containerData(this.getClassName(), null)
     check(containerData is ClassData) { "Unexpected container data type: ${containerData.javaClass}" }
     return containerData
@@ -36,7 +37,7 @@ internal fun Element.getClassName(): ClassName {
 
 internal fun Element.getRequestMethods(): Map<String, ExecutableElement> {
     val requestMap: HashMap<String, ExecutableElement> = HashMap()
-    RequestAnnotations.validRequestTypes.forEach {
+    SprouteRequestAnnotations.validRequestTypes.forEach {
         requestMap.putAll(getMethodsForRequestType(it))
     }
     return requestMap
@@ -68,8 +69,31 @@ internal fun Element.isOrphanFunction() =
         ?.header
         ?.kind == FILE_FACADE_KIND
 
-internal fun Element.getQualifiedName(processingEnv: ProcessingEnvironment): String {
-    val packageName = processingEnv.elementUtils.getPackageOf(this).qualifiedName.toString()
+internal fun Element.getQualifiedName(): String {
+    val packageName = processingEnvironment.elementUtils.getPackageOf(this).qualifiedName.toString()
     val containerName = enclosingElement.simpleName.toString()
     return "${packageName}.${containerName}.${simpleName}"
 }
+
+
+// This is harder to read when hasRootAndRouteSegment is inlined
+@Suppress("MoveVariableDeclarationIntoWhen")
+internal fun Element.getOrphanPathRoot(): String {
+    val sprouteAnnotation = getAnnotation(Sproute::class.java)
+    val sprouteRootSegment = sprouteAnnotation?.getSprouteRoot()?.getPathPrefixToSproutePackage(packageName) ?: ""
+    val sprouteSegment = sprouteAnnotation?.routeSegment ?: ""
+    val hasRootAndRouteSegment = sprouteRootSegment.isNotNullOrBlank() && sprouteSegment.isNotNullOrBlank()
+
+    val sprouteRootPathAsPrefix = when (hasRootAndRouteSegment) {
+        true -> "${sprouteRootSegment}/"
+        false -> sprouteRootSegment
+    }
+
+    return sprouteRootPathAsPrefix + sprouteSegment
+}
+
+internal val Element.packageName: String
+    get() {
+        val packageElement = processingEnvironment.elementUtils.getPackageOf(this)
+        return processingEnvironment.elementUtils.getPackageOf(packageElement).qualifiedName.toString()
+    }

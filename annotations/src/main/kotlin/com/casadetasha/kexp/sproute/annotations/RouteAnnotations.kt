@@ -3,7 +3,7 @@ package com.casadetasha.kexp.sproute.annotations
 import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class Sproute(val routeSegment: String = "", val sprouteRoot: KClass<out Any> = SprouteRoot::class)
 
 @Retention(AnnotationRetention.SOURCE)

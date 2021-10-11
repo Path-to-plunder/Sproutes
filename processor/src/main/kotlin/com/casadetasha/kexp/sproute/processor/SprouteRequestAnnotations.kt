@@ -5,7 +5,7 @@ import com.casadetasha.kexp.sproute.processor.ktx.asKClass
 import javax.lang.model.element.Element
 import kotlin.reflect.KClass
 
-internal object RequestAnnotations {
+internal object SprouteRequestAnnotations {
     private enum class RequestType(val annotationKClass: KClass<out Annotation>, val methodName: String) {
         GET(Get::class, "get"),
         POST(Post::class, "post"),

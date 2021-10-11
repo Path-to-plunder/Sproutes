@@ -11,7 +11,7 @@ object SourceFiles {
             import com.casadetasha.kexp.sproute.annotations.Sproute
 
             @Sproute("/route")
-            class Route() {
+            class Route {
                 @Get("/get-a-route", includeClassRouteSegment = false)
                 fun get() = "get me"
             }
@@ -78,7 +78,7 @@ object SourceFiles {
             import io.ktor.application.*
 
             @Sproute("/route")
-            class Route() {
+            class Route {
                 @Get("/get-a-route", includeClassRouteSegment = false)
                 fun innerGet() = "get me"
             }
@@ -111,7 +111,7 @@ object SourceFiles {
             import io.ktor.routing.*
 
             @Get("/function/route")
-            fun Route.functionGet() = "I'm a get function!"
+            fun Route.functionGet() = this.let { "I'm a get function!" }
         """.trimIndent()
     )
 
@@ -136,10 +136,12 @@ object SourceFiles {
             import io.ktor.application.*
 
             @Get("/function/route")
-            fun ApplicationCall.functionGet() = "I'm a get function!"
+            fun ApplicationCall.functionGet() = this.let { "I'm a get function!" }
         """.trimIndent()
     )
 
+    // KClass<*> is unused because it's only needed to test that compiling fails
+    @Suppress("unused")
     internal val unrecognizedExtensionFunctionSource = SourceFile.kotlin(
         "Unrecognized ExtensionFunctionSource.kt", """
             package com.casadetasha

@@ -92,7 +92,7 @@ internal class RequestFunSpecParser(
             CodeBlock.builder()
                 .add("  %M", sprouteKotlinParent.memberName)
                 .addMethodParameters((sprouteKotlinParent as SprouteClass).primaryConstructorParams)
-                .add(".%N", requestFunction.functionSimpleName)
+                .add(".%N", requestFunction.simpleName)
                 .addMethodParameters(requestFunction.functionParams)
                 .add("\n")
                 .build()
@@ -113,7 +113,7 @@ internal class RequestFunSpecParser(
                 .add("  %L%N.%M",
                     "this@",
                     requestFunction.configurationMethodSimpleName,
-                    sprouteKotlinParent.getMethodFunctionName(requestFunction))
+                    requestFunction.memberName)
                 .addMethodParameters(requestFunction.functionParams)
                 .add("\n")
                 .build()
@@ -123,7 +123,7 @@ internal class RequestFunSpecParser(
     private fun FunSpec.Builder.addPackageMethodCall() {
         addCode(
             CodeBlock.builder()
-                .add("  %M", sprouteKotlinParent.getMethodFunctionName(requestFunction))
+                .add("  %M", requestFunction.memberName)
                 .addMethodParameters(requestFunction.functionParams)
                 .add("\n")
                 .build()
