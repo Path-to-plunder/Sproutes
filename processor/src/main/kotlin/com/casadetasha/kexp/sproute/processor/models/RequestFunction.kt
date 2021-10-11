@@ -42,10 +42,16 @@ internal class RequestFunction(
     private val requestAnnotation: Annotation = methodElement.getInstaRequestAnnotation()
     private val authenticatedAnnotation: Authenticated? = methodElement.getAnnotation(Authenticated::class.java)
     private val unauthenticatedAnnotation: Unauthenticated? = methodElement.getAnnotation(Unauthenticated::class.java)
-    val authenticationNames: List<String> = authenticatedAnnotation?.apply {
+    private val authenticationNames: List<String> = authenticatedAnnotation?.apply {
         validateAuthenticatedAnnotations()
+    }?.names?.asList()?: ArrayList()
+
+    private val authenticationOptionalParamSuffix: String by lazy {
+        when (authenticatedAnnotation?.optional ?: false) {
+            true -> "optional = true"
+            false -> ""
+        }
     }
-        ?.names?.asList()?: ArrayList()
 
     val isAuthenticationRequested: Boolean by lazy {
         val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null
@@ -53,6 +59,10 @@ internal class RequestFunction(
 
         authenticatedAnnotation != null || shouldAuthenticateAsDefault
     }
+    val authenticationParams: String = listOf(authenticationNames.asVarArgs(), authenticationOptionalParamSuffix)
+        .filter { it.isNotEmpty() }
+        .joinToString(", ")
+    val hasAuthenticationParams: Boolean = isAuthenticationRequested || authenticatedAnnotation?.optional != null
 
     val fullRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
@@ -115,4 +125,8 @@ internal class RequestFunction(
         val comparison = fullRoutePath.compareTo(other.fullRoutePath)
         return if (comparison != 0) comparison else requestMethodSimpleName.compareTo(other.requestMethodSimpleName)
     }
+}
+
+private fun List<String>.asVarArgs(): String = this.let {
+    return joinToString(", ") { "\"$it\"" }
 }

@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import com.casadetasha.kexp.sproute.processor.post.addBasicAuthHeader
 import com.casadetasha.kexp.sproute.processor.post.withConfiguredTestApplication
 import io.ktor.http.*
-import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*
 import kotlin.test.Test
@@ -20,7 +19,7 @@ class AuthenticatedRoutesTest {
 
     @Test
     fun `authenticated get with valid auth routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-unnamed"){
+        handleRequest(HttpMethod.Get, "/authenticated/required-unnamed") {
             addBasicAuthHeader("username", "password")
         }.apply {
             assertThat(response.content).isEqualTo("Unnamed authenticated route GET.")
@@ -28,15 +27,16 @@ class AuthenticatedRoutesTest {
     }
 
     @Test
-    fun `named authenticated get with invalid auth returns status Unauthorized (401)`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-named").apply {
-            assertThat(response.status()).isEqualTo(Unauthorized)
+    fun `named authenticated get with invalid auth returns status Unauthorized (401)`() =
+        withConfiguredTestApplication {
+            handleRequest(HttpMethod.Get, "/authenticated/required-named").apply {
+                assertThat(response.status()).isEqualTo(Unauthorized)
+            }
         }
-    }
 
     @Test
     fun `named authenticated get with valid auth routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-named"){
+        handleRequest(HttpMethod.Get, "/authenticated/required-named") {
             addBasicAuthHeader("namedUsername", "namedPassword")
         }.apply {
             assertThat(response.content).isEqualTo("Named authenticated route GET.")
@@ -44,27 +44,62 @@ class AuthenticatedRoutesTest {
     }
 
     @Test
-    fun `multi-named authenticated get with invalid auth on first auth-name returns status Unauthorized (401)`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-multi-named").apply {
-            assertThat(response.status()).isEqualTo(Unauthorized)
+    fun `multi-named authenticated get with invalid auth on first auth-name returns status Unauthorized (401)`() =
+        withConfiguredTestApplication {
+            handleRequest(HttpMethod.Get, "/authenticated/required-multi-named").apply {
+                assertThat(response.status()).isEqualTo(Unauthorized)
+            }
+        }
+
+    @Test
+    fun `multi-named authenticated get with valid auth on first auth-name routes through`() =
+        withConfiguredTestApplication {
+            handleRequest(HttpMethod.Get, "/authenticated/required-multi-named") {
+                addBasicAuthHeader("namedUsername", "namedPassword")
+            }.apply {
+                assertThat(response.content).isEqualTo("Multi-named authenticated route GET.")
+            }
+        }
+
+    @Test
+    fun `multi-named authenticated get with valid auth on extra auth-name routes through`() =
+        withConfiguredTestApplication {
+            handleRequest(HttpMethod.Get, "/authenticated/required-multi-named") {
+                addBasicAuthHeader("secondaryNamedUsername", "secondaryNamedPassword")
+            }.apply {
+                assertThat(response.content).isEqualTo("Multi-named authenticated route GET.")
+            }
+        }
+
+    @Test
+    fun `optional unnamed authenticated get without auth routes through`() = withConfiguredTestApplication {
+        handleRequest(HttpMethod.Get, "/authenticated/optional-unnamed").apply {
+            assertThat(response.content).isEqualTo("Optional unnamed authenticated route GET.")
         }
     }
 
     @Test
-    fun `multi-named authenticated get with valid auth on first auth-name routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-multi-named"){
+    fun `optional unnamed authenticated get with valid auth routes through`() = withConfiguredTestApplication {
+        handleRequest(HttpMethod.Get, "/authenticated/optional-unnamed") {
+            addBasicAuthHeader("username", "password")
+        }.apply {
+            assertThat(response.content).isEqualTo("Optional unnamed authenticated route GET.")
+        }
+    }
+
+    @Test
+    fun `optionally named authenticated get without auth routes through`() = withConfiguredTestApplication {
+        handleRequest(HttpMethod.Get, "/authenticated/optional-named").apply {
+            assertThat(response.content).isEqualTo("Optional named authenticated route GET.")
+        }
+    }
+
+    @Test
+    fun `optionally named authenticated get with valid auth routes through`() = withConfiguredTestApplication {
+        handleRequest(HttpMethod.Get, "/authenticated/optional-named") {
             addBasicAuthHeader("namedUsername", "namedPassword")
         }.apply {
-            assertThat(response.content).isEqualTo("Multi-named authenticated route GET.")
-        }
-    }
-
-    @Test
-    fun `multi-named authenticated get with valid auth on extra auth-name routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/authenticated/required-multi-named"){
-            addBasicAuthHeader("secondaryNamedUsername", "secondaryNamedPassword")
-        }.apply {
-            assertThat(response.content).isEqualTo("Multi-named authenticated route GET.")
+            assertThat(response.content).isEqualTo("Optional named authenticated route GET.")
         }
     }
 }

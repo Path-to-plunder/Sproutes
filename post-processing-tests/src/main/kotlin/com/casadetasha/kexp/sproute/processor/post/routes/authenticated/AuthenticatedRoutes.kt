@@ -17,4 +17,12 @@ internal class AuthenticatedRoutes {
     @Get("/required-multi-named")
     @Authenticated("named-auth", "secondary-named-auth")
     fun multiNamedAuthenticatedGet() = "Multi-named authenticated route GET."
+
+    @Get("/optional-unnamed")
+    @Authenticated(optional = true)
+    fun optionalAuthenticatedGet() = "Optional unnamed authenticated route GET."
+
+    @Get("/optional-named")
+    @Authenticated("named-auth", optional = true)
+    fun optionalNamedAuthenticatedGet() = "Optional named authenticated route GET."
 }

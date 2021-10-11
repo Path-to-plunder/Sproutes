@@ -1,17 +1,15 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.MemberNames.MethodNames
-import com.casadetasha.kexp.sproute.processor.models.RequestFunction
 import com.casadetasha.kexp.sproute.processor.ktx.addMethodParameters
-import com.casadetasha.kexp.sproute.processor.ktx.isNotNullOrBlank
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
+import com.casadetasha.kexp.sproute.processor.models.RequestFunction
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SproutePackage
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
 import io.ktor.routing.*
@@ -37,11 +35,11 @@ internal class RequestFunSpecParser(
     }
 
     private fun FunSpec.Builder.beginSetAuthenticationRequirements() = apply {
-        if (requestFunction.isAuthenticationRequested && requestFunction.authenticationNames.isNotEmpty()) {
+        if (requestFunction.isAuthenticationRequested && requestFunction.hasAuthenticationParams) {
             beginControlFlow(
                 "%M(%L) ",
                 MethodNames.authenticationScopeMethod,
-                requestFunction.authenticationNames.asVarArgs()
+                requestFunction.authenticationParams
             )
         } else if (requestFunction.isAuthenticationRequested) {
             beginControlFlow("%M() ", MethodNames.authenticationScopeMethod)
@@ -139,8 +137,4 @@ internal class RequestFunSpecParser(
             addStatement(")")
         }
     }
-}
-
-private fun List<String>.asVarArgs(): String = this.let {
-    return joinToString(", ") { "\"$it\"" }
 }

@@ -12,7 +12,7 @@ annotation class SprouteRoot(val rootSprouteSegment: String = "", val appendSubP
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class Authenticated(vararg val names: String)
+annotation class Authenticated(vararg val names: String, val optional: Boolean = false)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
