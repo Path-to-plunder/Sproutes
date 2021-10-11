@@ -42,9 +42,10 @@ internal class RequestFunction(
     private val requestAnnotation: Annotation = methodElement.getInstaRequestAnnotation()
     private val authenticatedAnnotation: Authenticated? = methodElement.getAnnotation(Authenticated::class.java)
     private val unauthenticatedAnnotation: Unauthenticated? = methodElement.getAnnotation(Unauthenticated::class.java)
-    val authenticationName: String? = authenticatedAnnotation?.apply {
+    val authenticationNames: List<String> = authenticatedAnnotation?.apply {
         validateAuthenticatedAnnotations()
-    }?.name
+    }
+        ?.names?.asList()?: ArrayList()
 
     val isAuthenticationRequested: Boolean by lazy {
         val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null
@@ -72,7 +73,7 @@ internal class RequestFunction(
     }
 
     val functionReceiver: MemberName? by lazy {
-        val receiverType = function.receiverParameterType;
+        val receiverType = function.receiverParameterType
         if (receiverType == null) null
         else when (receiverType.classifier) {
             is KmClassifier.Class -> receiverType.toMemberName()

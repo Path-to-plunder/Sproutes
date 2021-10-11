@@ -82,14 +82,8 @@ internal fun Element.getOrphanPathRoot(): String {
     val sprouteAnnotation = getAnnotation(Sproute::class.java)
     val sprouteRootSegment = sprouteAnnotation?.getSprouteRoot()?.getPathPrefixToSproutePackage(packageName) ?: ""
     val sprouteSegment = sprouteAnnotation?.routeSegment ?: ""
-    val hasRootAndRouteSegment = sprouteRootSegment.isNotNullOrBlank() && sprouteSegment.isNotNullOrBlank()
 
-    val sprouteRootPathAsPrefix = when (hasRootAndRouteSegment) {
-        true -> "${sprouteRootSegment}/"
-        false -> sprouteRootSegment
-    }
-
-    return sprouteRootPathAsPrefix + sprouteSegment
+    return sprouteRootSegment + sprouteSegment
 }
 
 internal val Element.packageName: String
