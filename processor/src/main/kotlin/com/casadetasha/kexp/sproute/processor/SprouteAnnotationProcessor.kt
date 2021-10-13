@@ -16,9 +16,9 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 @AutoService(Processor::class)
-@SupportedOptions(SprouteProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
+@SupportedOptions(SprouteAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-class SprouteProcessor : AbstractProcessor() {
+class SprouteAnnotationProcessor : AbstractProcessor() {
 
     companion object {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
@@ -56,45 +56,4 @@ class SprouteProcessor : AbstractProcessor() {
         return true
     }
 
-    @OptIn(KotlinPoetMetadataPreview::class)
-    private fun RoundEnvironment.getRoutePackages(): ImmutableSet<SproutePackage> {
-        val functionListMap = HashMap<String, MutableList<Element>>()
-        val functionFileElementMap = HashMap<String, Element>()
-        getElementsAnnotatedWithAny(SprouteRequestAnnotations.validRequestTypes.map { it.java }.toSet())
-            .filter { it.isOrphanFunction() }
-            .forEach {
-                val key = it.enclosingElement.getQualifiedName()
-                functionListMap.getOrCreateList(key).add(it)
-                functionFileElementMap[key] = functionFileElementMap[key] ?: it.enclosingElement
-            }
-
-        return functionListMap.map {
-            val fileElement = functionFileElementMap[it.key]!!
-            SproutePackage(
-                immutableKmPackage = it.value.first().getParentFileKmPackage(),
-                packageName = fileElement.packageName,
-                fileName = fileElement.simpleName?.toString() ?: "",
-                requestMethodMap = it.value.toMap()
-            )
-        }.toImmutableSet()
-    }
-
-    private fun RoundEnvironment.getRouteClasses(): ImmutableSet<SprouteClass> =
-        getElementsAnnotatedWith(Sproute::class.java)
-            .filterNot { it.isOrphanFunction() }
-            .mapToImmutableSet { createRouteClass(it) }
-
-    @OptIn(KotlinPoetMetadataPreview::class)
-    private fun createRouteClass(routeClassElement: Element): SprouteClass {
-        val classSprouteAnnotation: Sproute = routeClassElement.getAnnotation(Sproute::class.java)
-        val routeRoot = classSprouteAnnotation.getSprouteRoot()
-        val classData = routeClassElement.getClassData()
-
-        return SprouteClass(
-            classData = classData,
-            rootPathSegment = routeRoot.getPathPrefixToSproutePackage(classData.className.packageName),
-            classRouteSegment = classSprouteAnnotation.routeSegment,
-            requestMethodMap = routeClassElement.getRequestMethods()
-        )
-    }
 }

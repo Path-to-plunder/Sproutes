@@ -83,7 +83,7 @@ internal sealed class SprouteKotlinParent(
                         packageName = packageName,
                         methodElement = methodElement,
                         function = it,
-                        pathRootSegment = methodElement.getOrphanPathRoot(),
+                        pathRootSegment = methodElement.getTopLevelFunctionPathRoot(),
                         classRouteSegment = "",
                         Unauthenticated::class
                     )

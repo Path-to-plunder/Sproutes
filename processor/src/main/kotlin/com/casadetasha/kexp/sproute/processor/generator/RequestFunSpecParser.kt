@@ -92,14 +92,14 @@ internal class RequestFunSpecParser(
                 .add("  %M", sprouteKotlinParent.memberName)
                 .addMethodParameters((sprouteKotlinParent as SprouteClass).primaryConstructorParams)
                 .add(".%N", requestFunction.simpleName)
-                .addMethodParameters(requestFunction.functionParams)
+                .addMethodParameters(requestFunction.params)
                 .add("\n")
                 .build()
         )
     }
 
     private fun FunSpec.Builder.addRoutePackageMethodCall() = apply {
-        when(requestFunction.functionReceiver) {
+        when(requestFunction.receiver) {
             Route::class.toMemberName() -> addRouteExtensionPackageMethodCall()
             ApplicationCall::class.toMemberName() -> addPackageMethodCall()
             null -> addPackageMethodCall()
@@ -113,7 +113,7 @@ internal class RequestFunSpecParser(
                     "this@",
                     requestFunction.configurationMethodSimpleName,
                     requestFunction.memberName)
-                .addMethodParameters(requestFunction.functionParams)
+                .addMethodParameters(requestFunction.params)
                 .add("\n")
                 .build()
         )
@@ -123,7 +123,7 @@ internal class RequestFunSpecParser(
         addCode(
             CodeBlock.builder()
                 .add("  %M", requestFunction.memberName)
-                .addMethodParameters(requestFunction.functionParams)
+                .addMethodParameters(requestFunction.params)
                 .add("\n")
                 .build()
         )

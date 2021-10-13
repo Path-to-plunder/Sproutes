@@ -1,6 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.SprouteProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.ktx.printNote
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.google.common.collect.ImmutableSet

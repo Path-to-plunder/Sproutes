@@ -1,7 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.processor.SprouteProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.SprouteRoots
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
 import com.squareup.kotlinpoet.ClassName
@@ -26,3 +26,4 @@ private fun Sproute.getRootTypeName(): TypeName {
         exception.typeMirror.asTypeName()
     }
 }
+

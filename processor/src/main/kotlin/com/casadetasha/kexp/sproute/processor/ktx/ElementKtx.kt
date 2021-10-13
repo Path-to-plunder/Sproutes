@@ -1,16 +1,15 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.processor.SprouteProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.classinspector.elements.ElementsClassInspector
-import com.squareup.kotlinpoet.metadata.*
+import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
 import com.squareup.kotlinpoet.metadata.specs.containerData
 import com.squareup.kotlinpoet.metadata.specs.internal.ClassInspectorUtil
-import kotlinx.metadata.jvm.KotlinClassHeader.Companion.FILE_FACADE_KIND
-import kotlinx.metadata.jvm.KotlinClassMetadata
+import com.squareup.kotlinpoet.metadata.toImmutableKmClass
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -56,29 +55,13 @@ internal fun Element.getMethodsForRequestType(requestTypeClass: KClass<out Annot
     return methodMap
 }
 
-@OptIn(KotlinPoetMetadataPreview::class)
-internal fun Element.getParentFileKmPackage(): ImmutableKmPackage =
-    enclosingElement.getAnnotation(Metadata::class.java)!!
-        .toKotlinClassMetadata<KotlinClassMetadata.FileFacade>()
-        .toImmutableKmPackage()
-
-@OptIn(KotlinPoetMetadataPreview::class)
-internal fun Element.isOrphanFunction() =
-    enclosingElement.getAnnotation(Metadata::class.java)
-        ?.readKotlinClassMetadata()
-        ?.header
-        ?.kind == FILE_FACADE_KIND
-
 internal fun Element.getQualifiedName(): String {
     val packageName = processingEnvironment.elementUtils.getPackageOf(this).qualifiedName.toString()
     val containerName = enclosingElement.simpleName.toString()
     return "${packageName}.${containerName}.${simpleName}"
 }
 
-
-// This is harder to read when hasRootAndRouteSegment is inlined
-@Suppress("MoveVariableDeclarationIntoWhen")
-internal fun Element.getOrphanPathRoot(): String {
+internal fun Element.getTopLevelFunctionPathRoot(): String {
     val sprouteAnnotation = getAnnotation(Sproute::class.java)
     val sprouteRootSegment = sprouteAnnotation?.getSprouteRoot()?.getPathPrefixToSproutePackage(packageName) ?: ""
     val sprouteSegment = sprouteAnnotation?.routeSegment ?: ""
