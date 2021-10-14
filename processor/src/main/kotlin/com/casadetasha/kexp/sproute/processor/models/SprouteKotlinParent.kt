@@ -1,7 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.annotationparser.KotlinFunction
-import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
 import com.squareup.kotlinpoet.MemberName
@@ -24,15 +23,14 @@ internal sealed class SprouteKotlinParent(
         return configurationMethodSimpleName.compareTo(other.configurationMethodSimpleName)
     }
 
-
     @OptIn(KotlinPoetMetadataPreview::class)
     internal class SprouteClass(
         val classData: ClassData,
         val primaryConstructorParams: List<MemberName>?,
-        authentication: Authenticated?,
         classRouteSegment: String,
         rootPathSegment: String,
-        functions: Set<KotlinFunction>
+        functions: Set<KotlinFunction>,
+        authentication: Authentication
     ) : SprouteKotlinParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
@@ -44,7 +42,7 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = rootPathSegment,
                     classRouteSegment = classRouteSegment,
-                    parentAuthentication = authentication
+                    authentication = authentication.forChildElement(it.element)
                 )
             }.toSortedSet()
     }
@@ -65,7 +63,10 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
                     classRouteSegment = "",
-                    parentAuthentication = null
+                    authentication = Authentication(
+                        element = it.element,
+                        parentAuthenticatedAnnotation = null
+                    )
                 )
             }.toSortedSet()
     }

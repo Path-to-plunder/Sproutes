@@ -1,14 +1,12 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
-import com.casadetasha.kexp.annotationparser.KotlinContainer
 import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
-import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
+import com.casadetasha.kexp.sproute.processor.models.Authentication
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
 import com.squareup.kotlinpoet.TypeName
@@ -55,20 +53,10 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.Sproute
             SprouteKotlinParent.SprouteClass(
                 classData = it.classData,
                 primaryConstructorParams = it.primaryConstructorParams?.toRequestParamMemberNames(),
-                authentication = it.getAuthenticationAnnotation(),
+                authentication = Authentication(it.element, null),
                 rootPathSegment = routeRoot.getPathPrefixToSproutePackage(it.packageName),
                 classRouteSegment = classSprouteAnnotation.routeSegment,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray()),
             )
         }
         .toSet()
-
-private fun KotlinContainer.KotlinClass.getAuthenticationAnnotation(): Authenticated? {
-    val authenticatedAnnotation: Authenticated? = getAnnotation(Authenticated::class) as Authenticated?
-    if (authenticatedAnnotation != null && getAnnotation(Unauthenticated::class) != null) {
-        throw IllegalStateException("A Sproute cannot have both Authenticated and Unauthenticated annotations")
-    }
-
-    return if (authenticatedAnnotation != null) authenticatedAnnotation else null
-}
-
