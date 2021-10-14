@@ -5,6 +5,7 @@ import com.casadetasha.kexp.sproute.processor.ktx.hasAnnotation
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.ImmutableKmFunction
+import com.squareup.kotlinpoet.metadata.ImmutableKmType
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import kotlinx.metadata.KmClassifier
 import javax.lang.model.element.Element
@@ -30,6 +31,9 @@ sealed class KotlinFunction(
             )
         }
     }
+
+    val returnType: ImmutableKmType = function.returnType
+    val hasReturnValue: Boolean = returnType.toMemberName() != Unit::class.toMemberName()
 
     override fun compareTo(other: KotlinFunction): Int {
         return this.memberName.toString().compareTo(other.memberName.toString())

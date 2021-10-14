@@ -2,7 +2,6 @@ package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
 import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
@@ -31,13 +30,12 @@ internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRootInfo> 
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal fun RoundEnvironment.getRoutePackages(): Set<SprouteKotlinParent.SproutePackage> {
-    return getFileFacadesForTopLevelFunctionsAnnotatedWith(SprouteRequestAnnotations.validRequestTypes)
+    return getFileFacadesForTopLevelFunctionsAnnotatedWith(validRequestTypes)
         .map {
             SprouteKotlinParent.SproutePackage(
-                immutableKmPackage = it.immutableKmPackage,
                 packageName = it.packageName,
                 fileName = it.fileName,
-                requestMethodMap = it.functionMap
+                functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())
             )
         }
         .toSet()
@@ -54,7 +52,7 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.Sproute
                 classData = it.classData,
                 rootPathSegment = routeRoot.getPathPrefixToSproutePackage(it.packageName),
                 classRouteSegment = classSprouteAnnotation.routeSegment,
-                requestMethodMap = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())
+                functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())
             )
         }
         .toSet()

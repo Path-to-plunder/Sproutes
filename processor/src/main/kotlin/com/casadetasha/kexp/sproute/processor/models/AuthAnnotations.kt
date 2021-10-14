@@ -5,12 +5,16 @@ import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
 import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
+import javax.lang.model.element.Element
 import kotlin.reflect.KClass
 
-class AuthenticationAnnotations(private val authenticatedAnnotation: Authenticated?,
-                                private val unauthenticatedAnnotation: Unauthenticated?,
-                                private val defaultAuthenticationStatus: KClass<*>
+class AuthAnnotations(
+    requestElement: Element,
+    private val defaultAuthenticationStatus: KClass<*>
 ) {
+
+    private val authenticatedAnnotation: Authenticated? = requestElement.getAnnotation(Authenticated::class.java)
+    private val unauthenticatedAnnotation: Unauthenticated? = requestElement.getAnnotation(Unauthenticated::class.java)
     private val authenticationNames: List<String> = authenticatedAnnotation?.apply {
         validateAuthenticatedAnnotations()
     }?.names?.asList()?: ArrayList()

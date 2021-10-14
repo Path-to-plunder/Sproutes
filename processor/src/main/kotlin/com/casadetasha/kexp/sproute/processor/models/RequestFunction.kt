@@ -3,32 +3,27 @@ package com.casadetasha.kexp.sproute.processor.models
 import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames
-import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getInstaRequestAnnotation
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRequestMethodName
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRouteSegment
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
+import com.casadetasha.kexp.sproute.processor.annotatedloader.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.metadata.ImmutableKmFunction
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
 import io.ktor.routing.*
-import kotlinx.metadata.KmClassifier
-import javax.lang.model.element.Element
 import kotlin.reflect.KClass
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class RequestFunction(
-    packageName: String,
-    methodElement: Element,
-    function: ImmutableKmFunction,
+    kotlinFunction: KotlinFunction,
     pathRootSegment: String,
     classRouteSegment: String,
-    defaultAuthenticationStatus: KClass<*>
+    defaultAuthStatus: KClass<*>
 ) : Comparable<RequestFunction> {
 
     companion object {
@@ -46,28 +41,17 @@ internal class RequestFunction(
         pathRootSegment + usableClassSegment + pathSuffix
     }
 
-    private val requestAnnotation: Annotation = methodElement.getInstaRequestAnnotation()
-    private val authenticationAnnotations = AuthenticationAnnotations(
-        methodElement.getAnnotation(Authenticated::class.java),
-        methodElement.getAnnotation(Unauthenticated::class.java),
-        defaultAuthenticationStatus)
-    val isAuthenticationRequested: Boolean = authenticationAnnotations.isAuthenticationRequested
-    val authenticationParams: String = authenticationAnnotations.authenticationParams
-    val hasAuthenticationParams: Boolean = authenticationAnnotations.hasAuthenticationParams
+    val simpleName: String = kotlinFunction.simpleName
+    val memberName: MemberName = kotlinFunction.memberName
+    val params: List<MemberName> = kotlinFunction.parameters
+    val receiver: MemberName? = kotlinFunction.receiver.apply { validateFunctionReceiver(this) }
 
-    val simpleName: String = function.name
-    val memberName: MemberName = MemberName(packageName, simpleName)
-    val params: List<MemberName> = function.valueParameters.convertToMemberNames()
-    val receiver: MemberName? by lazy {
-        val receiverType = function.receiverParameterType
-        if (receiverType == null) null
-        else when (receiverType.classifier) {
-            is KmClassifier.Class -> receiverType.toMemberName()
-            else -> processingEnvironment.printThenThrowError(
-                "Unable to generate $configurationMethodSimpleName, extension parameter must be a class."
-            )
-        }.apply { validateFunctionReceiver(this) }
-    }
+    private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()
+
+    private val authAnnotations = AuthAnnotations(kotlinFunction.element, defaultAuthStatus)
+    val isAuthenticationRequested: Boolean = authAnnotations.isAuthenticationRequested
+    val authenticationParams: String = authAnnotations.authenticationParams
+    val hasAuthenticationParams: Boolean = authAnnotations.hasAuthenticationParams
 
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
     val requestMethodName: MemberName = MemberName(MemberNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
@@ -79,21 +63,27 @@ internal class RequestFunction(
     }
 
     val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()
-    val hasReturnValue: Boolean = (function.returnType.toMemberName() != Unit::class.toMemberName()).apply {
-        if (this && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError("Route" +
-                " $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND have a" +
-                " return type. If you want to access the ApplicationCall and return a value, add the ApplicationCall" +
-                " as a method parameter.")
-    }
+    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { validateReturnValue(this) }
 
-    private fun validateFunctionReceiver(memberName: MemberName) {
+    private fun validateFunctionReceiver(memberName: MemberName?) {
         when (memberName) {
+            null -> return
             !in VALID_EXTENSION_CLASSES -> {
                 val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
-                processingEnvironment.printThenThrowError("Only [$extensionClasses] are supported as extension" +
-                        " receivers for request methods. Found $this for route $fullRoutePath")
+                processingEnvironment.printThenThrowError(
+                    "Only [$extensionClasses] are supported as extension" +
+                            " receivers for request methods. Found $this for route $fullRoutePath"
+                )
             }
         }
+    }
+
+    private fun validateReturnValue(hasReturnValue: Boolean) {
+        if (hasReturnValue && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError(
+            "Route $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND" +
+                    " have a return type. If you want to access the ApplicationCall and return a value, add the" +
+                    " ApplicationCall as a method parameter."
+        )
     }
 
     override fun compareTo(other: RequestFunction): Int {
