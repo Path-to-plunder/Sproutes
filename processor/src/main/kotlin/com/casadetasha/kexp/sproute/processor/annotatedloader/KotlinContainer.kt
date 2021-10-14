@@ -1,10 +1,9 @@
 package com.casadetasha.kexp.sproute.processor.annotatedloader
 
 import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
-import com.casadetasha.kexp.sproute.processor.ktx.getClassData
 import com.casadetasha.kexp.sproute.processor.ktx.primaryConstructor
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.metadata.ImmutableKmClass
 import com.squareup.kotlinpoet.metadata.ImmutableKmPackage
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
@@ -27,15 +26,15 @@ sealed class KotlinContainer(
     @OptIn(KotlinPoetMetadataPreview::class)
     class KotlinClass(
         element: Element,
-        kmClass: ImmutableKmClass,
-        private val functionMap: Map<String, Element>
+        val className: ClassName,
+        val classData: ClassData,
+        val functionMap: Map<String, Element>
     ) : KotlinContainer(
         element = element,
-        packageName = element.getClassData().className.packageName,
-        classSimpleName = element.getClassData().className.simpleName
+        packageName = classData.className.packageName,
+        classSimpleName = classData.className.simpleName
     ) {
 
-        val classData: ClassData by lazy { element.getClassData() }
         val primaryConstructorParams: List<MemberName>? by lazy {
             classData.primaryConstructor()
                 ?.valueParameters

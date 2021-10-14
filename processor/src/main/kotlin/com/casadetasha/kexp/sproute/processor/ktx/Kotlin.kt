@@ -19,7 +19,9 @@ internal fun String.asMethod() : String {
     return this.asPath().replace("/", "_")
 }
 
-internal fun String?.isNotNullOrBlank() = this?.isNotBlank() ?: false
+internal fun List<String>.asVarArgs(): String = this.let {
+    return joinToString(", ") { "\"$it\"" }
+}
 
 internal fun <T> List<T>?.letIfNotEmpty(function: (List<T>) -> Unit): Boolean {
     if (this == null || isEmpty()) {

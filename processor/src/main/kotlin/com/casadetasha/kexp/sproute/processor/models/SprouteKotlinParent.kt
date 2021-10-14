@@ -34,7 +34,7 @@ internal sealed class SprouteKotlinParent(
         val classData: ClassData,
         private val classRouteSegment: String,
         private val rootPathSegment: String,
-        private val requestMethodMap: Map<String, ExecutableElement>
+        private val requestMethodMap: Map<String, Element>
     ) : SprouteKotlinParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
