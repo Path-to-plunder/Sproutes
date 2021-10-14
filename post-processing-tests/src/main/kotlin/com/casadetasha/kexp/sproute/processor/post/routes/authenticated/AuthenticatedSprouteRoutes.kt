@@ -5,17 +5,18 @@ import com.casadetasha.kexp.sproute.annotations.Get
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 
-@Sproute("/authenticated_class")
+@Sproute("/authenticated_sproute")
 @Authenticated
-internal class AuthenticatedClassRoutes {
+internal class AuthenticatedSprouteRoutes {
     @Get
-    fun authenticatedClassGet() = "Authenticated class route GET."
+    fun authenticatedClassGet() = "Authenticated sproute route GET."
 
     @Get("/override_auth")
     @Authenticated("named-auth")
-    fun authenticatedClassOverrideAuthRequestGet() = "Authenticated class override auth route GET."
+    fun authenticatedClassOverrideAuthRequestGet() = "Authenticated sproute override auth route GET."
 
     @Get("/override_unauthenticated")
     @Unauthenticated
-    fun authenticatedClassOverrideUnauthenticatedRequestGet() = "Authenticated class override unauthenticated route GET."
+    fun authenticatedClassOverrideUnauthenticatedRequestGet() =
+        "Authenticated sproute override unauthenticated route GET."
 }

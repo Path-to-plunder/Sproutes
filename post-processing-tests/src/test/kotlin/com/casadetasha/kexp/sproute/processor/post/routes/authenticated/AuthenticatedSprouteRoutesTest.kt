@@ -9,28 +9,28 @@ import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*
 import kotlin.test.Test
 
-class AuthenticatedClassRoutesTest {
+class AuthenticatedSprouteRoutesTest {
     @Test
-    fun `authenticated class get with invalid auth returns status Unauthorized (401)`() =
+    fun `authenticated sproute get with invalid auth returns status Unauthorized (401)`() =
         withConfiguredTestApplication {
-            handleRequest(HttpMethod.Get, "authenticated_class").apply {
+            handleRequest(HttpMethod.Get, "authenticated_sproute").apply {
                 assertThat(response.status()).isEqualTo(Unauthorized)
             }
         }
 
     @Test
-    fun `authenticated class get with valid auth routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "authenticated_class") {
+    fun `authenticated sproute get with valid auth routes through`() = withConfiguredTestApplication {
+        handleRequest(HttpMethod.Get, "authenticated_sproute") {
             addBasicAuthHeader("username", "password")
         }.apply {
-            assertThat(response.content).isEqualTo("Authenticated class route GET.")
+            assertThat(response.content).isEqualTo("Authenticated sproute route GET.")
         }
     }
 
     @Test
     fun `overridden authenticated get with no auth returns status Unauthorized (401)`() =
         withConfiguredTestApplication {
-            handleRequest(HttpMethod.Get, "authenticated_class/override_auth").apply {
+            handleRequest(HttpMethod.Get, "authenticated_sproute/override_auth").apply {
                 assertThat(response.status()).isEqualTo(Unauthorized)
             }
         }
@@ -38,7 +38,7 @@ class AuthenticatedClassRoutesTest {
     @Test
     fun `overridden authenticated get with valid auth for parent returns status Unauthorized (401)`() =
         withConfiguredTestApplication {
-            handleRequest(HttpMethod.Get, "authenticated_class/override_auth") {
+            handleRequest(HttpMethod.Get, "authenticated_sproute/override_auth") {
                 addBasicAuthHeader("username", "password")
             }.apply {
                 assertThat(response.status()).isEqualTo(Unauthorized)
@@ -47,18 +47,18 @@ class AuthenticatedClassRoutesTest {
 
     @Test
     fun `overridden authenticated get with valid auth routes through`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "authenticated_class/override_auth") {
+        handleRequest(HttpMethod.Get, "authenticated_sproute/override_auth") {
             addBasicAuthHeader("namedUsername", "namedPassword")
         }.apply {
-            assertThat(response.content).isEqualTo("Authenticated class override auth route GET.")
+            assertThat(response.content).isEqualTo("Authenticated sproute override auth route GET.")
         }
     }
 
     @Test
     fun `overridden unauthenticated get with no auth routes through`() =
         withConfiguredTestApplication {
-            handleRequest(HttpMethod.Get, "authenticated_class/override_unauthenticated").apply {
-                assertThat(response.content).isEqualTo("Authenticated class override unauthenticated route GET.")
+            handleRequest(HttpMethod.Get, "authenticated_sproute/override_unauthenticated").apply {
+                assertThat(response.content).isEqualTo("Authenticated sproute override unauthenticated route GET.")
             }
         }
 }
