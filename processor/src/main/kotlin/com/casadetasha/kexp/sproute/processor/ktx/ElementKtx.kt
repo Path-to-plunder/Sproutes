@@ -8,10 +8,6 @@ import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import kotlin.reflect.KClass
 
-internal fun Element.hasAnnotation(clazz: Class<out Annotation>): Boolean {
-    return getAnnotation(clazz) != null
-}
-
 internal fun Element.getRequestMethods(): Map<String, ExecutableElement> {
     val requestMap: HashMap<String, ExecutableElement> = HashMap()
     SprouteRequestAnnotations.validRequestTypes.forEach {
@@ -31,6 +27,10 @@ internal fun Element.getMethodsForRequestType(requestTypeClass: KClass<out Annot
     }
 
     return methodMap
+}
+
+internal fun Element.hasAnnotation(clazz: Class<out Annotation>): Boolean {
+    return getAnnotation(clazz) != null
 }
 
 internal fun Element.getTopLevelFunctionPathRoot(): String {

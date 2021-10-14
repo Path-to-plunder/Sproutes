@@ -31,12 +31,3 @@ internal fun <T> List<T>?.ifNotEmpty(function: (List<T>) -> Unit): Boolean {
     function(this)
     return true
 }
-
-internal fun MutableList<Element>.mapOnSimpleName() = HashMap<String, Element>().apply {
-    this@mapOnSimpleName.forEach { this[it.simpleName.toString()] = it }
-}
-
-internal fun <K, V> HashMap<K, MutableList<V>>.getOrCreateList(key: K): MutableList<V> {
-    this[key] = this[key] ?: ArrayList()
-    return this[key]!!
-}
