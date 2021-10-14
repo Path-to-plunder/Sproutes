@@ -18,7 +18,7 @@ internal sealed class SprouteKotlinParent(
     val configurationMethodSimpleName = "configureRoutes\$${packageName}_$classSimpleName".asMethod()
     val configurationMethodName: MemberName = MemberName(packageName, configurationMethodSimpleName)
 
-    abstract val requestFunctions: Set<RequestFunction>
+    abstract val sprouteRequestFunctions: Set<SprouteRequestFunction>
 
     override fun compareTo(other: SprouteKotlinParent): Int {
         return configurationMethodSimpleName.compareTo(other.configurationMethodSimpleName)
@@ -37,9 +37,9 @@ internal sealed class SprouteKotlinParent(
         classSimpleName = classData.className.simpleName
     ) {
 
-        override val requestFunctions: Set<RequestFunction> = functions
+        override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
-                RequestFunction(
+                SprouteRequestFunction(
                     kotlinFunction = it,
                     pathRootSegment = rootPathSegment,
                     classRouteSegment = classRouteSegment,
@@ -58,9 +58,9 @@ internal sealed class SprouteKotlinParent(
         classSimpleName = fileName
     ) {
 
-        override val requestFunctions: Set<RequestFunction> = functions
+        override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
-                RequestFunction(
+                SprouteRequestFunction(
                     kotlinFunction = it,
                     pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
                     classRouteSegment = "",

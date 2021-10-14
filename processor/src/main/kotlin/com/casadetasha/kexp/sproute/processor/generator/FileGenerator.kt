@@ -37,7 +37,7 @@ internal class FileGenerator(private val kaptKotlinGeneratedDir: String) {
     }
 
     private fun FileSpec.Builder.addRequestFunctions(routeClass: SprouteKotlinParent) = apply {
-        routeClass.requestFunctions.forEach { requestFunction ->
+        routeClass.sprouteRequestFunctions.forEach { requestFunction ->
             addFunction(RequestFunSpecParser(routeClass, requestFunction).funSpec)
         }
     }

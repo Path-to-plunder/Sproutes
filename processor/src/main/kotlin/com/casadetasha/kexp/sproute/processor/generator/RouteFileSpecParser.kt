@@ -19,7 +19,7 @@ internal class RouteFileSpecParser(private val sprouteKotlinParent: SprouteKotli
     }
 
     private fun FunSpec.Builder.addRouteMethods(): FunSpec.Builder = apply {
-        sprouteKotlinParent.requestFunctions
+        sprouteKotlinParent.sprouteRequestFunctions
             .map { RequestFunSpecParser(sprouteKotlinParent, it).funSpec }
             .forEach { addStatement("%N()", it) }
     }

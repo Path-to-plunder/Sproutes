@@ -3,7 +3,7 @@ package com.casadetasha.kexp.sproute.processor.generator
 import com.casadetasha.kexp.sproute.processor.MemberNames.MethodNames
 import com.casadetasha.kexp.sproute.processor.ktx.addMethodParameters
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
-import com.casadetasha.kexp.sproute.processor.models.RequestFunction
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SproutePackage
@@ -17,11 +17,11 @@ import io.ktor.routing.*
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class RequestFunSpecParser(
     private val sprouteKotlinParent: SprouteKotlinParent,
-    private val requestFunction: RequestFunction
+    private val sprouteRequestFunction: SprouteRequestFunction
 ) {
 
     val funSpec: FunSpec by lazy {
-        FunSpec.builder(requestFunction.configurationMethodSimpleName)
+        FunSpec.builder(sprouteRequestFunction.configurationMethodSimpleName)
             .addModifiers(KModifier.INTERNAL)
             .receiver(Route::class)                 // internal Route.configurationMethodSimpleName() {
             .beginSetAuthenticationRequirements()   //   authenticate("auth configuration") {
@@ -35,13 +35,13 @@ internal class RequestFunSpecParser(
     }
 
     private fun FunSpec.Builder.beginSetAuthenticationRequirements() = apply {
-        if (requestFunction.isAuthenticationRequested && requestFunction.hasAuthenticationParams) {
+        if (sprouteRequestFunction.isAuthenticationRequested && sprouteRequestFunction.hasAuthenticationParams) {
             beginControlFlow(
                 "%M(%L) ",
                 MethodNames.authenticationScopeMethod,
-                requestFunction.authenticationParams
+                sprouteRequestFunction.authenticationParams
             )
-        } else if (requestFunction.isAuthenticationRequested) {
+        } else if (sprouteRequestFunction.isAuthenticationRequested) {
             beginControlFlow("%M() ", MethodNames.authenticationScopeMethod)
         }
     }
@@ -49,28 +49,28 @@ internal class RequestFunSpecParser(
     private fun FunSpec.Builder.beginRequestControlFlow() = apply {
         beginControlFlow(
             "%M(%S) ",
-            requestFunction.requestMethodName,
-            requestFunction.fullRoutePath,
+            sprouteRequestFunction.requestMethodName,
+            sprouteRequestFunction.fullRoutePath,
         )
     }
 
     private fun FunSpec.Builder.endRequestControlFlow() = apply { endControlFlow() }
 
     private fun FunSpec.Builder.endSetAuthenticationRequirements() = apply {
-        if (requestFunction.isAuthenticationRequested) {
+        if (sprouteRequestFunction.isAuthenticationRequested) {
             endControlFlow()
         }
     }
 
     private fun FunSpec.Builder.beginCallControlFlow() = apply {
-        if (requestFunction.hasReturnValue) {
+        if (sprouteRequestFunction.hasReturnValue) {
             addStatement(
                 "%M.%M(",
                 MethodNames.applicationCallGetter,
                 MethodNames.callRespondMethod,
             )
         }
-        if (requestFunction.isApplicationCallExtensionMethod) {
+        if (sprouteRequestFunction.isApplicationCallExtensionMethod) {
             beginControlFlow(
                 "%M.%M",
                 MethodNames.applicationCallGetter,
@@ -91,15 +91,15 @@ internal class RequestFunSpecParser(
             CodeBlock.builder()
                 .add("  %M", sprouteKotlinParent.memberName)
                 .addMethodParameters((sprouteKotlinParent as SprouteClass).primaryConstructorParams)
-                .add(".%N", requestFunction.simpleName)
-                .addMethodParameters(requestFunction.params)
+                .add(".%N", sprouteRequestFunction.simpleName)
+                .addMethodParameters(sprouteRequestFunction.params)
                 .add("\n")
                 .build()
         )
     }
 
     private fun FunSpec.Builder.addRoutePackageMethodCall() = apply {
-        when(requestFunction.receiver) {
+        when(sprouteRequestFunction.receiver) {
             Route::class.toMemberName() -> addRouteExtensionPackageMethodCall()
             ApplicationCall::class.toMemberName() -> addPackageMethodCall()
             null -> addPackageMethodCall()
@@ -111,9 +111,9 @@ internal class RequestFunSpecParser(
             CodeBlock.builder()
                 .add("  %L%N.%M",
                     "this@",
-                    requestFunction.configurationMethodSimpleName,
-                    requestFunction.memberName)
-                .addMethodParameters(requestFunction.params)
+                    sprouteRequestFunction.configurationMethodSimpleName,
+                    sprouteRequestFunction.memberName)
+                .addMethodParameters(sprouteRequestFunction.params)
                 .add("\n")
                 .build()
         )
@@ -122,18 +122,18 @@ internal class RequestFunSpecParser(
     private fun FunSpec.Builder.addPackageMethodCall() {
         addCode(
             CodeBlock.builder()
-                .add("  %M", requestFunction.memberName)
-                .addMethodParameters(requestFunction.params)
+                .add("  %M", sprouteRequestFunction.memberName)
+                .addMethodParameters(sprouteRequestFunction.params)
                 .add("\n")
                 .build()
         )
     }
 
     private fun FunSpec.Builder.endCallControlFlow() = apply {
-        if (requestFunction.isApplicationCallExtensionMethod) {
+        if (sprouteRequestFunction.isApplicationCallExtensionMethod) {
             endControlFlow()
         }
-        if (requestFunction.hasReturnValue) {
+        if (sprouteRequestFunction.hasReturnValue) {
             addStatement(")")
         }
     }

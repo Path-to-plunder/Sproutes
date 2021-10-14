@@ -18,12 +18,12 @@ import io.ktor.routing.*
 import kotlin.reflect.KClass
 
 @OptIn(KotlinPoetMetadataPreview::class)
-internal class RequestFunction(
+internal class SprouteRequestFunction(
     kotlinFunction: KotlinFunction,
     pathRootSegment: String,
     classRouteSegment: String,
     defaultAuthStatus: KClass<*>
-) : Comparable<RequestFunction> {
+) : Comparable<SprouteRequestFunction> {
 
     companion object {
         val VALID_EXTENSION_CLASSES =
@@ -85,7 +85,7 @@ internal class RequestFunction(
         )
     }
 
-    override fun compareTo(other: RequestFunction): Int {
+    override fun compareTo(other: SprouteRequestFunction): Int {
         val comparison = fullRoutePath.compareTo(other.fullRoutePath)
         return if (comparison != 0) comparison else requestMethodSimpleName.compareTo(other.requestMethodSimpleName)
     }
