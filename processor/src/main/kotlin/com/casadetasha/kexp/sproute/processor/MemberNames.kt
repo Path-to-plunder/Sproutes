@@ -49,7 +49,7 @@ internal object MemberNames {
     private val validParameterTypes = memberMap.keys
 
     @OptIn(KotlinPoetMetadataPreview::class)
-    fun List<ImmutableKmValueParameter>.convertToMemberNames(): List<MemberName> {
+    fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
         return map { it.asCanonicalName() }
             .apply {
                 val containsInvalidParameter = any { it !in validParameterTypes }

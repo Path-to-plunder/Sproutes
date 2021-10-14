@@ -4,6 +4,7 @@ import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
+import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
@@ -50,6 +51,7 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.Sproute
 
             SprouteKotlinParent.SprouteClass(
                 classData = it.classData,
+                primaryConstructorParams = it.primaryConstructorParams?.toRequestParamMemberNames(),
                 rootPathSegment = routeRoot.getPathPrefixToSproutePackage(it.packageName),
                 classRouteSegment = classSprouteAnnotation.routeSegment,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())

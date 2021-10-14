@@ -2,10 +2,8 @@ package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.annotationparser.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
-import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
-import com.casadetasha.kexp.sproute.processor.ktx.primaryConstructor
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
@@ -30,6 +28,7 @@ internal sealed class SprouteKotlinParent(
     @OptIn(KotlinPoetMetadataPreview::class)
     internal class SprouteClass(
         val classData: ClassData,
+        val primaryConstructorParams: List<MemberName>?,
         classRouteSegment: String,
         rootPathSegment: String,
         functions: Set<KotlinFunction>
@@ -37,12 +36,6 @@ internal sealed class SprouteKotlinParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
     ) {
-
-        val primaryConstructorParams: List<MemberName>? by lazy {
-            classData.primaryConstructor()
-                ?.valueParameters
-                ?.convertToMemberNames()
-        }
 
         override val requestFunctions: Set<RequestFunction> = functions
             .map {
