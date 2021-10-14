@@ -1,11 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
-import com.google.common.collect.ImmutableSet
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 
-internal class RouteConfigurationSpecParser(private val sprouteKotlinParent: ImmutableSet<SprouteKotlinParent>) {
+internal class RouteConfigurationSpecParser(private val sprouteKotlinParent: Set<SprouteKotlinParent>) {
 
     companion object {
         const val CONFIGURATION_METHOD_SIMPLE_NAME = "configureSproutes"

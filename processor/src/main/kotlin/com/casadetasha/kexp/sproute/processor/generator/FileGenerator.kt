@@ -3,7 +3,6 @@ package com.casadetasha.kexp.sproute.processor.generator
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.ktx.printNote
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
-import com.google.common.collect.ImmutableSet
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 
@@ -14,7 +13,7 @@ internal class FileGenerator(private val kaptKotlinGeneratedDir: String) {
         const val ROUTING_PACKAGE_NAME = "com.casadetasha.kexp.sproute"
     }
 
-    internal fun generateRouteFiles(routeClasses: ImmutableSet<SprouteKotlinParent>) {
+    internal fun generateRouteFiles(routeClasses: Set<SprouteKotlinParent>) {
         processingEnvironment.printNote("Creating route for $INSTA_ROUTE_CONFIG_FILE_NAME")
         routeClasses.forEach { generateRouteFile(it) }
         generatePublicRouteConfigFile(routeClasses)
@@ -30,7 +29,7 @@ internal class FileGenerator(private val kaptKotlinGeneratedDir: String) {
             .writeTo(File(kaptKotlinGeneratedDir))
     }
 
-    private fun generatePublicRouteConfigFile(sprouteKotlinParents: ImmutableSet<SprouteKotlinParent>) {
+    private fun generatePublicRouteConfigFile(sprouteKotlinParents: Set<SprouteKotlinParent>) {
         FileSpec.builder(ROUTING_PACKAGE_NAME, INSTA_ROUTE_CONFIG_FILE_NAME)
             .addFunction(RouteConfigurationSpecParser(sprouteKotlinParents).routeConfigurationFunSpec)
             .build()

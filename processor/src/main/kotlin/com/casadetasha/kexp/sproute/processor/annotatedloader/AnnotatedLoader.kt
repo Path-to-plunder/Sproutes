@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 @OptIn(KotlinPoetMetadataPreview::class)
 fun RoundEnvironment.getFileFacadesForTopLevelFunctionsAnnotatedWith(
     annotations: List<KClass<out Annotation>>
-): ImmutableSet<KotlinContainer.KotlinFileFacade> {
+): Set<KotlinContainer.KotlinFileFacade> {
     val functionListMap = HashMap<String, MutableList<Element>>()
     val functionFileElementMap = HashMap<String, Element>()
 
@@ -37,17 +37,17 @@ fun RoundEnvironment.getFileFacadesForTopLevelFunctionsAnnotatedWith(
             immutableKmPackage = it.value.first().getParentFileKmPackage(),
             packageName = fileElement.packageName,
             fileName = fileElement.simpleName?.toString() ?: "",
-            functionMap = it.value.toMap()
+            functionMap = it.value.mapOnSimpleName()
         )
-    }.toImmutableSet()
+    }.toSet()
 }
 
 @OptIn(KotlinPoetMetadataPreview::class)
 fun RoundEnvironment.getClassesAnnotatedWith(
     annotationClass: KClass<out Annotation>
-): ImmutableSet<KotlinContainer.KotlinClass> = getElementsAnnotatedWith(annotationClass.java)
+): Set<KotlinContainer.KotlinClass> = getElementsAnnotatedWith(annotationClass.java)
     .filterNot { it.isTopLevelFunction() }
-    .mapToImmutableSet {
+    .map {
         val className = it.getClassName()
         KotlinContainer.KotlinClass(
             element = it,
@@ -55,7 +55,7 @@ fun RoundEnvironment.getClassesAnnotatedWith(
             classData = className.getClassData(),
             functionMap = it.getRequestMethods()
         )
-    }
+    }.toSet()
 
 @OptIn(KotlinPoetMetadataPreview::class)
 private fun Element.getParentFileKmPackage(): ImmutableKmPackage =

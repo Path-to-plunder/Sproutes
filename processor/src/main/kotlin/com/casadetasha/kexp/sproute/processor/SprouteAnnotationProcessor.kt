@@ -26,12 +26,12 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
     }
 
     private lateinit var roundEnv: RoundEnvironment
-    private val sprouteClasses: ImmutableSet<SprouteClass> by lazy { roundEnv.getRouteClasses() }
-    private val sproutePackages: ImmutableSet<SproutePackage> by lazy { roundEnv.getRoutePackages() }
+    private val sprouteClasses: Set<SprouteClass> by lazy { roundEnv.getRouteClasses() }
+    private val sproutePackages: Set<SproutePackage> by lazy { roundEnv.getRoutePackages() }
 
-    private val sortedSprouteKotlinParents: ImmutableSet<SprouteKotlinParent> by lazy {
+    private val sortedSprouteKotlinParents: Set<SprouteKotlinParent> by lazy {
         val mergedSortedSets = sprouteClasses.toSortedSet() + sproutePackages.toSortedSet()
-        mergedSortedSets.toImmutableSet()
+        mergedSortedSets.toSet()
     }
 
     private lateinit var kaptKotlinGeneratedDir: String
