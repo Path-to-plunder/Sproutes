@@ -1,22 +1,24 @@
 package com.casadetasha.kexp.sproute.processor.annotatedloader
 
 import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
+import com.casadetasha.kexp.sproute.processor.ktx.hasAnnotation
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.ImmutableKmFunction
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import kotlinx.metadata.KmClassifier
 import javax.lang.model.element.Element
+import kotlin.reflect.KClass
 
 @OptIn(KotlinPoetMetadataPreview::class)
 sealed class KotlinFunction(
     val packageName: String,
-    val methodElement: Element,
-    val function: ImmutableKmFunction,
+    val element: Element,
+    val function: ImmutableKmFunction
 ) : Comparable<KotlinFunction> {
 
-    val simpleName: String = function.name
     abstract val memberName: MemberName
+    val simpleName: String = function.name
     val parameters: List<MemberName> = function.valueParameters.convertToMemberNames()
     val receiver: MemberName? by lazy {
         val receiverType = function.receiverParameterType
@@ -33,26 +35,33 @@ sealed class KotlinFunction(
         return this.memberName.toString().compareTo(other.memberName.toString())
     }
 
+    fun hasAnyAnnotationsIn(vararg annotations: KClass<out Annotation>): Boolean {
+        annotations.forEach {
+            if (element.hasAnnotation(it.java)) return true
+        }
+        return false
+    }
+
     class KotlinTopLevelFunction(
         packageName: String,
         methodElement: Element,
         function: ImmutableKmFunction,
     ) : KotlinFunction(
         packageName = packageName,
-        methodElement = methodElement,
+        element = methodElement,
         function = function
     ) {
         override val memberName: MemberName = MemberName(packageName, simpleName)
     }
 
 
-    class KotlinClassMemberFunction(
+    class KotlinMemberFunction(
         packageName: String,
         methodElement: Element,
         function: ImmutableKmFunction,
     ) : KotlinFunction(
         packageName = packageName,
-        methodElement = methodElement,
+        element = methodElement,
         function = function
     ) {
         override val memberName: MemberName = MemberName(packageName, simpleName)

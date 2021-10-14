@@ -3,8 +3,9 @@ package com.casadetasha.kexp.sproute.processor.ktx
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations
-import com.casadetasha.kexp.sproute.processor.annotatedloader.getClassesAnnotatedWith
-import com.casadetasha.kexp.sproute.processor.annotatedloader.getFileFacadesForTopLevelFunctionsAnnotatedWith
+import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
+import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getClassesAnnotatedWith
+import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
 import com.squareup.kotlinpoet.TypeName
@@ -53,7 +54,7 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.Sproute
                 classData = it.classData,
                 rootPathSegment = routeRoot.getPathPrefixToSproutePackage(it.packageName),
                 classRouteSegment = classSprouteAnnotation.routeSegment,
-                requestMethodMap = it.functionMap.toMap()
+                requestMethodMap = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())
             )
         }
         .toSet()

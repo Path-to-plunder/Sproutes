@@ -16,7 +16,7 @@ internal object SprouteRequestAnnotations {
         OPTIONS(Options::class, "options")
     }
 
-    val validRequestTypes = RequestType.values().map { it.annotationKClass }
+    val validRequestTypes: List<KClass<out Annotation>> = RequestType.values().map { it.annotationKClass }
 
     fun Element.getInstaRequestAnnotation(): Annotation {
         return getAnnotation(Get::class.java)

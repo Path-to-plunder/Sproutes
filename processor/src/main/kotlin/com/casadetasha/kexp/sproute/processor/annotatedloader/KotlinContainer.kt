@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.metadata.ImmutableKmPackage
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
 import javax.lang.model.element.Element
+import kotlin.reflect.KClass
 
 sealed class KotlinContainer(
     val element: Element,
@@ -17,6 +18,15 @@ sealed class KotlinContainer(
 
     val memberName = MemberName(packageName, classSimpleName)
     abstract val kotlinFunctions: Set<KotlinFunction>
+
+    fun getFunctionsAnnotatedWith(vararg annotations: KClass<out Annotation>)
+            : Map<String, Element> = HashMap<String, Element>().apply {
+        kotlinFunctions.forEach { function ->
+            if (function.hasAnyAnnotationsIn(*annotations)) {
+                this += function.simpleName to function.element
+            }
+        }
+    }
 
     override fun compareTo(other: KotlinContainer): Int {
         return memberName.toString().compareTo(other.memberName.toString())
@@ -45,7 +55,7 @@ sealed class KotlinContainer(
             classData.methods
                 .filter { functionMap.containsKey(it.key.name) }
                 .map { entry ->
-                    KotlinFunction.KotlinClassMemberFunction(
+                    KotlinFunction.KotlinMemberFunction(
                         packageName = packageName,
                         methodElement = functionMap[entry.key.name]!!,
                         function = entry.key
