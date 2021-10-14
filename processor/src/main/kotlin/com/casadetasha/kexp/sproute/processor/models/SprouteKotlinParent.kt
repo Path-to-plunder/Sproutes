@@ -2,6 +2,7 @@ package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
+import com.casadetasha.kexp.sproute.processor.annotatedloader.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.ktx.*
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.primaryConstructor
@@ -34,7 +35,7 @@ internal sealed class SprouteKotlinParent(
         val classData: ClassData,
         private val classRouteSegment: String,
         private val rootPathSegment: String,
-        private val requestMethodMap: Map<String, Element>
+        private val requestMethodMap: Map<String, KotlinFunction>
     ) : SprouteKotlinParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
@@ -47,19 +48,16 @@ internal sealed class SprouteKotlinParent(
         }
 
         override val requestFunctions: Set<RequestFunction> by lazy {
-            classData.methods
-                .filter { requestMethodMap.containsKey(it.key.name) }
-                .map { entry ->
+                requestMethodMap.map { entry ->
                     RequestFunction(
                         packageName = packageName,
-                        methodElement = requestMethodMap[entry.key.name]!!,
-                        function = entry.key,
+                        methodElement = entry.value.element,
+                        function = entry.value.function,
                         pathRootSegment = rootPathSegment,
                         classRouteSegment = classRouteSegment,
                         defaultAuthenticationStatus = Unauthenticated::class
                     )
-                }
-                .toSortedSet()
+                }.toSortedSet()
         }
     }
 

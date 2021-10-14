@@ -20,10 +20,10 @@ sealed class KotlinContainer(
     abstract val kotlinFunctions: Set<KotlinFunction>
 
     fun getFunctionsAnnotatedWith(vararg annotations: KClass<out Annotation>)
-            : Map<String, Element> = HashMap<String, Element>().apply {
+            : Map<String, KotlinFunction> = HashMap<String, KotlinFunction>().apply {
         kotlinFunctions.forEach { function ->
             if (function.hasAnyAnnotationsIn(*annotations)) {
-                this += function.simpleName to function.element
+                this += function.simpleName to function
             }
         }
     }
