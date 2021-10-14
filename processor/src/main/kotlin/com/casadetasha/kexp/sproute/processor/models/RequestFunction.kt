@@ -1,14 +1,13 @@
 package com.casadetasha.kexp.sproute.processor.models
 
-import com.casadetasha.kexp.sproute.annotations.Authenticated
-import com.casadetasha.kexp.sproute.annotations.Unauthenticated
+import com.casadetasha.kexp.annotationparser.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.MemberNames
+import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getInstaRequestAnnotation
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRequestMethodName
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRouteSegment
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
-import com.casadetasha.kexp.sproute.processor.annotatedloader.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
@@ -43,7 +42,7 @@ internal class RequestFunction(
 
     val simpleName: String = kotlinFunction.simpleName
     val memberName: MemberName = kotlinFunction.memberName
-    val params: List<MemberName> = kotlinFunction.parameters
+    val params: List<MemberName> = kotlinFunction.parameters.convertToMemberNames()
     val receiver: MemberName? = kotlinFunction.receiver.apply { validateFunctionReceiver(this) }
 
     private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()

@@ -1,5 +1,6 @@
 package com.casadetasha.kexp.sproute.processor
 
+import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
@@ -42,6 +43,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
     ) + SprouteRequestAnnotations.validRequestTypes.map { it.java.canonicalName }.toMutableList()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
+        AnnotationParser.setup(processingEnv)
         processingEnvironment = processingEnv
         kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME] ?: return false
 

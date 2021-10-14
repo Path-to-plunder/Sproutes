@@ -1,10 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
+import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
+import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
-import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getClassesAnnotatedWith
-import com.casadetasha.kexp.sproute.processor.annotatedloader.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
 import com.squareup.kotlinpoet.TypeName

@@ -1,8 +1,8 @@
 package com.casadetasha.kexp.sproute.processor.models
 
+import com.casadetasha.kexp.annotationparser.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames.convertToMemberNames
-import com.casadetasha.kexp.sproute.processor.annotatedloader.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
 import com.casadetasha.kexp.sproute.processor.ktx.primaryConstructor
