@@ -1,6 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.annotationparser.KotlinFunction
+import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.processor.MemberNames
 import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
@@ -15,14 +16,13 @@ import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
 import io.ktor.routing.*
-import kotlin.reflect.KClass
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(
     kotlinFunction: KotlinFunction,
     pathRootSegment: String,
     classRouteSegment: String,
-    defaultAuthStatus: KClass<*>
+    parentAuthentication: Authenticated?
 ) : Comparable<SprouteRequestFunction> {
 
     companion object {
@@ -47,7 +47,7 @@ internal class SprouteRequestFunction(
 
     private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()
 
-    private val authAnnotations = AuthAnnotations(kotlinFunction.element, defaultAuthStatus)
+    private val authAnnotations = AuthAnnotations(kotlinFunction.element, parentAuthentication)
     val isAuthenticationRequested: Boolean = authAnnotations.isAuthenticationRequested
     val authenticationParams: String = authAnnotations.authenticationParams
     val hasAuthenticationParams: Boolean = authAnnotations.hasAuthenticationParams

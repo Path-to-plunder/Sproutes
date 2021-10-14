@@ -6,17 +6,17 @@ import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
 import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import javax.lang.model.element.Element
-import kotlin.reflect.KClass
 
 class AuthAnnotations(
     requestElement: Element,
-    private val defaultAuthenticationStatus: KClass<*>
+    private val parentAuthentication: Authenticated?
 ) {
 
     private val authenticatedAnnotation: Authenticated? = requestElement.getAnnotation(Authenticated::class.java)
     private val unauthenticatedAnnotation: Unauthenticated? = requestElement.getAnnotation(Unauthenticated::class.java)
-    private val authenticationNames: List<String> = authenticatedAnnotation?.apply {
+    private val authenticationNames: List<String> = with(authenticatedAnnotation) {
         validateAuthenticatedAnnotations()
+        this ?: parentAuthentication
     }?.names?.asList()?: ArrayList()
 
     private val authenticationOptionalParamSuffix: String by lazy {
@@ -27,9 +27,7 @@ class AuthAnnotations(
     }
 
     val isAuthenticationRequested: Boolean by lazy {
-        val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null
-                && defaultAuthenticationStatus == Authenticated::class
-
+        val shouldAuthenticateAsDefault = unauthenticatedAnnotation == null && parentAuthentication != null
         authenticatedAnnotation != null || shouldAuthenticateAsDefault
     }
     val authenticationParams: String = listOf(authenticationNames.asVarArgs(), authenticationOptionalParamSuffix)
