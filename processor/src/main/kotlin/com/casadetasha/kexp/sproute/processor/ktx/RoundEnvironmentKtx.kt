@@ -3,7 +3,7 @@ package com.casadetasha.kexp.sproute.processor.ktx
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations
-import com.casadetasha.kexp.sproute.processor.annotatedloader.getParentFileKmPackage
+import com.casadetasha.kexp.sproute.processor.annotatedloader.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.processor.annotatedloader.isTopLevelFunction
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
@@ -32,25 +32,14 @@ internal fun RoundEnvironment.getSprouteRoots() :
 }
 @OptIn(KotlinPoetMetadataPreview::class)
 internal fun RoundEnvironment.getRoutePackages(): ImmutableSet<SprouteKotlinParent.SproutePackage> {
-    val functionListMap = HashMap<String, MutableList<Element>>()
-    val functionFileElementMap = HashMap<String, Element>()
-    getElementsAnnotatedWithAny(SprouteRequestAnnotations.validRequestTypes.map { it.java }.toSet())
-        .filter { it.isTopLevelFunction() }
-        .forEach {
-            val key = it.enclosingElement.getQualifiedName()
-            functionListMap.getOrCreateList(key).add(it)
-            functionFileElementMap[key] = functionFileElementMap[key] ?: it.enclosingElement
-        }
-
-    return functionListMap.map {
-        val fileElement = functionFileElementMap[it.key]!!
-        SprouteKotlinParent.SproutePackage(
-            immutableKmPackage = it.value.first().getParentFileKmPackage(),
-            packageName = fileElement.packageName,
-            fileName = fileElement.simpleName?.toString() ?: "",
-            requestMethodMap = it.value.toMap()
-        )
-    }.toImmutableSet()
+    return getFileFacadesForTopLevelFunctionsAnnotatedWith(SprouteRequestAnnotations.validRequestTypes)
+        .map { SprouteKotlinParent.SproutePackage(
+            immutableKmPackage = it.immutableKmPackage,
+            packageName = it.packageName,
+            fileName = it.fileName,
+            requestMethodMap = it.functionMap
+        ) }
+        .toImmutableSet()
 }
 
 internal fun RoundEnvironment.getRouteClasses(): ImmutableSet<SprouteKotlinParent.SprouteClass> =

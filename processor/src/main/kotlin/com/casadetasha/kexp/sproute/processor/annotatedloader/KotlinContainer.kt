@@ -62,7 +62,7 @@ sealed class KotlinContainer(
         val immutableKmPackage: ImmutableKmPackage,
         packageName: String,
         val fileName: String,
-        functionMap: Map<String, Element>
+        val functionMap: Map<String, Element>
     ) : KotlinContainer(
         element = element,
         packageName = packageName,

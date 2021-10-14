@@ -7,6 +7,18 @@ internal fun Boolean.orElseRun(function: () -> Unit) {
     if (!this) function()
 }
 
+internal fun String.asPath() : String {
+    return this.replace(".", "/")
+}
+
+internal fun String.asSubPackageOf(classPackage: String) : String {
+    return this.removePrefix(classPackage)
+}
+
+internal fun String.asMethod() : String {
+    return this.asPath().replace("/", "_")
+}
+
 internal fun String?.isNotNullOrBlank() = this?.isNotBlank() ?: false
 
 internal fun <T> List<T>?.letIfNotEmpty(function: (List<T>) -> Unit): Boolean {
