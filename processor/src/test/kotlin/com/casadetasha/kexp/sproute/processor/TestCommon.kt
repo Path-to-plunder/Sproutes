@@ -3,7 +3,6 @@ package com.casadetasha.kexp.sproute.processor
 import assertk.Assert
 import assertk.fail
 import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.SourceFile
 
 internal fun assertThat(result: KotlinCompilation.Result?) : Assert<KotlinCompilation.Result> {
     if (result == null) fail ("Results must be compiled before comparing result value")

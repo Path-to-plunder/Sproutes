@@ -2,7 +2,9 @@ package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication.BaseAuthentication
 import com.casadetasha.kexp.annotationparser.KotlinFunction
+import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
+import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -60,11 +62,16 @@ internal sealed class SprouteKotlinParent(
 
         override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
+                val classSprouteAnnotation: Sproute? = it.element.getAnnotation(Sproute::class.java)
+                val sprouteRoot = classSprouteAnnotation?.getSprouteRoot()
+                val auth = sprouteRoot?.sprouteAuthentication?.createChildFromElement(it.element)
+                    ?: BaseAuthentication()
+
                 SprouteRequestFunction(
                     kotlinFunction = it,
                     pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
                     classRouteSegment = "",
-                    authentication = BaseAuthentication().createChildFromElement(it.element)
+                    authentication = auth
                 )
             }.toSortedSet()
     }

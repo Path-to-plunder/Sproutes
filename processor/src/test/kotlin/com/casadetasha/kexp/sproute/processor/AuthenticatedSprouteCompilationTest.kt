@@ -11,7 +11,7 @@ class AuthenticatedSprouteCompilationTest {
     private lateinit var compilationResult: KotlinCompilation.Result
 
     @Test
-    fun `boring route compiles with exit code OK`() {
+    fun `Authenticated RouteRoot compiles with OK`() {
         compileSource(AuthenticationSourceFiles.boringRouteSource)
         assertThat(compilationResult).hasExitCode(OK)
     }

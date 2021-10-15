@@ -56,7 +56,6 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.Sproute
     getClassesAnnotatedWith(Sproute::class)
         .map {
             val classSprouteAnnotation: Sproute = it.element.getAnnotation(Sproute::class.java)
-            val authenticatedAnnotation: Authenticated? = it.element.getAnnotation(Authenticated::class.java)
             val sprouteRoot = classSprouteAnnotation.getSprouteRoot()
             val auth = sprouteRoot.sprouteAuthentication.createChildFromElement(it.element)
 

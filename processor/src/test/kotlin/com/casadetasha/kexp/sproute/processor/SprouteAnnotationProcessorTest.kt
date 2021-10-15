@@ -1,7 +1,5 @@
 package com.casadetasha.kexp.sproute.processor
 
-import assertk.Assert
-import assertk.fail
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.*
 import com.tschuchort.compiletesting.SourceFile
