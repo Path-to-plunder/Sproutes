@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.post.routes.authenticated
+package com.casadetasha.kexp.sproute.processor.post.routes.authenticated.sprouteroot
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -9,10 +9,10 @@ import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.server.testing.*
 import kotlin.test.Test
 
-class AuthenticatedSprouteRoutesTest {
+class AuthenticatedSprouteRootRoutesTest {
 
     companion object {
-        const val BASE_URL: String = "authenticated_sproute"
+        const val BASE_URL: String = "authenticated_sproute_root"
     }
 
     @Test

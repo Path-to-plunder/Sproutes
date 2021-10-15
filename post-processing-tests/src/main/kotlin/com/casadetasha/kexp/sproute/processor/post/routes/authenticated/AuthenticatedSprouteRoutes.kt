@@ -9,7 +9,7 @@ import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 @Authenticated
 internal class AuthenticatedSprouteRoutes {
     @Get
-    fun authenticatedClassGet() = "Authenticated sproute route GET."
+    fun authenticatedSprouteGet() = "Authenticated sproute route GET."
 
     @Get("/override_auth")
     @Authenticated("named-auth")

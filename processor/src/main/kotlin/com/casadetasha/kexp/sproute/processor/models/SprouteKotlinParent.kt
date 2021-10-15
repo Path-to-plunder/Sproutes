@@ -1,5 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.models
 
+import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication.BaseAuthentication
 import com.casadetasha.kexp.annotationparser.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
@@ -30,7 +31,7 @@ internal sealed class SprouteKotlinParent(
         classRouteSegment: String,
         rootPathSegment: String,
         functions: Set<KotlinFunction>,
-        authentication: Authentication
+        sprouteAuthentication: SprouteAuthentication
     ) : SprouteKotlinParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
@@ -42,7 +43,7 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = rootPathSegment,
                     classRouteSegment = classRouteSegment,
-                    authentication = authentication.forChildElement(it.element)
+                    authentication = sprouteAuthentication.createChildFromElement(it.element)
                 )
             }.toSortedSet()
     }
@@ -63,10 +64,7 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
                     classRouteSegment = "",
-                    authentication = Authentication(
-                        element = it.element,
-                        parentAuthenticatedAnnotation = null
-                    )
+                    authentication = BaseAuthentication().createChildFromElement(it.element)
                 )
             }.toSortedSet()
     }

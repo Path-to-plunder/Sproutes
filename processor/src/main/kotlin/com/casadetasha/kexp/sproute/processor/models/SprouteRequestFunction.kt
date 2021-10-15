@@ -21,7 +21,7 @@ internal class SprouteRequestFunction(
     kotlinFunction: KotlinFunction,
     pathRootSegment: String,
     classRouteSegment: String,
-    authentication: Authentication
+    authentication: SprouteAuthentication
 ) : Comparable<SprouteRequestFunction> {
 
     companion object {
