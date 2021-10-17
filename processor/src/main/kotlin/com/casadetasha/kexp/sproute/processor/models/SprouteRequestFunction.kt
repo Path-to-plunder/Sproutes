@@ -1,6 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.models
 
-import com.casadetasha.kexp.annotationparser.KotlinFunction
+import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.MemberNames
 import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment

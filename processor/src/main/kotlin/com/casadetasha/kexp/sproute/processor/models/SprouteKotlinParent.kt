@@ -1,7 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication.BaseAuthentication
-import com.casadetasha.kexp.annotationparser.KotlinFunction
+import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
