@@ -18,7 +18,7 @@ import javax.lang.model.element.TypeElement
 
 @AutoService(Processor::class)
 @SupportedOptions(SprouteAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 class SprouteAnnotationProcessor : AbstractProcessor() {
 
     companion object {
