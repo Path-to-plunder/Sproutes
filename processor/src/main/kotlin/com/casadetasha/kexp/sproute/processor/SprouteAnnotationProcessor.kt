@@ -54,9 +54,9 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         this.roundEnv = roundEnv
         // TODO: Investigate why process started running again without any @Route classes
         if (sortedSprouteKotlinParents.isNotEmpty()) {
-            val routeTrie = generateRouteTrie(sortedSprouteKotlinParents)
-            FileGenerator(kaptKotlinGeneratedDir).generateRouteFiles(sortedSprouteKotlinParents)
             val packageName = sortedSprouteKotlinParents.first().packageName
+            val routeTrie = generateRouteTrie(sortedSprouteKotlinParents)
+
             TrieFileGenerator(kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
                 rootNode = routeTrie,
                 packageName

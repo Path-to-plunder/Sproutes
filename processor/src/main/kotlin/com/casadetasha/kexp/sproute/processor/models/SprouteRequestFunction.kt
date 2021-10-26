@@ -32,12 +32,14 @@ internal class SprouteRequestFunction(
             )
     }
 
-    val fullRoutePath: String by lazy {
+    val baseRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
-        val pathSuffix: String = getRouteSegment(requestAnnotation)
         val usableClassSegment: String = if (includeClassRouteSegment) classRouteSegment else ""
-        pathRootSegment + usableClassSegment + pathSuffix
+        pathRootSegment + usableClassSegment
     }
+
+    val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation) }
+    val fullRoutePath: String by lazy { baseRoutePath + functionPathSegment }
 
     val simpleName: String = kotlinFunction.simpleName
     val memberName: MemberName = kotlinFunction.memberName

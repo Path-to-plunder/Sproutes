@@ -31,7 +31,7 @@ internal class FileGenerator(private val kaptKotlinGeneratedDir: String) {
 
     private fun generatePublicRouteConfigFile(sprouteKotlinParents: Set<SprouteKotlinParent>) {
         FileSpec.builder(ROUTING_PACKAGE_NAME, INSTA_ROUTE_CONFIG_FILE_NAME)
-            .addFunction(RouteConfigurationSpecParser(sprouteKotlinParents).routeConfigurationFunSpec)
+            .addFunction(RouteConfigurationSpecParser().routeConfigurationFunSpec)
             .build()
             .writeTo(File(kaptKotlinGeneratedDir))
     }

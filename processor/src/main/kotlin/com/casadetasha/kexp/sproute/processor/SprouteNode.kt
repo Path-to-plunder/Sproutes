@@ -36,7 +36,7 @@ internal fun generateRouteTrie(sprouteParents: Set<SprouteKotlinParent>): Sprout
 
     allBuds.forEach {
         val routeSegments = it.function
-            .fullRoutePath
+            .baseRoutePath
             .trimStart('/')
             .split("/")
         sproutedBuds.addBud(routeSegments, it)

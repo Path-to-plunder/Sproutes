@@ -1,10 +1,12 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
+import com.casadetasha.kexp.sproute.processor.generator.FileGenerator.Companion.ROUTING_PACKAGE_NAME
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.MemberName
 import io.ktor.application.*
 
-internal class RouteConfigurationSpecParser(private val sprouteKotlinParent: Set<SprouteKotlinParent>) {
+internal class RouteConfigurationSpecParser {
 
     companion object {
         const val CONFIGURATION_METHOD_SIMPLE_NAME = "configureSproutes"
@@ -18,6 +20,6 @@ internal class RouteConfigurationSpecParser(private val sprouteKotlinParent: Set
     }
 
     private fun FunSpec.Builder.addRouteConfigurationCalls() = apply {
-        sprouteKotlinParent.forEach { addStatement( "%M()", it.configurationMethodName ) }
+        addStatement("%M()", MemberName(ROUTING_PACKAGE_NAME, "sprouteBuds"))
     }
 }

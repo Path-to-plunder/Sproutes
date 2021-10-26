@@ -20,12 +20,20 @@ internal class TrieFileGenerator(private val kaptKotlinGeneratedDir: String,
     internal fun generateRoutes() {
         processingEnvironment.printNote("Generating sproute hierarchies")
         generateRoutesForNode(rootNode)
+        generatePublicRouteConfigFile()
     }
 
     private fun generateRoutesForNode(rootNode: SprouteNode) {
         SprouteTrieSpec(rootNode).funSpec
         FileSpec.builder(ROUTING_PACKAGE_NAME, SPROUTE_FILE_NAME)
             .addFunction(SprouteTrieSpec(rootNode).funSpec)
+            .build()
+            .writeTo(File(kaptKotlinGeneratedDir))
+    }
+
+    private fun generatePublicRouteConfigFile() {
+        FileSpec.builder(FileGenerator.ROUTING_PACKAGE_NAME, FileGenerator.INSTA_ROUTE_CONFIG_FILE_NAME)
+            .addFunction(RouteConfigurationSpecParser().routeConfigurationFunSpec)
             .build()
             .writeTo(File(kaptKotlinGeneratedDir))
     }
