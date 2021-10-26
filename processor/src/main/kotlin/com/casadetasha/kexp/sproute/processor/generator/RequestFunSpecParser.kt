@@ -56,12 +56,6 @@ internal class RequestFunSpecParser(
 
     private fun FunSpec.Builder.endRequestControlFlow() = apply { endControlFlow() }
 
-    private fun FunSpec.Builder.endSetAuthenticationRequirements() = apply {
-        if (sprouteRequestFunction.isAuthenticationRequested) {
-            endControlFlow()
-        }
-    }
-
     private fun FunSpec.Builder.beginCallControlFlow() = apply {
         if (sprouteRequestFunction.hasReturnValue) {
             addStatement(
@@ -76,13 +70,6 @@ internal class RequestFunSpecParser(
                 MethodNames.applicationCallGetter,
                 MethodNames.applyMethod
             )
-        }
-    }
-
-    private fun FunSpec.Builder.addMethodCall() = apply {
-        when(sprouteKotlinParent) {
-            is SprouteClass -> addRouteClassMethodCall()
-            is SproutePackage -> addRoutePackageMethodCall()
         }
     }
 
@@ -119,6 +106,23 @@ internal class RequestFunSpecParser(
         )
     }
 
+    private fun FunSpec.Builder.addMethodCall() = apply {
+        when(sprouteKotlinParent) {
+            is SprouteClass -> addRouteClassMethodCall()
+            is SproutePackage -> addRoutePackageMethodCall()
+        }
+    }
+
+
+    private fun FunSpec.Builder.endCallControlFlow() = apply {
+        if (sprouteRequestFunction.isApplicationCallExtensionMethod) {
+            endControlFlow()
+        }
+        if (sprouteRequestFunction.hasReturnValue) {
+            addStatement(")")
+        }
+    }
+
     private fun FunSpec.Builder.addPackageMethodCall() {
         addCode(
             CodeBlock.builder()
@@ -129,12 +133,9 @@ internal class RequestFunSpecParser(
         )
     }
 
-    private fun FunSpec.Builder.endCallControlFlow() = apply {
-        if (sprouteRequestFunction.isApplicationCallExtensionMethod) {
+    private fun FunSpec.Builder.endSetAuthenticationRequirements() = apply {
+        if (sprouteRequestFunction.isAuthenticationRequested) {
             endControlFlow()
-        }
-        if (sprouteRequestFunction.hasReturnValue) {
-            addStatement(")")
         }
     }
 }
