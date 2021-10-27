@@ -9,6 +9,7 @@ import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import io.ktor.application.*
 import io.ktor.routing.*
 
@@ -16,7 +17,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     private lateinit var funBuilder: FunSpec.Builder
 
     val funSpec: FunSpec by lazy {
-        funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class)
+        funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.INTERNAL)
         funBuilder.beginControlFlow("%M", MethodNames.routingMethod)
 
         amendFunForNode(rootNode)
@@ -48,9 +49,9 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun amendFunForBud(bud: Bud) {
         beginRequestControlFlow(bud.function)          //     get ("/path") {
-        beginCallControlFlow(bud.function)             //       call.respond(
+        beginCallBlock(bud.function)                   //       call.respond(
         addMethodCall(bud.kotlinParent, bud.function)  //         Route().get()
-        endCallControlFlow(bud.function)               //       )
+        endCallBlock(bud.function)                     //       )
         endRequestControlFlow()                        //     }
     }
 
@@ -69,7 +70,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
     }
 
-    private fun beginCallControlFlow(function: SprouteRequestFunction) = apply {
+    private fun beginCallBlock(function: SprouteRequestFunction) = apply {
         if (function.hasReturnValue) {
             funBuilder.addCode(
                 "%M.%M( ",
@@ -139,9 +140,9 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         )
     }
 
-    private fun endCallControlFlow(function: SprouteRequestFunction) = apply {
+    private fun endCallBlock(function: SprouteRequestFunction) = apply {
         if (function.isApplicationCallExtensionMethod) {
-            funBuilder.addStatement(" }")
+            funBuilder.addCode(" }")
         }
         if (function.hasReturnValue) {
             funBuilder.addStatement(" )")
