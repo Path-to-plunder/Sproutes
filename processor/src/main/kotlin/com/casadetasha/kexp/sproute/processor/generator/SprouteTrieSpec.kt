@@ -20,7 +20,10 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.INTERNAL)
         funBuilder.beginControlFlow("%M", MethodNames.routingMethod)
 
-        rootNode.sproutes.forEach { amendFunForNode(it, fullParentRoute = "") }
+        rootNode.sproutes.forEach {
+            if (rootNode.sproutes.first() != it) funBuilder.addStatement("")
+            amendFunForNode(it, fullParentRoute = "")
+        }
 
         funBuilder.endControlFlow()
         funBuilder.build()
@@ -32,7 +35,6 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
         }
 
-        funBuilder.addStatement("")
         amendFunForChildBearingNode(baseRouteSegment, node, fullRoute)
     }
 
@@ -46,8 +48,11 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         node.buds.forEach {
             if (node.buds.first() != it) funBuilder.addStatement("")
             amendFunForBud(bud = it, fullRoutePath = fullRoute)
-        }                             //   ...
-        node.sproutes.forEach { amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute) }     //   ...
+        }
+        node.sproutes.forEach {
+            if (node.sproutes.first() != it) funBuilder.addStatement("")
+            amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute)
+        }
         funBuilder.endControlFlow()                                                                           // }
     }
 
@@ -57,13 +62,13 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             funBuilder.beginControlFlow(
                 "%M(%S)",
                 MethodNames.routeMethod,
-                "/$routeSegment"
+                "/${routeSegment.removePrefix("/")}"
             )
         } else {
             funBuilder.beginControlFlow(
                 "%M(%S)·%L@",
                 MethodNames.routeMethod,
-                "/$routeSegment",
+                "/${routeSegment.removePrefix("/")}",
                 "`$routeReference`"
             )
         }
