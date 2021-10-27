@@ -26,24 +26,26 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     }
 
     private fun amendFunForNode(node: SprouteNode) {
+        beginNodeControlFlow(node.name)                         // route("/routeSegment") {
+        node.buds.forEach { amendFunForBud(it) }                //   ...
+        node.sprouteMap.values.forEach { amendFunForNode(it) }  //   ...
+        funBuilder.endControlFlow()                             // }
+    }
+
+    private fun beginNodeControlFlow(routeSegment: String) {
         funBuilder.beginControlFlow(
             "%M(%S)",
             MethodNames.routeMethod,
-            "/${node.name}"
+            "/$routeSegment"
         )
-
-        node.buds.forEach { amendFunForBud(it) }
-        node.sprouteMap.values.forEach { amendFunForNode(it) }
-
-        funBuilder.endControlFlow()
     }
 
     private fun amendFunForBud(bud: Bud) {
-        beginRequestControlFlow(bud.function)
-        beginCallControlFlow(bud.function)
-        addMethodCall(bud.kotlinParent, bud.function)
-        endCallControlFlow(bud.function)
-        endRequestControlFlow()
+        beginRequestControlFlow(bud.function)          //     get ("/path") {
+        beginCallControlFlow(bud.function)             //       call.respond(
+        addMethodCall(bud.kotlinParent, bud.function)  //         Route().get()
+        endCallControlFlow(bud.function)               //       )
+        endRequestControlFlow()                        //     }
     }
 
     private fun beginRequestControlFlow(function: SprouteRequestFunction) = apply {
@@ -63,7 +65,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun beginCallControlFlow(function: SprouteRequestFunction) = apply {
         if (function.hasReturnValue) {
-            funBuilder.addStatement(
+            funBuilder.addCode(
                 "%M.%M(",
                 MethodNames.applicationCallGetter,
                 MethodNames.callRespondMethod,
@@ -83,11 +85,10 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     ) = apply {
         funBuilder.addCode(
             CodeBlock.builder()
-                .add("  %M", sprouteKotlinParent.memberName)
+                .add("%M", sprouteKotlinParent.memberName)
                 .addMethodParameters((sprouteKotlinParent as SprouteKotlinParent.SprouteClass).primaryConstructorParams)
                 .add(".%N", function.simpleName)
                 .addMethodParameters(function.params)
-                .add("\n")
                 .build()
         )
     }
@@ -137,9 +138,8 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     private fun addPackageMethodCall(function: SprouteRequestFunction) {
         funBuilder.addCode(
             CodeBlock.builder()
-                .add("  %M", function.memberName)
+                .add("%M", function.memberName)
                 .addMethodParameters(function.params)
-                .add("\n")
                 .build()
         )
     }
