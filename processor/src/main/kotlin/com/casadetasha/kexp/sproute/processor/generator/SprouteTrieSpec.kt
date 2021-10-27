@@ -80,19 +80,6 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
     }
 
-    private fun addRouteClassMethodCall(
-        sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction
-    ) = apply {
-        funBuilder.addCode(
-            CodeBlock.builder()
-                .add("%M", sprouteKotlinParent.memberName)
-                .addMethodParameters((sprouteKotlinParent as SprouteKotlinParent.SprouteClass).primaryConstructorParams)
-                .add(".%N", function.simpleName)
-                .addMethodParameters(function.params)
-                .build()
-        )
-    }
-
     private fun addRoutePackageMethodCall(function: SprouteRequestFunction) = apply {
         when (function.receiver) {
             Route::class.toMemberName() -> addRouteExtensionPackageMethodCall(function)
@@ -111,7 +98,6 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
                     function.memberName
                 )
                 .addMethodParameters(function.params)
-                .add("\n")
                 .build()
         )
     }
@@ -125,14 +111,17 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
     }
 
-
-    private fun endCallControlFlow(function: SprouteRequestFunction) = apply {
-        if (function.isApplicationCallExtensionMethod) {
-            funBuilder.endControlFlow()
-        }
-        if (function.hasReturnValue) {
-            funBuilder.addStatement(")")
-        }
+    private fun addRouteClassMethodCall(
+        sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction
+    ) = apply {
+        funBuilder.addCode(
+            CodeBlock.builder()
+                .add("%M", sprouteKotlinParent.memberName)
+                .addMethodParameters((sprouteKotlinParent as SprouteKotlinParent.SprouteClass).primaryConstructorParams)
+                .add(".%N", function.simpleName)
+                .addMethodParameters(function.params)
+                .build()
+        )
     }
 
     private fun addPackageMethodCall(function: SprouteRequestFunction) {
@@ -142,6 +131,18 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
                 .addMethodParameters(function.params)
                 .build()
         )
+    }
+
+    private fun endCallControlFlow(function: SprouteRequestFunction) = apply {
+        if (function.isApplicationCallExtensionMethod) {
+            funBuilder.addStatement("")
+                .endControlFlow()
+        }
+        if (function.hasReturnValue) {
+            funBuilder.addStatement(")")
+        } else {
+            funBuilder.addStatement("")
+        }
     }
 
     private fun endRequestControlFlow() = apply { funBuilder.endControlFlow() }
