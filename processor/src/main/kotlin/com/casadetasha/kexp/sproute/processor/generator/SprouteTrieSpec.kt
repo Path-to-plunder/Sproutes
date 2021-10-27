@@ -20,7 +20,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.INTERNAL)
         funBuilder.beginControlFlow("%M", MethodNames.routingMethod)
 
-        amendFunForNode(rootNode, fullParentRoute = "")
+        rootNode.sproutes.forEach { amendFunForNode(it, fullParentRoute = "") }
 
         funBuilder.endControlFlow()
         funBuilder.build()
@@ -43,7 +43,10 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun amendFunForChildBearingNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
         beginNodeControlFlow(routeSegment = "${baseRouteSegment}/${node.name}", fullRoute = fullRoute)        // route("/routeSegment") {
-        node.buds.forEach { amendFunForBud(bud = it, fullRoutePath = fullRoute) }                             //   ...
+        node.buds.forEach {
+            if (node.buds.first() != it) funBuilder.addStatement("")
+            amendFunForBud(bud = it, fullRoutePath = fullRoute)
+        }                             //   ...
         node.sproutes.forEach { amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute) }     //   ...
         funBuilder.endControlFlow()                                                                           // }
     }
@@ -58,7 +61,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             )
         } else {
             funBuilder.beginControlFlow(
-                "%M(%S) %L@",
+                "%M(%S)·%L@",
                 MethodNames.routeMethod,
                 "/$routeSegment",
                 "`$routeReference`"
@@ -75,15 +78,14 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     }
 
     private fun beginRequestControlFlow(path: String, function: SprouteRequestFunction) = apply {
-        funBuilder.addStatement("")
         if (path.isBlank()) {
             funBuilder.addCode(
-                "%M·{ ",
+                "%M·{·",
                 function.requestMethodName
             )
         } else {
             funBuilder.beginControlFlow(
-                "%M(%S) ",
+                "%M(%S)·",
                 function.requestMethodName,
                 path,
             )
@@ -93,14 +95,14 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     private fun beginCallBlock(function: SprouteRequestFunction) = apply {
         if (function.hasReturnValue) {
             funBuilder.addCode(
-                "%M.%M( ",
+                "%M.%M(·",
                 MethodNames.applicationCallGetter,
                 MethodNames.callRespondMethod,
             )
         }
         if (function.isApplicationCallExtensionMethod) {
             funBuilder.addCode(
-                " %M.%M { ",
+                "·%M.%M·{·",
                 MethodNames.applicationCallGetter,
                 MethodNames.applyMethod
             )
@@ -177,10 +179,10 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun endCallBlock(function: SprouteRequestFunction) = apply {
         if (function.isApplicationCallExtensionMethod) {
-            funBuilder.addCode(" }")
+            funBuilder.addCode("·}")
         }
         if (function.hasReturnValue) {
-            funBuilder.addCode(" )")
+            funBuilder.addCode("·)")
         } else {
             funBuilder.addCode("")
         }
@@ -188,7 +190,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun endRequestControlFlow(requestRouteSegment: String) = apply {
         if (requestRouteSegment.isBlank()) {
-            funBuilder.addStatement(" }")
+            funBuilder.addStatement("·}")
         } else {
             funBuilder.endControlFlow()
         }
