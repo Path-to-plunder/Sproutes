@@ -25,11 +25,17 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         funBuilder.build()
     }
 
-    private fun amendFunForNode(node: SprouteNode) {
-        beginNodeControlFlow(node.name)                         // route("/routeSegment") {
-        node.buds.forEach { amendFunForBud(it) }                //   ...
-        node.sprouteMap.values.forEach { amendFunForNode(it) }  //   ...
-        funBuilder.endControlFlow()                             // }
+    private fun amendFunForNode(node: SprouteNode, baseRouteSegment: String = "") {
+        if (node.buds.isEmpty()) {
+            val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
+            node.sprouteMap.values.forEach { amendFunForNode(it, aggregatedRouteSegment) } // route("/this/next/") {...
+            return
+        }
+
+        beginNodeControlFlow("${baseRouteSegment}/${node.name}")        // route("/routeSegment") {
+        node.buds.forEach { amendFunForBud(it) }                                   //   ...
+        node.sprouteMap.values.forEach { amendFunForNode(it, "") }  //   ...
+        funBuilder.endControlFlow()                                                // }
     }
 
     private fun beginNodeControlFlow(routeSegment: String) {
@@ -66,14 +72,14 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     private fun beginCallControlFlow(function: SprouteRequestFunction) = apply {
         if (function.hasReturnValue) {
             funBuilder.addCode(
-                "%M.%M(",
+                "%M.%M( ",
                 MethodNames.applicationCallGetter,
                 MethodNames.callRespondMethod,
             )
         }
         if (function.isApplicationCallExtensionMethod) {
-            funBuilder.beginControlFlow(
-                "%M.%M",
+            funBuilder.addCode(
+                " %M.%M { ",
                 MethodNames.applicationCallGetter,
                 MethodNames.applyMethod
             )
@@ -92,7 +98,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         funBuilder.addCode(
             CodeBlock.builder()
                 .add(
-                    "  %L%N.%M",
+                    "%L%N.%M",
                     "this@",
                     MethodNames.routeMethod,
                     function.memberName
@@ -135,11 +141,10 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun endCallControlFlow(function: SprouteRequestFunction) = apply {
         if (function.isApplicationCallExtensionMethod) {
-            funBuilder.addStatement("")
-                .endControlFlow()
+            funBuilder.addStatement(" }")
         }
         if (function.hasReturnValue) {
-            funBuilder.addStatement(")")
+            funBuilder.addStatement(" )")
         } else {
             funBuilder.addStatement("")
         }
