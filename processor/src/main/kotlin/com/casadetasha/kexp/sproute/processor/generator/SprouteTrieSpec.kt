@@ -27,14 +27,19 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     }
 
     private fun amendFunForNode(node: SprouteNode, baseRouteSegment: String = "") {
-        if (node.buds.isEmpty()) {
+        if (node.buds.isEmpty() && node.sprouteMap.size == 1) {
             val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
             node.sprouteMap.values.forEach { amendFunForNode(it, aggregatedRouteSegment) } // route("/this/next/") {...
             return
         }
 
+        if (node.buds.size == 1 && node.sprouteMap.isEmpty()) {
+            amendFunForBud("/${node.name}", node.buds.first())
+            return
+        }
+
         beginNodeControlFlow("${baseRouteSegment}/${node.name}")        // route("/routeSegment") {
-        node.buds.forEach { amendFunForBud(it) }                                   //   ...
+        node.buds.forEach { amendFunForBud(bud = it) }                                   //   ...
         node.sprouteMap.values.forEach { amendFunForNode(it, "") }  //   ...
         funBuilder.endControlFlow()                                                // }
     }
@@ -47,16 +52,16 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         )
     }
 
-    private fun amendFunForBud(bud: Bud) {
-        beginRequestControlFlow(bud.function)          //     get ("/path") {
+    private fun amendFunForBud(path: String = "", bud: Bud) {
+        beginRequestControlFlow(path, bud.function)          //     get ("/path") {
         beginCallBlock(bud.function)                   //       call.respond(
         addMethodCall(bud.kotlinParent, bud.function)  //         Route().get()
         endCallBlock(bud.function)                     //       )
         endRequestControlFlow()                        //     }
     }
 
-    private fun beginRequestControlFlow(function: SprouteRequestFunction) = apply {
-        if (function.functionPathSegment.isBlank()) {
+    private fun beginRequestControlFlow(path: String, function: SprouteRequestFunction) = apply {
+        if (path.isBlank()) {
             funBuilder.beginControlFlow(
                 "%M() ",
                 function.requestMethodName
@@ -65,7 +70,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             funBuilder.beginControlFlow(
                 "%M(%S) ",
                 function.requestMethodName,
-                function.functionPathSegment,
+                path,
             )
         }
     }

@@ -3,8 +3,6 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
 
-var output: String = ""
-
 internal class SprouteNode(val name: String) {
     val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
     val buds: MutableSet<Bud> = HashSet()
@@ -36,7 +34,7 @@ internal fun generateRouteTrie(sprouteParents: Set<SprouteKotlinParent>): Sprout
 
     allBuds.forEach {
         val routeSegments = it.function
-            .baseRoutePath
+            .fullRoutePath
             .trimStart('/')
             .split("/")
         sproutedBuds.addBud(routeSegments, it)
