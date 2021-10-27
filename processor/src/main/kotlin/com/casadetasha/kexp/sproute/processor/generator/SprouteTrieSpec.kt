@@ -28,25 +28,25 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun amendFunForNode(node: SprouteNode, baseRouteSegment: String = "", fullParentRoute: String) {
         val fullRoute = "$fullParentRoute/${node.name}"
-        if (node.buds.isEmpty() && node.sprouteMap.size == 1) {
-            val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
-            node.sprouteMap.values.forEach { amendFunForNode(it, aggregatedRouteSegment, fullRoute ) } // route("/this/next/") root_this_next@ {...
-            return
+        if (node.buds.isEmpty() && node.sproutes.size == 1) {
+            return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
         }
 
-        if (node.buds.size == 1 && node.sprouteMap.isEmpty()) {
-            amendFunForBud(
-                requestRouteSegment = "/${node.name}",
-                fullRoutePath = fullRoute,
-                bud = node.buds.first()
-            )
-            return
-        }
+        funBuilder.addStatement("")
+        amendFunForBusyNode(baseRouteSegment, node, fullRoute)
+    }
 
+    private fun amendFunForSingleSprouteNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
+        val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
+        node.sproutes.forEach { amendFunForNode(it, aggregatedRouteSegment, fullRoute ) } // route("/this/next/") root_this_next@ {...
+    }
+
+    private fun amendFunForBusyNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
         beginNodeControlFlow(routeSegment = "${baseRouteSegment}/${node.name}", fullRoute = fullRoute)        // route("/routeSegment") {
-        node.buds.forEach { amendFunForBud(bud = it, fullRoutePath = fullRoute) }                                   //   ...
-        node.sprouteMap.values.forEach { amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute) }  //   ...
-        funBuilder.endControlFlow()                                                // }
+        node.buds.forEach { amendFunForBud(bud = it, fullRoutePath = fullRoute) }                             //   ...
+        node.sproutes.forEach { amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute) }     //   ...
+        funBuilder.endControlFlow()                                                                           // }
+        funBuilder.addStatement("")
     }
 
     private fun beginNodeControlFlow(routeSegment: String, fullRoute: String) {
@@ -190,5 +190,5 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 }
 
 private fun String.toReference(): String {
-    return replace("/", " ").trim()
+    return replace("/", "·").trim()
 }

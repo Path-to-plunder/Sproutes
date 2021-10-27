@@ -4,7 +4,8 @@ import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
 
 internal class SprouteNode(val name: String) {
-    val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
+    private val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
+    val sproutes: Set<SprouteNode> get() {return sprouteMap.values.toSet() }
     val buds: MutableSet<Bud> = HashSet()
 
     fun addBud(routeSegments: List<String>, bud: Bud) {
@@ -21,6 +22,7 @@ internal class SprouteNode(val name: String) {
         val trimmedSegments = routeSegments.toMutableList().apply { removeFirst() }
         sprouteMap[segmentName]!!.addBud(trimmedSegments, bud)
     }
+
 }
 
 internal data class Bud(val kotlinParent: SprouteKotlinParent, val function: SprouteRequestFunction)
