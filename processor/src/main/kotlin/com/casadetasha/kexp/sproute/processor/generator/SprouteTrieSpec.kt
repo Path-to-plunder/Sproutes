@@ -35,12 +35,16 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
 
         if (node.buds.size == 1 && node.sprouteMap.isEmpty()) {
-            amendFunForBud("/${node.name}", node.buds.first())
+            amendFunForBud(
+                requestRouteSegment = "/${node.name}",
+                fullRoutePath = fullRoute,
+                bud = node.buds.first()
+            )
             return
         }
 
         beginNodeControlFlow(routeSegment = "${baseRouteSegment}/${node.name}", fullRoute = fullRoute)        // route("/routeSegment") {
-        node.buds.forEach { amendFunForBud(bud = it) }                                   //   ...
+        node.buds.forEach { amendFunForBud(bud = it, fullRoutePath = fullRoute) }                                   //   ...
         node.sprouteMap.values.forEach { amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute) }  //   ...
         funBuilder.endControlFlow()                                                // }
     }
@@ -63,12 +67,12 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
     }
 
-    private fun amendFunForBud(path: String = "", bud: Bud) {
-        beginRequestControlFlow(path, bud.function)          //     get ("/path") {
-        beginCallBlock(bud.function)                   //       call.respond(
-        addMethodCall(bud.kotlinParent, bud.function)  //         Route().get()
-        endCallBlock(bud.function)                     //       )
-        endRequestControlFlow()                        //     }
+    private fun amendFunForBud(requestRouteSegment: String = "", bud: Bud, fullRoutePath: String) {
+        beginRequestControlFlow(requestRouteSegment, bud.function)          //     get ("/path") {
+        beginCallBlock(bud.function)                                        //       call.respond(
+        addMethodCall(bud.kotlinParent, bud.function, fullRoutePath)        //         Route().get()
+        endCallBlock(bud.function)                                          //       )
+        endRequestControlFlow()                                             //     }
     }
 
     private fun beginRequestControlFlow(path: String, function: SprouteRequestFunction) = apply {
@@ -103,34 +107,49 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
         }
     }
 
-    private fun addRoutePackageMethodCall(function: SprouteRequestFunction) = apply {
+    private fun addRoutePackageMethodCall(function: SprouteRequestFunction, fullRoutePath: String) = apply {
         when (function.receiver) {
-            Route::class.toMemberName() -> addRouteExtensionPackageMethodCall(function)
+            Route::class.toMemberName() -> addRouteExtensionPackageMethodCall(function, fullRoutePath)
             ApplicationCall::class.toMemberName() -> addPackageMethodCall(function)
             null -> addPackageMethodCall(function)
         }
     }
 
-    private fun addRouteExtensionPackageMethodCall(function: SprouteRequestFunction) {
-        funBuilder.addCode(
-            CodeBlock.builder()
-                .add(
-                    "%L%N.%M",
-                    "this@",
-                    MethodNames.routeMethod,
-                    function.memberName
-                )
-                .addMethodParameters(function.params)
-                .build()
-        )
+    private fun addRouteExtensionPackageMethodCall(function: SprouteRequestFunction, fullRoutePath: String) {
+        val routeReference = fullRoutePath.toReference()
+        if (routeReference.isBlank()) {
+            funBuilder.addCode(
+                CodeBlock.builder()
+                    .add(
+                        "%L%N.%M",
+                        "this@",
+                        MethodNames.routeMethod,
+                        function.memberName
+                    )
+                    .addMethodParameters(function.params)
+                    .build()
+            )
+        } else  {
+            funBuilder.addCode(
+                CodeBlock.builder()
+                    .add(
+                        "%L%L.%M",
+                        "this@",
+                        "`$routeReference`",
+                        function.memberName
+                    )
+                    .addMethodParameters(function.params)
+                    .build()
+            )
+        }
     }
 
     private fun addMethodCall(
-        sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction
+        sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction, fullRoutePath: String
     ) = apply {
         when (sprouteKotlinParent) {
             is SprouteKotlinParent.SprouteClass -> addRouteClassMethodCall(sprouteKotlinParent, function)
-            is SprouteKotlinParent.SproutePackage -> addRoutePackageMethodCall(function)
+            is SprouteKotlinParent.SproutePackage -> addRoutePackageMethodCall(function, fullRoutePath)
         }
     }
 
@@ -171,9 +190,5 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 }
 
 private fun String.toReference(): String {
-    var newString = this
-    while (newString.startsWith("/")) {
-        newString = newString.removePrefix("/")
-    }
-    return "${newString.replace("/", "-")}"
+    return replace("/", " ").trim()
 }
