@@ -9,11 +9,12 @@ import kotlin.collections.HashSet
 internal class SprouteNode(val name: String): Comparable<SprouteNode> {
     private val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
     val sproutes: SortedSet<SprouteNode> get() {return sprouteMap.values.toSortedSet() }
-    val buds: MutableSet<Bud> = HashSet()
+    private val budsField: MutableSet<Bud> = HashSet()
+    val buds: Set<Bud> get() = budsField.toSortedSet()
 
     fun addBud(routeSegments: List<String>, bud: Bud) {
         if (routeSegments.isEmpty()) {
-            buds.add(bud)
+            budsField.add(bud)
             return
         }
 
@@ -29,10 +30,15 @@ internal class SprouteNode(val name: String): Comparable<SprouteNode> {
     override fun compareTo(other: SprouteNode): Int {
         return this.name.compareTo(other.name)
     }
-
 }
 
-internal data class Bud(val kotlinParent: SprouteKotlinParent, val function: SprouteRequestFunction)
+internal data class Bud(
+    val kotlinParent: SprouteKotlinParent,
+    val function: SprouteRequestFunction
+    ) : Comparable<Bud> {
+
+    override fun compareTo(other: Bud): Int = function.simpleName.compareTo(other.function.simpleName)
+}
 
 internal fun generateSproutNodes(sprouteParents: Set<SprouteKotlinParent>): SprouteNode {
     val sproutedBuds = SprouteNode("")

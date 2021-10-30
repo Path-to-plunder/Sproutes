@@ -40,7 +40,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
 
     private fun amendFunForSingleSprouteNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
         val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
-        node.sproutes.forEach { amendFunForNode(it, aggregatedRouteSegment, fullRoute ) } // route("/this/next/") root_this_next@ {...
+        node.sproutes.forEach { amendFunForNode(it, aggregatedRouteSegment, fullRoute ) } // route("/this/next/") `/this/next`@ {...
     }
 
     private fun amendFunForChildBearingNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
@@ -50,7 +50,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             amendFunForBud(bud = it, fullRoutePath = fullRoute)
         }
         node.sproutes.forEach {
-            if (node.sproutes.first() != it) funBuilder.addStatement("")
+            if (node.sproutes.first() != it || node.buds.isNotEmpty()) funBuilder.addStatement("")
             amendFunForNode(it, baseRouteSegment = "", fullParentRoute = fullRoute)
         }
         funBuilder.endControlFlow()                                                                           // }
