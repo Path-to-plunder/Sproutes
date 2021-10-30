@@ -17,7 +17,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     private lateinit var funBuilder: FunSpec.Builder
 
     val funSpec: FunSpec by lazy {
-        funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.INTERNAL)
+        funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.PRIVATE)
         funBuilder.beginControlFlow("%M", MethodNames.routingMethod)
 
         rootNode.sproutes.forEach {
