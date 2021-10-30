@@ -3,7 +3,8 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.generator.TrieFileGenerator
+import com.casadetasha.kexp.sproute.processor.SprouteNode.Companion.generateSproutNodes
+import com.casadetasha.kexp.sproute.processor.generator.SprouteFileGenerator
 import com.casadetasha.kexp.sproute.processor.ktx.*
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
@@ -48,17 +49,21 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         SprouteRoots.putAll(roundEnv.getSprouteRoots())
 
         this.roundEnv = roundEnv
-        // TODO: Investigate why process started running again without any @Route classes
-        if (sortedSprouteKotlinParents.isNotEmpty()) {
-            val packageName = sortedSprouteKotlinParents.first().packageName
-            val routeTrie = generateSproutNodes(sortedSprouteKotlinParents)
 
-            TrieFileGenerator(kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
-                rootNode = routeTrie,
-                packageName
-            ).generateRoutes()
+        // TODO: Investigate why process started running again without any annotated classes
+        if (sortedSprouteKotlinParents.isNotEmpty()) {
+            generateSproutes()
         }
         return true
+    }
+
+    private fun generateSproutes() {
+        val sprouteNodes = generateSproutNodes(sortedSprouteKotlinParents)
+
+        SprouteFileGenerator(
+            kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
+            rootNode = sprouteNodes
+        ).generateSproutes()
     }
 
 }

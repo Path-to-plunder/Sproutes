@@ -1,7 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.generator.FileGenerator.Companion.ROUTING_PACKAGE_NAME
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.generator.SprouteFileGenerator.Companion.ROUTING_PACKAGE_NAME
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
 import io.ktor.application.*
