@@ -27,7 +27,7 @@ internal class SprouteNode(val name: String) {
 
 internal data class Bud(val kotlinParent: SprouteKotlinParent, val function: SprouteRequestFunction)
 
-internal fun generateRouteTrie(sprouteParents: Set<SprouteKotlinParent>): SprouteNode {
+internal fun generateSproutNodes(sprouteParents: Set<SprouteKotlinParent>): SprouteNode {
     val sproutedBuds = SprouteNode("")
     val allBuds: MutableSet<Bud> = HashSet()
     sprouteParents.forEach {
@@ -44,16 +44,6 @@ internal fun generateRouteTrie(sprouteParents: Set<SprouteKotlinParent>): Sprout
     
     return sproutedBuds
 }
-
-//private fun SprouteNode.printRoutes(prefix: String = "") {
-//    buds.map { it.function }.forEach {
-//        output += "\n${prefix} - ${it.requestMethodName.simpleName.uppercase()}"
-//    }
-//
-//    sprouteMap.values.forEach {
-//        it.printRoutes("$prefix/$name")
-//    }
-//}
 
 private fun SprouteKotlinParent.getBuds(): Set<Bud> = HashSet<Bud>().apply {
     sprouteRequestFunctions.forEach {

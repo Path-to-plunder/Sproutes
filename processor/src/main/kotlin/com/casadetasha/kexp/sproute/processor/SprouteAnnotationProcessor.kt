@@ -3,18 +3,14 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
 import com.casadetasha.kexp.sproute.processor.generator.TrieFileGenerator
 import com.casadetasha.kexp.sproute.processor.ktx.*
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SproutePackage
 import com.google.auto.service.AutoService
-import com.google.common.collect.ImmutableSet
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 @AutoService(Processor::class)
@@ -55,7 +51,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         // TODO: Investigate why process started running again without any @Route classes
         if (sortedSprouteKotlinParents.isNotEmpty()) {
             val packageName = sortedSprouteKotlinParents.first().packageName
-            val routeTrie = generateRouteTrie(sortedSprouteKotlinParents)
+            val routeTrie = generateSproutNodes(sortedSprouteKotlinParents)
 
             TrieFileGenerator(kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
                 rootNode = routeTrie,
