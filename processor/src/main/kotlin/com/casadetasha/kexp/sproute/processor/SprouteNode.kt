@@ -2,10 +2,13 @@ package com.casadetasha.kexp.sproute.processor
 
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
-internal class SprouteNode(val name: String) {
+internal class SprouteNode(val name: String): Comparable<SprouteNode> {
     private val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
-    val sproutes: Set<SprouteNode> get() {return sprouteMap.values.toSet() }
+    val sproutes: SortedSet<SprouteNode> get() {return sprouteMap.values.toSortedSet() }
     val buds: MutableSet<Bud> = HashSet()
 
     fun addBud(routeSegments: List<String>, bud: Bud) {
@@ -21,6 +24,10 @@ internal class SprouteNode(val name: String) {
 
         val trimmedSegments = routeSegments.toMutableList().apply { removeFirst() }
         sprouteMap[segmentName]!!.addBud(trimmedSegments, bud)
+    }
+
+    override fun compareTo(other: SprouteNode): Int {
+        return this.name.compareTo(other.name)
     }
 
 }

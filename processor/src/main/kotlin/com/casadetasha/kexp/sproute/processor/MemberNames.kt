@@ -44,11 +44,11 @@ internal object MemberNames {
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    private val memberMap = mapOf(
+    private val validParamMemberMap = mapOf(
         Application::class.asCanonicalName() to applicationGetter,
         ApplicationCall::class.asCanonicalName() to applicationCallGetter
     )
-    private val validParameterTypes = memberMap.keys
+    private val validParameterTypes = validParamMemberMap.keys
 
     @OptIn(KotlinPoetMetadataPreview::class)
     fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
@@ -61,6 +61,6 @@ internal object MemberNames {
                             " ${this@apply.joinToString()}"
                 )
             }
-            .map { memberMap[it]!! }
+            .map { validParamMemberMap[it]!! }
     }
 }

@@ -57,7 +57,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     }
 
     private fun beginNodeControlFlow(routeSegment: String, fullRoute: String) {
-        val routeReference: String = fullRoute.toReference()
+        val routeReference: String = fullRoute.trim()
         if (routeReference.isEmpty()) {
             funBuilder.beginControlFlow(
                 "%M(%S)",
@@ -123,7 +123,7 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
     }
 
     private fun addRouteExtensionPackageMethodCall(function: SprouteRequestFunction, fullRoutePath: String) {
-        val routeReference = fullRoutePath.toReference()
+        val routeReference = fullRoutePath.trim()
         if (routeReference.isBlank()) {
             funBuilder.addCode(
                 CodeBlock.builder()
@@ -200,8 +200,4 @@ internal class SprouteTrieSpec(private val rootNode: SprouteNode) {
             funBuilder.endControlFlow()
         }
     }
-}
-
-private fun String.toReference(): String {
-    return replace("/", " ").trim().replace(" ", "·")
 }
