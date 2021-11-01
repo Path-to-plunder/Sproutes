@@ -71,7 +71,7 @@ internal class SprouteRequestFunction(
                 val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
                 processingEnvironment.printThenThrowError(
                     "Only [$extensionClasses] are supported as extension" +
-                            " receivers for request methods. Found $this for route $fullRoutePath"
+                            " receivers for request methods. Found $memberName for route $fullRoutePath"
                 )
             }
         }
