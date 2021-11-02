@@ -16,13 +16,14 @@ internal class RouteConfigurationSpecParser(private val sprouteTree: SprouteTree
             .receiver(Application::class)
             .beginControlFlow("%M", MemberNames.MethodNames.routingMethod)
 
-        sprouteTree.sprouteMap.toSortedMap().forEach {
+        val sortedSprouteMap = sprouteTree.sprouteMap.toSortedMap()
+        sortedSprouteMap.forEach {
             funBuilder = SprouteSpec(
                 authentication = it.key,
                 rootNode = it.value
             ).amendToFunSpecBuilder(funBuilder)
 
-            funBuilder.addStatement("")
+            if (it.key != sortedSprouteMap.lastKey()) funBuilder.addStatement("")
         }
 
         funBuilder.endControlFlow().build()
