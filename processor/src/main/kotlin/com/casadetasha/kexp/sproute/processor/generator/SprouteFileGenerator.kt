@@ -23,10 +23,7 @@ internal class SprouteFileGenerator(
 
     private fun generatePublicRouteConfigFile() {
         FileSpec.builder(ROUTING_PACKAGE_NAME, INSTA_ROUTE_CONFIG_FILE_NAME)
-            .addFunction(
-                RouteConfigurationSpecParser(sprouteTree).routeConfigurationFunSpec
-            ).build()
+            .addFunction(SprouteTreeFunSpec(sprouteTree).value).build()
             .writeTo(File(kaptKotlinGeneratedDir))
     }
-
 }

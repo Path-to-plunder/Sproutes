@@ -4,7 +4,7 @@ import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import kotlin.collections.HashSet
 
-internal class SprouteTree(val sprouteMap: Map<SprouteAuthentication, SprouteNode>) {
+internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthentication, SprouteNode>) {
 
     class LazyLoader(
         private val kotlinParents: Set<SprouteKotlinParent>
