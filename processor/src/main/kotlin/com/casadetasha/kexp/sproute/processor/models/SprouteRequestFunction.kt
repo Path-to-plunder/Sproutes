@@ -21,7 +21,7 @@ internal class SprouteRequestFunction(
     kotlinFunction: KotlinFunction,
     pathRootSegment: String,
     classRouteSegment: String,
-    authentication: SprouteAuthentication
+    val authentication: SprouteAuthentication
 ) : Comparable<SprouteRequestFunction> {
 
     companion object {
@@ -32,13 +32,13 @@ internal class SprouteRequestFunction(
             )
     }
 
-    val baseRoutePath: String by lazy {
+    private val baseRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
         val usableClassSegment: String = if (includeClassRouteSegment) classRouteSegment else ""
         pathRootSegment + usableClassSegment
     }
 
-    val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation).removeSuffix("/") }
+    private val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation).removeSuffix("/") }
     val fullRoutePath: String by lazy { baseRoutePath + functionPathSegment }
 
     val simpleName: String = kotlinFunction.simpleName

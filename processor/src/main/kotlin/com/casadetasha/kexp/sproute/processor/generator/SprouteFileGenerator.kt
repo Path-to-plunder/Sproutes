@@ -1,14 +1,14 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.SprouteNode
+import com.casadetasha.kexp.sproute.processor.SprouteTree
 import com.casadetasha.kexp.sproute.processor.ktx.printNote
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 
 internal class SprouteFileGenerator(
     private val kaptKotlinGeneratedDir: String,
-    private val rootNode: SprouteNode
+    private val sprouteTree: SprouteTree
 ) {
 
     companion object {
@@ -23,9 +23,9 @@ internal class SprouteFileGenerator(
 
     private fun generatePublicRouteConfigFile() {
         FileSpec.builder(ROUTING_PACKAGE_NAME, INSTA_ROUTE_CONFIG_FILE_NAME)
-            .addFunction(RouteConfigurationSpecParser().routeConfigurationFunSpec)
-            .addFunction(SprouteSpec(rootNode).funSpec)
-            .build()
+            .addFunction(
+                RouteConfigurationSpecParser(sprouteTree).routeConfigurationFunSpec
+            ).build()
             .writeTo(File(kaptKotlinGeneratedDir))
     }
 

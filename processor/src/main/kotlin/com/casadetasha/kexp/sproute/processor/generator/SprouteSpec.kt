@@ -3,38 +3,53 @@ package com.casadetasha.kexp.sproute.processor.generator
 import com.casadetasha.kexp.sproute.processor.MemberNames.MethodNames
 import com.casadetasha.kexp.sproute.processor.SprouteNode
 import com.casadetasha.kexp.sproute.processor.ktx.amendFunForBud
+import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import io.ktor.application.*
 
-internal class SprouteSpec(private val rootNode: SprouteNode) {
+internal class SprouteSpec(
+    private val rootNode: SprouteNode,
+    private val authentication: SprouteAuthentication
+) {
     private lateinit var funBuilder: FunSpec.Builder
 
-    val funSpec: FunSpec by lazy {
-        funBuilder = FunSpec.builder("sprouteBuds").receiver(Application::class).addModifiers(KModifier.PRIVATE)
-        funBuilder.beginControlFlow("%M", MethodNames.routingMethod)
+    fun amendToFunSpecBuilder(funBuilder: FunSpec.Builder): FunSpec.Builder {
+        this.funBuilder = funBuilder
+        beginSetAuthenticationRequirements()
 
         rootNode.sproutes.forEach {
             if (rootNode.sproutes.first() != it) funBuilder.addStatement("")
             amendFunForNode(it, fullParentRoute = "")
         }
 
-        funBuilder.endControlFlow()
-        funBuilder.build()
+        endSetAuthenticationRequirements()
+
+        return funBuilder
     }
 
-    private fun amendFunForNode(node: SprouteNode, baseRouteSegment: String = "", fullParentRoute: String) {
-        val fullRoute = "$fullParentRoute/${node.name}"
-        if (node.buds.isEmpty() && node.sproutes.size == 1) {
-            return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
+    private fun beginSetAuthenticationRequirements() {
+        if (authentication.isAuthenticationRequested && authentication.hasAuthenticationParams) {
+            funBuilder.beginControlFlow(
+                "%M(%L) ",
+                MethodNames.authenticationScopeMethod,
+                authentication.authenticationParams
+            )
+        } else if (authentication.isAuthenticationRequested) {
+            funBuilder.beginControlFlow("%M() ", MethodNames.authenticationScopeMethod)
         }
-
-        amendFunForChildBearingNode(baseRouteSegment, node, fullRoute)
     }
+
 
     private fun amendFunForSingleSprouteNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
         val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
-        node.sproutes.forEach { amendFunForNode(it, aggregatedRouteSegment, fullRoute ) } // route("/this/next/") `/this/next`@ {...
+        node.sproutes.forEach {
+            amendFunForNode(
+                it,
+                aggregatedRouteSegment,
+                fullRoute
+            )
+        } // route("/this/next/") `/this/next`@ {...
     }
 
     private fun amendFunForChildBearingNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String) {
@@ -69,5 +84,18 @@ internal class SprouteSpec(private val rootNode: SprouteNode) {
                 "`$routeReference`"
             )
         }
+    }
+
+    private fun amendFunForNode(node: SprouteNode, baseRouteSegment: String = "", fullParentRoute: String) {
+        val fullRoute = "$fullParentRoute/${node.name}"
+        if (node.buds.isEmpty() && node.sproutes.size == 1) {
+            return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
+        }
+
+        amendFunForChildBearingNode(baseRouteSegment, node, fullRoute)
+    }
+
+    private fun endSetAuthenticationRequirements() {
+        if (authentication.isAuthenticationRequested) funBuilder.endControlFlow()
     }
 }
