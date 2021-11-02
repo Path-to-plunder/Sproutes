@@ -18,6 +18,7 @@ internal object MemberNames {
     private object KtorMethodNames {
         // I'm not sure how to get the name of an overloaded generic method via reflection
         const val RESPOND = "respond"
+        const val ROUTE: String = "route"
         val ROUTING: String = Application::routing.name
         val AUTH: String = Route::authenticate.name
         val CALL: String = PipelineContext<*, ApplicationCall>::call.name
@@ -38,15 +39,16 @@ internal object MemberNames {
         val applicationCallGetter = MemberName(KtorPackageNames.APPLICATION, KtorMethodNames.CALL)
         val authenticationScopeMethod = MemberName(KtorPackageNames.AUTH, KtorMethodNames.AUTH)
         val routingMethod = MemberName(KtorPackageNames.ROUTING, KtorMethodNames.ROUTING)
+        val routeMethod = MemberName(KtorPackageNames.ROUTING, KtorMethodNames.ROUTE)
         val callRespondMethod = MemberName(KtorPackageNames.RESPONSE, KtorMethodNames.RESPOND)
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    private val memberMap = mapOf(
+    private val validParamMemberMap = mapOf(
         Application::class.asCanonicalName() to applicationGetter,
         ApplicationCall::class.asCanonicalName() to applicationCallGetter
     )
-    private val validParameterTypes = memberMap.keys
+    private val validParameterTypes = validParamMemberMap.keys
 
     @OptIn(KotlinPoetMetadataPreview::class)
     fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
@@ -59,6 +61,6 @@ internal object MemberNames {
                             " ${this@apply.joinToString()}"
                 )
             }
-            .map { memberMap[it]!! }
+            .map { validParamMemberMap[it]!! }
     }
 }

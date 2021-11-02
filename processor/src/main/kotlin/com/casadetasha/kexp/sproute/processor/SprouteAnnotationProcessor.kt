@@ -3,17 +3,14 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
+import com.casadetasha.kexp.sproute.processor.generator.SprouteFileGenerator
 import com.casadetasha.kexp.sproute.processor.ktx.*
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SproutePackage
 import com.google.auto.service.AutoService
-import com.google.common.collect.ImmutableSet
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 @AutoService(Processor::class)
@@ -30,9 +27,8 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
     private val sprouteClasses: Set<SprouteClass> by lazy { roundEnv.getRouteClasses() }
     private val sproutePackages: Set<SproutePackage> by lazy { roundEnv.getRoutePackages() }
 
-    private val sortedSprouteKotlinParents: Set<SprouteKotlinParent> by lazy {
-        val mergedSortedSets = sprouteClasses.toSortedSet() + sproutePackages.toSortedSet()
-        mergedSortedSets.toSet()
+    private val mergedKotlinParents: Set<SprouteKotlinParent> by lazy {
+        sprouteClasses.toSortedSet() + sproutePackages.toSortedSet()
     }
 
     private lateinit var kaptKotlinGeneratedDir: String
@@ -48,14 +44,22 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME] ?: return false
 
         if (roundEnv == null) return false
-        SprouteRoots.putAll(roundEnv.getSprouteRoots())
-
         this.roundEnv = roundEnv
-        // TODO: Investigate why process started running again without any @Route classes
-        if (sortedSprouteKotlinParents.isNotEmpty()) {
-            FileGenerator(kaptKotlinGeneratedDir).generateRouteFiles(sortedSprouteKotlinParents)
-        }
+
+        SprouteRoots.putAll(roundEnv.getSprouteRoots())
+        generateSproutes()
         return true
     }
 
+    private fun generateSproutes() {
+        // TODO: Investigate why process started running again without any annotated classes
+        if (mergedKotlinParents.isEmpty()) return
+
+        val sprouteTree: SprouteTree = SprouteTree.LazyLoader(mergedKotlinParents).value
+
+        SprouteFileGenerator(
+            kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
+            sprouteTree = sprouteTree
+        ).generateSproutes()
+    }
 }

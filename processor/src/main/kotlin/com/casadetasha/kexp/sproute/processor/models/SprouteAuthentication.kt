@@ -7,12 +7,77 @@ import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import javax.lang.model.element.Element
 
-internal sealed class SprouteAuthentication {
+internal sealed class SprouteAuthentication: Comparable<SprouteAuthentication> {
+    companion object {
+        const val OPTIONAL_PARAMETER_VALUE: String = "optional = true"
+
+        const val LESSER = -1
+        const val GREATER = 1
+    }
     abstract val isAuthenticationRequested: Boolean
-    abstract val hasAuthenticationParams: Boolean
-    abstract val authenticationParams: String
+    val hasAuthenticationParams: Boolean by lazy { authenticationParamNames.isNotBlank() || isOptional }
+
+    protected abstract val authenticationParamNames: String
+    abstract val isOptional: Boolean
+    val authenticationParams: String by lazy {
+        if (authenticationParamNames.isBlank() && isOptional) {
+            OPTIONAL_PARAMETER_VALUE
+        } else {
+            authenticationParamNames + if (isOptional) ", $OPTIONAL_PARAMETER_VALUE" else ""
+        }
+    }
 
     abstract fun createChildFromElement(element: Element): SprouteAuthentication
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SprouteAuthentication) return false
+
+        if (isAuthenticationRequested != other.isAuthenticationRequested) return false
+        if (hasAuthenticationParams != other.hasAuthenticationParams) return false
+        if (authenticationParams != other.authenticationParams) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = isAuthenticationRequested.hashCode()
+        result = 31 * result + hasAuthenticationParams.hashCode()
+        result = 31 * result + authenticationParams.hashCode()
+        return result
+    }
+
+    override fun compareTo(other: SprouteAuthentication): Int {
+        return if (!this.isAuthenticationRequested && other.isAuthenticationRequested) {
+            LESSER
+        } else if (this.isAuthenticationRequested && !other.isAuthenticationRequested) {
+            GREATER
+        } else {
+            compareToByParam(other)
+        }
+    }
+
+    private fun compareToByParam(other: SprouteAuthentication): Int {
+        val nameEquality = this.authenticationParamNames.compareTo(other.authenticationParamNames)
+
+        return if (nameEquality != 0) {
+            nameEquality
+        } else if (this.isOptional) {
+            LESSER
+        } else {
+            GREATER
+        }
+    }
+
+    class BaseAuthentication : SprouteAuthentication() {
+        override val isAuthenticationRequested: Boolean = false
+        override val authenticationParamNames: String = ""
+        override val isOptional: Boolean = false
+
+        override fun createChildFromElement(element: Element): SprouteAuthentication {
+            return ChildAuthentication(element, null)
+        }
+    }
 
     class ChildAuthentication constructor(
         private val element: Element,
@@ -28,12 +93,6 @@ internal sealed class SprouteAuthentication {
         }
 
         private val authenticationNames: List<String> = authenticatedAnnotation?.names?.asList() ?: ArrayList()
-        private val authenticationOptionalParamSuffix: String by lazy {
-            when (elementAuthenticatedAnnotation?.optional ?: false) {
-                true -> "optional = true"
-                false -> ""
-            }
-        }
 
         override val isAuthenticationRequested: Boolean by lazy {
             val shouldAuthenticateAsDefault =
@@ -41,12 +100,11 @@ internal sealed class SprouteAuthentication {
             elementAuthenticatedAnnotation != null || shouldAuthenticateAsDefault
         }
 
-        override val hasAuthenticationParams: Boolean =
-            isAuthenticationRequested || elementAuthenticatedAnnotation?.optional != null
-
-        override val authenticationParams: String = listOf(authenticationNames.asVarArgs(), authenticationOptionalParamSuffix)
+        override val authenticationParamNames: String = listOf(authenticationNames.asVarArgs())
             .filter { it.isNotEmpty() }
             .joinToString(", ")
+
+        override val isOptional: Boolean = elementAuthenticatedAnnotation?.optional == true
 
         override fun createChildFromElement(element: Element): ChildAuthentication {
             return ChildAuthentication(element, authenticatedAnnotation)
@@ -59,16 +117,6 @@ internal sealed class SprouteAuthentication {
                             " Cause: ${element.simpleName}."
                 )
             }
-        }
-    }
-
-    class BaseAuthentication : SprouteAuthentication() {
-        override val isAuthenticationRequested: Boolean = false
-        override val hasAuthenticationParams: Boolean = false
-        override val authenticationParams: String = ""
-
-        override fun createChildFromElement(element: Element): SprouteAuthentication {
-            return ChildAuthentication(element, null)
         }
     }
 }
