@@ -1,12 +1,12 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.SprouteTree
 import com.casadetasha.kexp.sproute.processor.ktx.printNote
+import com.casadetasha.kexp.sproute.processor.models.SprouteTree
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 
-internal class SprouteFileGenerator(
+internal class FileGenerator(
     private val kaptKotlinGeneratedDir: String,
     private val sprouteTree: SprouteTree
 ) {

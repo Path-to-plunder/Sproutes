@@ -3,7 +3,6 @@ package com.casadetasha.kexp.sproute.processor.post.routes.functions
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.casadetasha.kexp.sproute.processor.post.withConfiguredTestApplication
-import io.ktor.http.*
 import io.ktor.http.HttpMethod.Companion.Get
 import io.ktor.server.testing.*
 import kotlin.test.Test

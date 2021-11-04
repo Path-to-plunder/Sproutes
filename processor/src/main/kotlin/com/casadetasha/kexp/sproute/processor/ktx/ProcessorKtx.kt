@@ -4,15 +4,26 @@ import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.validRequestTypes
-import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication.BaseAuthentication
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.validRequestTypes
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
+import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
+import javax.tools.Diagnostic
+
+internal fun ProcessingEnvironment.printNote(noteText: String) {
+    messager.printMessage(Diagnostic.Kind.NOTE, noteText)
+}
+
+internal fun ProcessingEnvironment.printThenThrowError(errorMessage: String): Nothing {
+    messager.printMessage(Diagnostic.Kind.ERROR, errorMessage)
+    throw IllegalArgumentException(errorMessage)
+}
 
 internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRootInfo> = HashMap<TypeName, SprouteRootInfo>()
     .apply {

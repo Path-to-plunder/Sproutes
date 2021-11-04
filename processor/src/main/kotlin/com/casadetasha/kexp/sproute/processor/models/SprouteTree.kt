@@ -1,8 +1,7 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.models
 
-import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
-import kotlin.collections.HashSet
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
 
 internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthentication, SprouteNode>) {
 

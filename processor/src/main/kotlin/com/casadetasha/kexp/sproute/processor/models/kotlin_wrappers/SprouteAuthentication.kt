@@ -1,24 +1,23 @@
-package com.casadetasha.kexp.sproute.processor.models
+package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
 import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
+import com.casadetasha.kexp.sproute.processor.helpers.Equality.LESSER
 import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import javax.lang.model.element.Element
+import javax.xml.datatype.DatatypeConstants.GREATER
 
 internal sealed class SprouteAuthentication: Comparable<SprouteAuthentication> {
     companion object {
         const val OPTIONAL_PARAMETER_VALUE: String = "optional = true"
-
-        const val LESSER = -1
-        const val GREATER = 1
     }
     abstract val isAuthenticationRequested: Boolean
     val hasAuthenticationParams: Boolean by lazy { authenticationParamNames.isNotBlank() || isOptional }
 
-    protected abstract val authenticationParamNames: String
     abstract val isOptional: Boolean
+    protected abstract val authenticationParamNames: String
     val authenticationParams: String by lazy {
         if (authenticationParamNames.isBlank() && isOptional) {
             OPTIONAL_PARAMETER_VALUE
@@ -92,14 +91,13 @@ internal sealed class SprouteAuthentication: Comparable<SprouteAuthentication> {
             this ?: parentAuthenticatedAnnotation
         }
 
-        private val authenticationNames: List<String> = authenticatedAnnotation?.names?.asList() ?: ArrayList()
-
         override val isAuthenticationRequested: Boolean by lazy {
             val shouldAuthenticateAsDefault =
                 elementUnauthenticatedAnnotation == null && parentAuthenticatedAnnotation != null
             elementAuthenticatedAnnotation != null || shouldAuthenticateAsDefault
         }
 
+        private val authenticationNames: List<String> = authenticatedAnnotation?.names?.asList() ?: ArrayList()
         override val authenticationParamNames: String = listOf(authenticationNames.asVarArgs())
             .filter { it.isNotEmpty() }
             .joinToString(", ")

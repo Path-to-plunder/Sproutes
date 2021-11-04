@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.models
 
 import java.util.*
 

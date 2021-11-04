@@ -1,13 +1,13 @@
-package com.casadetasha.kexp.sproute.processor.models
+package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
-import com.casadetasha.kexp.sproute.processor.MemberNames
-import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getInstaRequestAnnotation
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRequestMethodName
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
+import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames
+import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getInstaRequestAnnotation
+import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getRequestMethodName
+import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getRouteSegment
+import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
@@ -53,7 +53,7 @@ internal class SprouteRequestFunction(
     val hasAuthenticationParams: Boolean = authentication.hasAuthenticationParams
 
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
-    val requestMethodName: MemberName = MemberName(MemberNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
+    val requestMethodName: MemberName = MemberName(KotlinNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
     val configurationMethodSimpleName by lazy {
         val formattedRoute = fullRoutePath.removePrefix("/").asMethod()
         val routePrefix = if (formattedRoute.isNotBlank()) "${formattedRoute}_" else ""

@@ -1,19 +1,19 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.helpers
 
-import com.casadetasha.kexp.sproute.processor.MemberNames.MethodNames.applicationCallGetter
-import com.casadetasha.kexp.sproute.processor.MemberNames.MethodNames.applicationGetter
+import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.MethodNames.applicationCallGetter
+import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.MethodNames.applicationGetter
 import com.casadetasha.kexp.sproute.processor.ktx.asCanonicalName
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
-import io.ktor.routing.*
-import io.ktor.util.pipeline.*
 import io.ktor.auth.*
 import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import kotlin.reflect.KClass
 
-internal object MemberNames {
+internal object KotlinNames {
 
     private object KtorMethodNames {
         // I'm not sure how to get the name of an overloaded generic method via reflection
@@ -24,6 +24,10 @@ internal object MemberNames {
         val CALL: String = PipelineContext<*, ApplicationCall>::call.name
         val APPLICATION = PipelineContext<*, ApplicationCall>::application.name
         val APPLY: String = KClass<*>::apply.name
+    }
+
+    object GeneratedMethodNames {
+        const val SPROUTE_CONFIGURATION: String = "configureSproutes"
     }
 
     object KtorPackageNames {

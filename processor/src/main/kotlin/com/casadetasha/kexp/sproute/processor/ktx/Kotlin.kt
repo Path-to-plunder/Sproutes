@@ -1,5 +1,11 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
+import com.casadetasha.kexp.sproute.annotations.*
+import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
+import kotlin.reflect.KClass
+
 internal fun Boolean.orElse(function: () -> Unit) {
     if (!this) function()
 }
@@ -27,4 +33,23 @@ internal fun <T> List<T>?.ifNotEmpty(function: (List<T>) -> Unit): Boolean {
 
     function(this)
     return true
+}
+
+internal fun KClass<*>.asCanonicalName(): String = asTypeName().canonicalName
+
+internal fun KClass<*>.toMemberName(): MemberName {
+    return MemberName(asClassName().packageName, asClassName().simpleName)
+}
+
+internal fun Annotation.asKClass(): KClass<out Annotation> {
+    return when(this){
+        is Get -> Get::class
+        is Post -> Post::class
+        is Put -> Put::class
+        is Patch -> Patch::class
+        is Delete -> Delete::class
+        is Head -> Head::class
+        is Options -> Options::class
+        else -> throw IllegalArgumentException("Provided annotation must be one of the types in validRequestList")
+    }
 }
