@@ -1,11 +1,10 @@
-package com.casadetasha.kexp.sproute.processor.models
+package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
-import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication.BaseAuthentication
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
@@ -16,14 +15,11 @@ internal sealed class SprouteKotlinParent(
 ) : Comparable<SprouteKotlinParent> {
 
     val memberName = MemberName(packageName, classSimpleName)
-    val fileName = "InstaRoutes\$${packageName}_${classSimpleName}"
-    val configurationMethodSimpleName = "configureRoutes\$${packageName}_$classSimpleName".asMethod()
-    val configurationMethodName: MemberName = MemberName(packageName, configurationMethodSimpleName)
 
     abstract val sprouteRequestFunctions: Set<SprouteRequestFunction>
 
     override fun compareTo(other: SprouteKotlinParent): Int {
-        return configurationMethodSimpleName.compareTo(other.configurationMethodSimpleName)
+        return this.memberName.toString().compareTo(other.memberName.toString())
     }
 
     @OptIn(KotlinPoetMetadataPreview::class)

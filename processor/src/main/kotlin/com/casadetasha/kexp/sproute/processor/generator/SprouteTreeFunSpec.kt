@@ -1,34 +1,67 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.MemberNames
-import com.casadetasha.kexp.sproute.processor.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.SprouteNode
+import com.casadetasha.kexp.sproute.processor.models.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.GeneratedMethodNames
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
+import java.util.*
 
 internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
 
-    companion object {
-        const val CONFIGURATION_METHOD_SIMPLE_NAME = "configureSproutes"
-    }
-
     val value: FunSpec by lazy {
-        FunSpec.builder(CONFIGURATION_METHOD_SIMPLE_NAME)
+        FunSpec.builder(GeneratedMethodNames.SPROUTE_CONFIGURATION)
             .receiver(Application::class)
-            .beginControlFlow("%M", MemberNames.MethodNames.routingMethod)
-            .amendSproutesFromTree(sprouteTree)
+            .beginControlFlow("%M", MethodNames.routingMethod)
+            .amendSproutesFromMap(sprouteTree.sprouteMap.toSortedMap())
             .endControlFlow()
             .build()
     }
 
-    private fun FunSpec.Builder.amendSproutesFromTree(sprouteTree: SprouteTree): FunSpec.Builder = apply {
-        val sortedSprouteMap = sprouteTree.sprouteMap.toSortedMap()
-        sortedSprouteMap.forEach {
+    private fun FunSpec.Builder.amendSproutesFromMap(sprouteMap: SortedMap<SprouteAuthentication, SprouteNode>)
+            : FunSpec.Builder = apply {
+        sprouteMap.forEach {
             amendToFunSpecBuilder(
                 authentication = it.key,
                 rootNode = it.value
             )
 
-            if (it.key != sortedSprouteMap.lastKey()) addStatement("")
+            if (it.key != sprouteMap.lastKey()) addStatement("")
         }
     }
+
+    private fun FunSpec.Builder.amendToFunSpecBuilder(
+        rootNode: SprouteNode,
+        authentication: SprouteAuthentication
+    ): FunSpec.Builder = apply {
+        beginSetAuthenticationRequirements(authentication)
+        addSprouteSpecs(rootNode)
+        endSetAuthenticationRequirements(authentication)
+    }
+
+    private fun FunSpec.Builder.beginSetAuthenticationRequirements(authentication: SprouteAuthentication)
+            : FunSpec.Builder = apply {
+        if (authentication.isAuthenticationRequested && authentication.hasAuthenticationParams) {
+            beginParameterizedAuthFlow(authentication.authenticationParams)
+        } else if (authentication.isAuthenticationRequested) {
+            beginNonParameterizedAuthFlow()
+        }
+    }
+
+    private fun FunSpec.Builder.addSprouteSpecs(rootNode: SprouteNode): FunSpec.Builder = apply {
+        rootNode.sproutes.forEach {
+            if (rootNode.sproutes.first() != it) addStatement("")
+            amendSprouteSpec(
+                node = it,
+                fullParentRoute = ""
+            )
+        }
+    }
+
+    private fun FunSpec.Builder.endSetAuthenticationRequirements(authentication: SprouteAuthentication): FunSpec.Builder =
+        apply {
+            if (authentication.isAuthenticationRequested) endControlFlow()
+        }
 }

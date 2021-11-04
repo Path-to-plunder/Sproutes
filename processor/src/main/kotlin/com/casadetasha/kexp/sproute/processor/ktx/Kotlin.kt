@@ -1,5 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
+import kotlin.collections.removeFirst as removeFirstFromCollection
+
 internal fun Boolean.orElse(function: () -> Unit) {
     if (!this) function()
 }
@@ -16,6 +18,10 @@ internal fun String.asMethod() : String {
     return this.asPath().replace("/", "_")
 }
 
+internal fun <E> Collection<E>.removeFirst(): List<E> {
+    return toMutableList().apply { removeFirstFromCollection() }
+}
+
 internal fun List<String>.asVarArgs(): String = this.let {
     return joinToString(", ") { "\"$it\"" }
 }
@@ -28,3 +34,4 @@ internal fun <T> List<T>?.ifNotEmpty(function: (List<T>) -> Unit): Boolean {
     function(this)
     return true
 }
+

@@ -1,8 +1,8 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.models
 
-import com.casadetasha.kexp.sproute.processor.models.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
 
 internal data class Bud(
     val kotlinParent: SprouteKotlinParent,

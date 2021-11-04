@@ -3,11 +3,16 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.generator.SprouteFileGenerator
-import com.casadetasha.kexp.sproute.processor.ktx.*
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.SprouteKotlinParent.SproutePackage
+import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
+import com.casadetasha.kexp.sproute.processor.ktx.getRouteClasses
+import com.casadetasha.kexp.sproute.processor.ktx.getRoutePackages
+import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoots
+import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo.Companion.sprouteRoots
+import com.casadetasha.kexp.sproute.processor.models.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent.SprouteClass
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent.SproutePackage
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations
 import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -46,7 +51,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         if (roundEnv == null) return false
         this.roundEnv = roundEnv
 
-        SprouteRoots.putAll(roundEnv.getSprouteRoots())
+        sprouteRoots.putAll(roundEnv.getSprouteRoots())
         generateSproutes()
         return true
     }
@@ -57,7 +62,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
 
         val sprouteTree: SprouteTree = SprouteTree.LazyLoader(mergedKotlinParents).value
 
-        SprouteFileGenerator(
+        FileGenerator(
             kaptKotlinGeneratedDir = kaptKotlinGeneratedDir,
             sprouteTree = sprouteTree
         ).generateSproutes()
