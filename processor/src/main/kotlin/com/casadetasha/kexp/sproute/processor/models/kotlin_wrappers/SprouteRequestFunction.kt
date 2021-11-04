@@ -2,15 +2,15 @@ package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.toRequestParamMemberNames
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getInstaRequestAnnotation
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getRequestMethodName
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
 import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getInstaRequestAnnotation
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getRequestMethodName
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getRouteSegment
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*

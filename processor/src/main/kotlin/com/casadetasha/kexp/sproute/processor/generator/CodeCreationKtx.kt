@@ -1,8 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames
+import com.casadetasha.kexp.sproute.processor.ktx.ifNotEmpty
+import com.casadetasha.kexp.sproute.processor.ktx.orElse
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
@@ -123,14 +125,6 @@ internal fun FunSpec.Builder.addPackageMethodCallCode(function: SprouteRequestFu
     )
 }
 
-internal fun CodeBlock.Builder.addEmptyMethodParamBrackets() = apply { add("()") }
-
-internal fun CodeBlock.Builder.addMethodParams(memberNames: List<MemberName>) = apply {
-    val memberParamString = memberNames.joinToString(", ") { "%M" }
-    val parameters = "($memberParamString)"
-    add(parameters, *memberNames.toTypedArray())
-}
-
 internal fun FunSpec.Builder.endCallBlock(function: SprouteRequestFunction) = apply {
     if (function.isApplicationCallExtensionMethod) {
         addCode("·}")
@@ -143,3 +137,19 @@ internal fun FunSpec.Builder.endCallBlock(function: SprouteRequestFunction) = ap
 }
 
 internal fun FunSpec.Builder.addEndCurlyBrace() = apply { addStatement("·}") }
+
+private fun CodeBlock.Builder.addMethodParameters(methodParams: List<MemberName>?) = apply {
+    methodParams.ifNotEmpty {
+        addMethodParams(it)
+    }.orElse {
+        addEmptyMethodParamBrackets()
+    }
+}
+
+private fun CodeBlock.Builder.addEmptyMethodParamBrackets() = apply { add("()") }
+
+private fun CodeBlock.Builder.addMethodParams(memberNames: List<MemberName>) = apply {
+    val memberParamString = memberNames.joinToString(", ") { "%M" }
+    val parameters = "($memberParamString)"
+    add(parameters, *memberNames.toTypedArray())
+}

@@ -3,11 +3,11 @@ package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
-import com.casadetasha.kexp.sproute.processor.helpers.Equality.LESSER
 import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
+import com.casadetasha.kexp.sproute.processor.models.objects.Equality.GREATER
+import com.casadetasha.kexp.sproute.processor.models.objects.Equality.LESSER
 import javax.lang.model.element.Element
-import javax.xml.datatype.DatatypeConstants.GREATER
 
 internal sealed class SprouteAuthentication: Comparable<SprouteAuthentication> {
     companion object {

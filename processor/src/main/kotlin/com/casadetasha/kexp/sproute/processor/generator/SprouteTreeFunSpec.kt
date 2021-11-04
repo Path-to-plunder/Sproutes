@@ -1,10 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.GeneratedMethodNames
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.MethodNames
 import com.casadetasha.kexp.sproute.processor.models.SprouteNode
 import com.casadetasha.kexp.sproute.processor.models.SprouteTree
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.GeneratedMethodNames
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 import java.util.*
@@ -40,4 +40,28 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
         addSprouteSpecs(rootNode)
         endSetAuthenticationRequirements(authentication)
     }
+
+    private fun FunSpec.Builder.beginSetAuthenticationRequirements(authentication: SprouteAuthentication)
+            : FunSpec.Builder = apply {
+        if (authentication.isAuthenticationRequested && authentication.hasAuthenticationParams) {
+            beginParameterizedAuthFlow(authentication.authenticationParams)
+        } else if (authentication.isAuthenticationRequested) {
+            beginNonParameterizedAuthFlow()
+        }
+    }
+
+    private fun FunSpec.Builder.addSprouteSpecs(rootNode: SprouteNode): FunSpec.Builder = apply {
+        rootNode.sproutes.forEach {
+            if (rootNode.sproutes.first() != it) addStatement("")
+            amendSprouteSpec(
+                node = it,
+                fullParentRoute = ""
+            )
+        }
+    }
+
+    private fun FunSpec.Builder.endSetAuthenticationRequirements(authentication: SprouteAuthentication): FunSpec.Builder =
+        apply {
+            if (authentication.isAuthenticationRequested) endControlFlow()
+        }
 }

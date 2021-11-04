@@ -4,11 +4,11 @@ import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.helpers.KotlinNames.toRequestParamMemberNames
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations.validRequestTypes
 import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.validRequestTypes
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview

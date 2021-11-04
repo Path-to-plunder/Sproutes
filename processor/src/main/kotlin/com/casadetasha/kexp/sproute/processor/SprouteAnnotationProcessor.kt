@@ -4,7 +4,6 @@ import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
-import com.casadetasha.kexp.sproute.processor.helpers.SprouteRequestAnnotations
 import com.casadetasha.kexp.sproute.processor.ktx.getRouteClasses
 import com.casadetasha.kexp.sproute.processor.ktx.getRoutePackages
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoots
@@ -13,6 +12,7 @@ import com.casadetasha.kexp.sproute.processor.models.SprouteTree
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent.SproutePackage
+import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations
 import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion

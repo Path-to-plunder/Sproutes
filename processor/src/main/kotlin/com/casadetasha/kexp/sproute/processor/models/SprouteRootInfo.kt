@@ -16,7 +16,6 @@ internal data class SprouteRootInfo(
         internal val sprouteRoots: MutableMap<TypeName, SprouteRootInfo> = HashMap()
     }
 
-
     fun getPathPrefixToSproutePackage(sproutePackage: String): String {
         return if (canAppendPackage) {
             routeSegment + sproutePackage.asSubPackageOf(packageName).asPath().lowercase()
