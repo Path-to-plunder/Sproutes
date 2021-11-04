@@ -2,7 +2,6 @@ package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
-import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.MemberNames.toRequestParamMemberNames
