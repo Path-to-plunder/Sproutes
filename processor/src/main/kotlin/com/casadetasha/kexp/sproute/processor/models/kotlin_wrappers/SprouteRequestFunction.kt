@@ -15,7 +15,6 @@ import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnot
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
-import io.ktor.routing.*
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(

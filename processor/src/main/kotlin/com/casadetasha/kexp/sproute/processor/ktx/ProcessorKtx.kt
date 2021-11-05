@@ -7,6 +7,7 @@ import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 import com.casadetasha.kexp.sproute.processor.models.AnnotatedSprouteRoot
 import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.Root.Companion.defaultRoot
+import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
@@ -81,6 +82,6 @@ internal fun RoundEnvironment.getRouteClasses(): Set<SprouteParent.SprouteClass>
                 sprouteRoot = sprouteRoot,
                 classRouteSegment = classSprouteAnnotation.routeSegment,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray()),
-            )
+            ).apply { sprouteRoots[this.key] = this }
         }
         .toSet()

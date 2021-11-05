@@ -5,6 +5,7 @@ import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
 import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.Root.Companion.defaultRoot
+import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
@@ -74,7 +75,7 @@ internal sealed class SprouteParent(
                     kotlinFunction = it,
                     classRouteSegment = classSprouteAnnotation?.routeSegment ?: "",
                     sprouteAuthentication = auth
-                )
+                ).apply { sprouteRoots[this.key] = this }
             }.toSortedSet()
     }
 }

@@ -55,12 +55,6 @@ internal object KotlinNames {
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    private val validParamMemberMap = mapOf(
-        Application::class.asCanonicalName() to applicationGetter,
-        ApplicationCall::class.asCanonicalName() to applicationCallGetter
-    )
-    private val validParameterTypes = validParamMemberMap.keys
-
     @OptIn(KotlinPoetMetadataPreview::class)
     fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
         return map { it.asCanonicalName() }
@@ -75,4 +69,9 @@ internal object KotlinNames {
             .map { validParamMemberMap[it]!! }
     }
 
+    private val validParamMemberMap = mapOf(
+        Application::class.asCanonicalName() to applicationGetter,
+        ApplicationCall::class.asCanonicalName() to applicationCallGetter
+    )
+    private val validParameterTypes = validParamMemberMap.keys
 }
