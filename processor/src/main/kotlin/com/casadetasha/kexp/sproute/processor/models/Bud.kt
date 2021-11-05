@@ -1,11 +1,11 @@
 package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
 
 internal data class Bud(
-    val kotlinParent: SprouteKotlinParent,
+    val kotlinParent: SprouteParent,
     val function: SprouteRequestFunction
     ) : Comparable<Bud> {
 
@@ -16,7 +16,7 @@ internal data class Bud(
         .split("/")
     }
 
-    val authentication: SprouteAuthentication = function.authentication
+    val authentication: SprouteAuthentication = function.sprouteAuthentication
 
     override fun compareTo(other: Bud): Int = function.simpleName.compareTo(other.function.simpleName)
 }

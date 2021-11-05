@@ -1,12 +1,12 @@
 package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
 
 internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthentication, SprouteNode>) {
 
     class LazyLoader(
-        private val kotlinParents: Set<SprouteKotlinParent>
+        private val kotlinParents: Set<SprouteParent>
     ) {
 
         val value: SprouteTree by lazy { SprouteTree(roots) }
@@ -32,7 +32,7 @@ internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthen
             }.toMap()
         }
 
-        private fun generateBuds(sprouteKotlinParent: SprouteKotlinParent): Set<Bud> = java.util.HashSet<Bud>().apply {
+        private fun generateBuds(sprouteKotlinParent: SprouteParent): Set<Bud> = java.util.HashSet<Bud>().apply {
             sprouteKotlinParent.sprouteRequestFunctions.forEach {
                 add(
                     Bud(

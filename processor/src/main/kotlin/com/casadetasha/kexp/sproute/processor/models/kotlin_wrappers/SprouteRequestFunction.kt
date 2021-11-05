@@ -2,9 +2,9 @@ package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.ktx.asMethod
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
+import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getInstaRequestAnnotation
@@ -18,11 +18,11 @@ import io.ktor.routing.*
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(
+    override val sprouteAuthentication: SprouteAuthentication,
     kotlinFunction: KotlinFunction,
     pathRootSegment: String,
-    classRouteSegment: String,
-    val authentication: SprouteAuthentication
-) : Comparable<SprouteRequestFunction> {
+    classRouteSegment: String
+): Root, Comparable<SprouteRequestFunction> {
 
     companion object {
         val VALID_EXTENSION_CLASSES =
@@ -46,23 +46,12 @@ internal class SprouteRequestFunction(
     val params: List<MemberName> = kotlinFunction.parameters.toRequestParamMemberNames()
     val receiver: MemberName? = kotlinFunction.receiver.apply { validateFunctionReceiver(this) }
 
+    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { validateReturnValue(this) }
+    val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()
+
     private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()
-
-    val isAuthenticationRequested: Boolean = authentication.isAuthenticationRequested
-    val authenticationParams: String = authentication.authenticationParams
-    val hasAuthenticationParams: Boolean = authentication.hasAuthenticationParams
-
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
     val requestMethodName: MemberName = MemberName(KotlinNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
-    val configurationMethodSimpleName by lazy {
-        val formattedRoute = fullRoutePath.removePrefix("/").asMethod()
-        val routePrefix = if (formattedRoute.isNotBlank()) "${formattedRoute}_" else ""
-        val requestType = requestMethodSimpleName.uppercase()
-        "configureRequestRoute\$${routePrefix}$requestType"
-    }
-
-    val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()
-    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { validateReturnValue(this) }
 
     private fun validateFunctionReceiver(memberName: MemberName?) {
         when (memberName) {
@@ -83,6 +72,13 @@ internal class SprouteRequestFunction(
                     " have a return type. If you want to access the ApplicationCall and return a value, add the" +
                     " ApplicationCall as a method parameter."
         )
+    }
+
+    // This should always use a character that would be illegal in Kotlin class names to prevent clashes
+    override val key: String = "${kotlinFunction.packageName}/${kotlinFunction.simpleName}"
+
+    override fun getSproutePathForPackage(sproutePackage: String): String {
+        return fullRoutePath
     }
 
     override fun compareTo(other: SprouteRequestFunction): Int {

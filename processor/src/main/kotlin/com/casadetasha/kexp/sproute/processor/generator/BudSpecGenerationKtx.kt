@@ -2,7 +2,7 @@ package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.models.Bud
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
@@ -17,11 +17,11 @@ internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", bu
 }
 
 internal fun FunSpec.Builder.addMethodCall(
-    sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction, fullRoutePath: String
+    sprouteKotlinParent: SprouteParent, function: SprouteRequestFunction, fullRoutePath: String
 ) = apply {
     when (sprouteKotlinParent) {
-        is SprouteKotlinParent.SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
-        is SprouteKotlinParent.SproutePackage -> addRoutePackageMethodCall(function, fullRoutePath)
+        is SprouteParent.SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
+        is SprouteParent.SproutePackage -> addRoutePackageMethodCall(function, fullRoutePath)
     }
 }
 

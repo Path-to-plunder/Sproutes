@@ -4,21 +4,22 @@ import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
 import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
+import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
 
-internal sealed class SprouteKotlinParent(
+internal sealed class SprouteParent(
     val packageName: String,
     val classSimpleName: String
-) : Comparable<SprouteKotlinParent> {
+) : Comparable<SprouteParent> {
 
     val memberName = MemberName(packageName, classSimpleName)
 
     abstract val sprouteRequestFunctions: Set<SprouteRequestFunction>
 
-    override fun compareTo(other: SprouteKotlinParent): Int {
+    override fun compareTo(other: SprouteParent): Int {
         return this.memberName.toString().compareTo(other.memberName.toString())
     }
 
@@ -26,14 +27,16 @@ internal sealed class SprouteKotlinParent(
     internal class SprouteClass(
         val classData: ClassData,
         val primaryConstructorParams: List<MemberName>?,
-        classRouteSegment: String,
-        rootPathSegment: String,
-        functions: Set<KotlinFunction>,
-        sprouteAuthentication: SprouteAuthentication
-    ) : SprouteKotlinParent(
+        val rootPathSegment: String,
+        val classRouteSegment: String,
+        override val sprouteAuthentication: SprouteAuthentication,
+        functions: Set<KotlinFunction>
+    ) : SprouteParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
-    ) {
+    ), Root {
+
+        override val key: String = classData.className.toString()
 
         override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
@@ -41,9 +44,13 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = rootPathSegment,
                     classRouteSegment = classRouteSegment,
-                    authentication = sprouteAuthentication.createChildFromElement(it.element)
+                    sprouteAuthentication = sprouteAuthentication.createChildFromElement(it.element)
                 )
             }.toSortedSet()
+
+        override fun getSproutePathForPackage(sproutePackage: String): String {
+            return "${rootPathSegment}$classRouteSegment"
+        }
     }
 
     @OptIn(KotlinPoetMetadataPreview::class)
@@ -51,7 +58,7 @@ internal sealed class SprouteKotlinParent(
         packageName: String,
         fileName: String,
         functions: Set<KotlinFunction>
-    ) : SprouteKotlinParent(
+    ) : SprouteParent(
         packageName = packageName,
         classSimpleName = fileName
     ) {
@@ -67,7 +74,7 @@ internal sealed class SprouteKotlinParent(
                     kotlinFunction = it,
                     pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
                     classRouteSegment = "",
-                    authentication = auth
+                    sprouteAuthentication = auth
                 )
             }.toSortedSet()
     }

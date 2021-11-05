@@ -2,7 +2,8 @@ package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.*
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
-import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
+import com.casadetasha.kexp.sproute.processor.models.Root
+import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -13,7 +14,7 @@ import kotlin.reflect.KClass
 
 internal fun Element.getTopLevelFunctionPathRoot(): String {
     val sprouteAnnotation = getAnnotation(Sproute::class.java)
-    val sprouteRootSegment = sprouteAnnotation?.getSprouteRoot()?.getPathPrefixToSproutePackage(packageName) ?: ""
+    val sprouteRootSegment = sprouteAnnotation?.getSprouteRoot()?.getSproutePathForPackage(packageName) ?: ""
     val sprouteSegment = sprouteAnnotation?.routeSegment ?: ""
 
     return sprouteRootSegment + sprouteSegment
@@ -50,10 +51,10 @@ internal fun Annotation.asKClass(): KClass<out Annotation> {
     }
 }
 
-internal fun Sproute.getSprouteRoot(): SprouteRootInfo {
-    val routeRootTypeName = getRootTypeName()
-    return SprouteRootInfo.sprouteRoots[routeRootTypeName] ?: SprouteAnnotationProcessor.processingEnvironment.printThenThrowError(
-        "@SprouteRoot annotation was not found for provided class $routeRootTypeName"
+internal fun Sproute.getSprouteRoot(): Root {
+    val root = sprouteRoots[getRootTypeName().toString()]
+    return root ?: SprouteAnnotationProcessor.processingEnvironment.printThenThrowError(
+        "@SprouteRoot annotation was not found for provided class $root"
     )
 }
 

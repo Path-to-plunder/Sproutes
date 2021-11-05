@@ -4,9 +4,9 @@ import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.annotationparser.kxt.getFileFacadesForTopLevelFunctionsAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SprouteRoot
-import com.casadetasha.kexp.sproute.processor.models.SprouteRootInfo
+import com.casadetasha.kexp.sproute.processor.models.AnnotatedSprouteRoot
 import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
+import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.validRequestTypes
 import com.squareup.kotlinpoet.TypeName
@@ -25,11 +25,12 @@ internal fun ProcessingEnvironment.printThenThrowError(errorMessage: String): No
     throw IllegalArgumentException(errorMessage)
 }
 
-internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRootInfo> = HashMap<TypeName, SprouteRootInfo>()
-    .apply {
+internal fun RoundEnvironment.getSprouteRoots(): Map<String, AnnotatedSprouteRoot> =
+    HashMap<String, AnnotatedSprouteRoot>().apply {
         val baseAuthentication = BaseAuthentication()
         SprouteRoot::class.asTypeName().let {
-            this[it] = SprouteRootInfo(
+            this[it.toString()] = AnnotatedSprouteRoot(
+                typeName = it,
                 packageName = it.packageName,
                 routeSegment = "",
                 canAppendPackage = false,
@@ -39,7 +40,8 @@ internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRootInfo> 
 
         getClassesAnnotatedWith(SprouteRoot::class).forEach {
             val annotation = it.element.getAnnotation(SprouteRoot::class.java)!!
-            this[it.className] = SprouteRootInfo(
+            this[it.className.toString()] = AnnotatedSprouteRoot(
+                it.className,
                 it.className.packageName,
                 annotation.rootSprouteSegment,
                 annotation.appendSubPackagesAsSegments,
@@ -49,10 +51,10 @@ internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRootInfo> 
     }.toMap()
 
 @OptIn(KotlinPoetMetadataPreview::class)
-internal fun RoundEnvironment.getRoutePackages(): Set<SprouteKotlinParent.SproutePackage> {
+internal fun RoundEnvironment.getRoutePackages(): Set<SprouteParent.SproutePackage> {
     return getFileFacadesForTopLevelFunctionsAnnotatedWith(validRequestTypes)
         .map {
-            SprouteKotlinParent.SproutePackage(
+            SprouteParent.SproutePackage(
                 packageName = it.packageName,
                 fileName = it.fileName,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray())
@@ -62,18 +64,18 @@ internal fun RoundEnvironment.getRoutePackages(): Set<SprouteKotlinParent.Sprout
 }
 
 @OptIn(KotlinPoetMetadataPreview::class)
-internal fun RoundEnvironment.getRouteClasses(): Set<SprouteKotlinParent.SprouteClass> =
+internal fun RoundEnvironment.getRouteClasses(): Set<SprouteParent.SprouteClass> =
     getClassesAnnotatedWith(Sproute::class)
         .map {
             val classSprouteAnnotation: Sproute = it.element.getAnnotation(Sproute::class.java)
             val sprouteRoot = classSprouteAnnotation.getSprouteRoot()
             val auth = sprouteRoot.sprouteAuthentication.createChildFromElement(it.element)
 
-            SprouteKotlinParent.SprouteClass(
+            SprouteParent.SprouteClass(
                 classData = it.classData,
                 primaryConstructorParams = it.primaryConstructorParams?.toRequestParamMemberNames(),
                 sprouteAuthentication = auth,
-                rootPathSegment = sprouteRoot.getPathPrefixToSproutePackage(it.packageName),
+                rootPathSegment = sprouteRoot.getSproutePathForPackage(it.packageName),
                 classRouteSegment = classSprouteAnnotation.routeSegment,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray()),
             )
