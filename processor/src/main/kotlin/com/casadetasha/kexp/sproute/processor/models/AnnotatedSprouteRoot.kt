@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.TypeName
 internal interface Root {
     companion object {
         internal val sprouteRoots: MutableMap<String, Root> = HashMap()
+        internal lateinit var defaultRoot: Root
     }
     val key: String
     val sprouteAuthentication: SprouteAuthentication

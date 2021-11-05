@@ -1,6 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.models.objects
 
 import com.casadetasha.kexp.sproute.processor.ktx.asCanonicalName
+import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationCallGetter
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationGetter
 import com.squareup.kotlinpoet.MemberName
@@ -14,6 +15,12 @@ import io.ktor.util.pipeline.*
 import kotlin.reflect.KClass
 
 internal object KotlinNames {
+
+    val VALID_EXTENSION_CLASSES =
+        listOf(
+            ApplicationCall::class.toMemberName(),
+            Route::class.toMemberName()
+        )
 
     private object KtorMethodNames {
         // I'm not sure how to get the name of an overloaded generic method via reflection
@@ -67,4 +74,5 @@ internal object KotlinNames {
             }
             .map { validParamMemberMap[it]!! }
     }
+
 }

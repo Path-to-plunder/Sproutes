@@ -6,6 +6,7 @@ import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
+import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.VALID_EXTENSION_CLASSES
 import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getInstaRequestAnnotation
 import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getRequestMethodName
@@ -19,23 +20,15 @@ import io.ktor.routing.*
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(
     override val sprouteAuthentication: SprouteAuthentication,
+    private val sprouteRoot: Root,
     kotlinFunction: KotlinFunction,
-    pathRootSegment: String,
     classRouteSegment: String
 ): Root, Comparable<SprouteRequestFunction> {
-
-    companion object {
-        val VALID_EXTENSION_CLASSES =
-            listOf(
-                ApplicationCall::class.toMemberName(),
-                Route::class.toMemberName()
-            )
-    }
 
     private val baseRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
         val usableClassSegment: String = if (includeClassRouteSegment) classRouteSegment else ""
-        pathRootSegment + usableClassSegment
+        sprouteRoot.getSproutePathForPackage(kotlinFunction.packageName) + usableClassSegment
     }
 
     private val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation).removeSuffix("/") }

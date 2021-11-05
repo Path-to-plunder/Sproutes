@@ -3,9 +3,8 @@ package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
-import com.casadetasha.kexp.sproute.processor.ktx.getTopLevelFunctionPathRoot
 import com.casadetasha.kexp.sproute.processor.models.Root
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication.BaseAuthentication
+import com.casadetasha.kexp.sproute.processor.models.Root.Companion.defaultRoot
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
@@ -27,22 +26,23 @@ internal sealed class SprouteParent(
     internal class SprouteClass(
         val classData: ClassData,
         val primaryConstructorParams: List<MemberName>?,
-        val rootPathSegment: String,
         val classRouteSegment: String,
         override val sprouteAuthentication: SprouteAuthentication,
-        functions: Set<KotlinFunction>
+        functions: Set<KotlinFunction>,
+        sprouteRoot: Root
     ) : SprouteParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
     ), Root {
 
         override val key: String = classData.className.toString()
+        private val rootPathSegment = sprouteRoot.getSproutePathForPackage(packageName)
 
         override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
                 SprouteRequestFunction(
+                    sprouteRoot = sprouteRoot,
                     kotlinFunction = it,
-                    pathRootSegment = rootPathSegment,
                     classRouteSegment = classRouteSegment,
                     sprouteAuthentication = sprouteAuthentication.createChildFromElement(it.element)
                 )
@@ -66,14 +66,13 @@ internal sealed class SprouteParent(
         override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
                 val classSprouteAnnotation: Sproute? = it.element.getAnnotation(Sproute::class.java)
-                val sprouteRoot = classSprouteAnnotation?.getSprouteRoot()
-                val auth = sprouteRoot?.sprouteAuthentication?.createChildFromElement(it.element)
-                    ?: BaseAuthentication()
+                val sprouteRoot: Root = classSprouteAnnotation?.getSprouteRoot() ?: defaultRoot
+                val auth = sprouteRoot.sprouteAuthentication.createChildFromElement(it.element)
 
                 SprouteRequestFunction(
+                    sprouteRoot = sprouteRoot,
                     kotlinFunction = it,
-                    pathRootSegment = it.element.getTopLevelFunctionPathRoot(),
-                    classRouteSegment = "",
+                    classRouteSegment = classSprouteAnnotation?.routeSegment ?: "",
                     sprouteAuthentication = auth
                 )
             }.toSortedSet()
