@@ -7,27 +7,30 @@ import com.squareup.kotlinpoet.TypeName
 
 internal interface Root {
     companion object {
-        internal val sprouteRoots: MutableMap<String, Root> = HashMap()
+        internal val sprouteRoots: MutableMap<TypeName, Root> = HashMap()
         internal lateinit var defaultRoot: Root
     }
-    val key: String
-    val sprouteAuthentication: SprouteAuthentication
 
+    val rootKey: TypeName
+    val sprouteAuthentication: SprouteAuthentication
     fun getSproutePathForPackage(sproutePackage: String): String
 }
 
 internal class AnnotatedSprouteRoot(
-    typeName: TypeName,
+    override val rootKey: TypeName,
     val packageName: String,
     val routeSegment: String,
     val canAppendPackage: Boolean,
     override val sprouteAuthentication: SprouteAuthentication
 ): Root {
-    override val key: String = typeName.toString()
-
     override fun getSproutePathForPackage(sproutePackage: String): String {
         return if (canAppendPackage) {
             routeSegment + sproutePackage.asSubPackageOf(packageName).asPath().lowercase()
         } else routeSegment
     }
+}
+
+internal class DefaultSprouteRoot(override val rootKey: TypeName): Root {
+    override val sprouteAuthentication: SprouteAuthentication = SprouteAuthentication.BaseAuthentication()
+    override fun getSproutePathForPackage(sproutePackage: String) = ""
 }

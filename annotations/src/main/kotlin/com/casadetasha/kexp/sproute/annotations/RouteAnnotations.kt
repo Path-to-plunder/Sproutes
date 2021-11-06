@@ -4,11 +4,11 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class Sproute(val routeSegment: String = "", val sprouteRoot: KClass<out Any> = SprouteRoot::class)
+annotation class Sproute(val routeSegment: String = "", val sprouteRoot: KClass<out Any> = Sproute::class)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class SprouteRoot(val rootSprouteSegment: String = "", val appendSubPackagesAsSegments: Boolean = false)
+annotation class SproutePackageRoot(val rootSprouteSegment: String = "", val appendSubPackagesAsSegments: Boolean)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)

@@ -2,11 +2,15 @@ package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoot
+import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
+import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRootKey
+import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.models.Root
 import com.casadetasha.kexp.sproute.processor.models.Root.Companion.defaultRoot
 import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
 import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
 
@@ -24,33 +28,72 @@ internal sealed class SprouteParent(
     }
 
     @OptIn(KotlinPoetMetadataPreview::class)
-    internal class SprouteClass(
+    internal open class SprouteClass(
+        private val parentRootKey: TypeName,
+        override val rootKey: TypeName,
         val classData: ClassData,
         val primaryConstructorParams: List<MemberName>?,
         val classRouteSegment: String,
-        override val sprouteAuthentication: SprouteAuthentication,
-        functions: Set<KotlinFunction>,
-        sprouteRoot: Root
+        functions: Set<KotlinFunction>
     ) : SprouteParent(
         packageName = classData.className.packageName,
         classSimpleName = classData.className.simpleName
     ), Root {
 
-        override val key: String = classData.className.toString()
-        private val rootPathSegment = sprouteRoot.getSproutePathForPackage(packageName)
+        private var sprouteRoot: Root? = null
+        private val validatedSprouteRoot: Root @Synchronized get() {
+            if (parentRootKey == classData.className) processingEnvironment.printThenThrowError("A Sproute cannot be its own parent")
+            if (sprouteRoot != null) return sprouteRoot!!
 
-        override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
-            .map {
-                SprouteRequestFunction(
-                    sprouteRoot = sprouteRoot,
-                    kotlinFunction = it,
-                    classRouteSegment = classRouteSegment,
-                    sprouteAuthentication = sprouteAuthentication.createChildFromElement(it.element)
-                )
-            }.toSortedSet()
+            sprouteRoot = sprouteRoots[parentRootKey] ?: defaultRoot
+            if (sprouteRoot is SprouteClass) (sprouteRoot as SprouteClass).validateRootKeyDoesNotExistInParents(rootKey)
+
+            return sprouteRoot!!
+        }
+
+        private val rootPathSegment by lazy {
+            validatedSprouteRoot.getSproutePathForPackage(packageName)
+        }
+
+        private var combinedRouteParentsCache: Set<TypeName>? = null
+        private val parentRootKeys: Set<TypeName> by lazy {
+            return@lazy if (combinedRouteParentsCache != null) {
+                combinedRouteParentsCache!!
+            } else if (parentRootKey == Sproute::class.asTypeName()) {
+                setOf(parentRootKey)
+            } else {
+                (sprouteRoot as SprouteClass).parentRootKeys
+            }
+        }
+
+        override val sprouteAuthentication: SprouteAuthentication by lazy {
+            validatedSprouteRoot.sprouteAuthentication
+        }
+
+        override val sprouteRequestFunctions: Set<SprouteRequestFunction> by lazy {
+            functions
+                .map {
+                    SprouteRequestFunction(
+                        sprouteRootKey = parentRootKey,
+                        kotlinFunction = it,
+                        classRouteSegment = classRouteSegment
+                    )
+                }.toSet()
+        }
 
         override fun getSproutePathForPackage(sproutePackage: String): String {
             return "${rootPathSegment}$classRouteSegment"
+        }
+
+        private fun validateRootKeyDoesNotExistInParents(childRootKey: TypeName) {
+            processingEnvironment.printThenThrowError(
+                "rootKey = $rootKey, childRootKey = $childRootKey, parentRootKeys = $parentRootKeys")
+            val allRoots = parentRootKeys + rootKey
+            if (allRoots.contains(childRootKey)) {
+                processingEnvironment.printThenThrowError(
+                    "Found cyclical Root dependency adding $childRootKey to root hierarchy" +
+                            " ( ${allRoots.joinToString(", ")} )")
+            }
         }
     }
 
@@ -67,15 +110,12 @@ internal sealed class SprouteParent(
         override val sprouteRequestFunctions: Set<SprouteRequestFunction> = functions
             .map {
                 val classSprouteAnnotation: Sproute? = it.element.getAnnotation(Sproute::class.java)
-                val sprouteRoot: Root = classSprouteAnnotation?.getSprouteRoot() ?: defaultRoot
-                val auth = sprouteRoot.sprouteAuthentication.createChildFromElement(it.element)
 
                 SprouteRequestFunction(
-                    sprouteRoot = sprouteRoot,
+                    sprouteRootKey = classSprouteAnnotation?.getSprouteRootKey(),
                     kotlinFunction = it,
-                    classRouteSegment = classSprouteAnnotation?.routeSegment ?: "",
-                    sprouteAuthentication = auth
-                ).apply { sprouteRoots[this.key] = this }
-            }.toSortedSet()
+                    classRouteSegment = classSprouteAnnotation?.routeSegment ?: ""
+                )
+            }.toSet()
     }
 }

@@ -2,7 +2,7 @@ package com.casadetasha.kexp.sproute.processor
 
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.annotations.SprouteRoot
+import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
 import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
 import com.casadetasha.kexp.sproute.processor.ktx.getRouteClasses
 import com.casadetasha.kexp.sproute.processor.ktx.getRoutePackages
@@ -40,7 +40,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes() = mutableSetOf(
         Sproute::class.java.canonicalName,
-        SprouteRoot::class.java.canonicalName
+        SproutePackageRoot::class.java.canonicalName
     ) + SprouteRequestAnnotations.validRequestTypes.map { it.java.canonicalName }.toMutableList()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {

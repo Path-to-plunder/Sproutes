@@ -1,9 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.*
-import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
-import com.casadetasha.kexp.sproute.processor.models.Root
-import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -36,16 +33,9 @@ internal fun Annotation.asKClass(): KClass<out Annotation> {
     }
 }
 
-internal fun Sproute.getSprouteRoot(): Root {
-    val root = sprouteRoots[getRootTypeName().toString()]
-    return root ?: SprouteAnnotationProcessor.processingEnvironment.printThenThrowError(
-        "@SprouteRoot annotation was not found for provided class $root"
-    )
-}
-
 // asTypeName() should be safe since custom routes will never be Kotlin core classes
 @OptIn(DelicateKotlinPoetApi::class)
-private fun Sproute.getRootTypeName(): TypeName {
+internal fun Sproute.getSprouteRootKey(): TypeName {
     return try {
         ClassName(sprouteRoot.java.packageName, sprouteRoot.java.simpleName)
     } catch (exception: MirroredTypeException) {
