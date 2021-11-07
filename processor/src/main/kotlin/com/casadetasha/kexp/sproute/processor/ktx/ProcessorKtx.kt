@@ -7,6 +7,7 @@ import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.models.KotlinNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.validRequestTypes
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
 import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.AnnotatedSprouteRoot
 import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots
@@ -37,7 +38,7 @@ internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRoot> =
                 packageName = className.packageName,
                 routeSegment = annotation.rootSprouteSegment,
                 canAppendPackage = annotation.appendSubPackagesAsSegments,
-                sprouteAuthentication = ProcessedSprouteRoots.defaultSprouteRoot.sprouteAuthentication.createChildFromElement(it.element)
+                sprouteAuthentication = SprouteAuthentication.BaseAuthentication().createChildFromElement(it.element)
             )
         }
     }.toMap()

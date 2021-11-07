@@ -11,7 +11,7 @@ internal object ProcessedSprouteRoots {
         HashMap<TypeName, SprouteRoot>().apply { put(defaultSprouteRoot.childRootKey, defaultSprouteRoot) }
     }
 
-    val defaultSprouteRoot: SprouteRoot = DefaultSprouteSprouteRoot(Sproute::class.asTypeName())
+    private val defaultSprouteRoot: SprouteRoot = DefaultSprouteSprouteRoot(Sproute::class.asTypeName())
 
     fun put(sprouteRoot: SprouteRoot) {
         sprouteRoots[sprouteRoot.childRootKey] = sprouteRoot
@@ -28,7 +28,7 @@ internal object ProcessedSprouteRoots {
             sprouteRoots[parentRootKey]
                 ?: processingEnvironment.printThenThrowError(
                     "Sproute root $parentRootKey not found in sproute roots"
-                            + " ( ${sprouteRoots.values.joinToString(", ")} )")
+                            + " ( ${getHumanReadableSprouteRootList()} )")
         }
     }
 
@@ -41,4 +41,8 @@ internal object ProcessedSprouteRoots {
             failIfChildRootIsCyclical(childRootKey)
         }
     }
+
+    private fun getHumanReadableSprouteRootList() = sprouteRoots.values
+        .map { it.childRootKey }
+        .joinToString(", ")
 }
