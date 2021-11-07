@@ -1,9 +1,9 @@
-package com.casadetasha.kexp.sproute.processor.models.objects
+package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.processor.ktx.asCanonicalName
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationCallGetter
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationGetter
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.MethodNames.applicationCallGetter
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.MethodNames.applicationGetter
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview

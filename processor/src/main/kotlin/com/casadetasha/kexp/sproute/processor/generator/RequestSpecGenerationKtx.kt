@@ -1,18 +1,20 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
-import com.casadetasha.kexp.sproute.processor.models.Bud
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.HttpRequestNode
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 import io.ktor.routing.*
 
-internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", bud: Bud, fullRoutePath: String) {
-    beginRequestControlFlow(requestRouteSegment, bud.function)          //     get ("/path") {
-    beginCallBlock(bud.function)                                        //       call.respond(
-    addMethodCall(bud.kotlinParent, bud.function, fullRoutePath)        //         Route().get()
-    endCallBlock(bud.function)                                          //       )
+internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", httpRequestNode: HttpRequestNode, fullRoutePath: String) {
+    beginRequestControlFlow(requestRouteSegment, httpRequestNode.function)          //     get ("/path") {
+    beginCallBlock(httpRequestNode.function)                                        //       call.respond(
+    addMethodCall(httpRequestNode.kotlinParent, httpRequestNode.function, fullRoutePath)        //         Route().get()
+    endCallBlock(httpRequestNode.function)                                          //       )
     endRequestControlFlow(requestRouteSegment)                          //     }
 }
 
@@ -20,8 +22,8 @@ internal fun FunSpec.Builder.addMethodCall(
     sprouteKotlinParent: SprouteParent, function: SprouteRequestFunction, fullRoutePath: String
 ) = apply {
     when (sprouteKotlinParent) {
-        is SprouteParent.SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
-        is SprouteParent.SproutePackage -> addRoutePackageMethodCall(function, fullRoutePath)
+        is SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
+        is SproutePackage -> addRoutePackageMethodCall(function, fullRoutePath)
     }
 }
 

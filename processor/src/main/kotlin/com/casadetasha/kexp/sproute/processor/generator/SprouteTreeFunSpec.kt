@@ -1,10 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.generator
 
-import com.casadetasha.kexp.sproute.processor.models.SprouteNode
-import com.casadetasha.kexp.sproute.processor.models.SprouteTree
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.GeneratedMethodNames
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteNode
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.GeneratedMethodNames
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 import java.util.*

@@ -1,28 +1,24 @@
-package com.casadetasha.kexp.sproute.processor.models
+package com.casadetasha.kexp.sproute.processor.models.sproutes.roots
 
 import com.casadetasha.kexp.sproute.processor.ktx.asPath
 import com.casadetasha.kexp.sproute.processor.ktx.asSubPackageOf
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
 import com.squareup.kotlinpoet.TypeName
 
-internal interface Root {
-    companion object {
-        internal val sprouteRoots: MutableMap<TypeName, Root> = HashMap()
-        internal lateinit var defaultRoot: Root
+internal sealed class TopLevelSprouteRoot() : SprouteRoot {
+    override fun failIfChildRootIsCyclical(childRootKey: TypeName) {
+        // Since there are no parents there is nothing more to check
     }
-
-    val rootKey: TypeName
-    val sprouteAuthentication: SprouteAuthentication
-    fun getSproutePathForPackage(sproutePackage: String): String
 }
 
 internal class AnnotatedSprouteRoot(
-    override val rootKey: TypeName,
+    override val childRootKey: TypeName,
+    override val sprouteAuthentication: SprouteAuthentication,
     val packageName: String,
     val routeSegment: String,
-    val canAppendPackage: Boolean,
-    override val sprouteAuthentication: SprouteAuthentication
-): Root {
+    val canAppendPackage: Boolean
+) : TopLevelSprouteRoot() {
+
     override fun getSproutePathForPackage(sproutePackage: String): String {
         return if (canAppendPackage) {
             routeSegment + sproutePackage.asSubPackageOf(packageName).asPath().lowercase()
@@ -30,7 +26,10 @@ internal class AnnotatedSprouteRoot(
     }
 }
 
-internal class DefaultSprouteRoot(override val rootKey: TypeName): Root {
+internal class DefaultSprouteSprouteRoot(
+    override val childRootKey: TypeName
+) : TopLevelSprouteRoot() {
+
     override val sprouteAuthentication: SprouteAuthentication = SprouteAuthentication.BaseAuthentication()
     override fun getSproutePathForPackage(sproutePackage: String) = ""
 }

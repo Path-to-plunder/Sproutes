@@ -1,7 +1,7 @@
-package com.casadetasha.kexp.sproute.processor.models
+package com.casadetasha.kexp.sproute.processor.models.sproutes.tree
 
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteAuthentication
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
 
 internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthentication, SprouteNode>) {
 
@@ -11,8 +11,8 @@ internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthen
 
         val value: SprouteTree by lazy { SprouteTree(roots) }
 
-        private val buds: Set<Bud> by lazy {
-            HashSet<Bud>().apply {
+        private val httpRequestNodes: Set<HttpRequestNode> by lazy {
+            HashSet<HttpRequestNode>().apply {
                 kotlinParents.forEach {
                     addAll(generateBuds(it))
                 }
@@ -21,7 +21,7 @@ internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthen
 
         private val roots: Map<SprouteAuthentication, SprouteNode> by lazy {
             HashMap<SprouteAuthentication, SprouteNode>().apply {
-                buds.forEach {
+                httpRequestNodes.forEach {
                     val key = it.authentication
                     if (this[key] == null) {
                         this[key] = SprouteNode("")
@@ -32,10 +32,10 @@ internal class SprouteTree private constructor(val sprouteMap: Map<SprouteAuthen
             }.toMap()
         }
 
-        private fun generateBuds(sprouteKotlinParent: SprouteParent): Set<Bud> = java.util.HashSet<Bud>().apply {
+        private fun generateBuds(sprouteKotlinParent: SprouteParent): Set<HttpRequestNode> = java.util.HashSet<HttpRequestNode>().apply {
             sprouteKotlinParent.sprouteRequestFunctions.forEach {
                 add(
-                    Bud(
+                    HttpRequestNode(
                         kotlinParent = sprouteKotlinParent,
                         function = it
                     )

@@ -2,7 +2,7 @@ package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.ktx.printNote
-import com.casadetasha.kexp.sproute.processor.models.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 

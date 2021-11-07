@@ -1,6 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.post
 
-import com.casadetasha.kexp.sproute.annotations.Sproute
+import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
 
-@Sproute("/root")
+@SproutePackageRoot("/root", appendSubPackagesAsSegments = true)
 interface SubPackageRouteRoot

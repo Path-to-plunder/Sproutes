@@ -4,15 +4,15 @@ import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
 import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
-import com.casadetasha.kexp.sproute.processor.ktx.getRouteClasses
-import com.casadetasha.kexp.sproute.processor.ktx.getRoutePackages
+import com.casadetasha.kexp.sproute.processor.ktx.generateRouteClasses
+import com.casadetasha.kexp.sproute.processor.ktx.generateRoutePackages
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoots
-import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
-import com.casadetasha.kexp.sproute.processor.models.SprouteTree
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteParent.SproutePackage
-import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots
 import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -29,8 +29,8 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
     }
 
     private lateinit var roundEnv: RoundEnvironment
-    private val sprouteClasses: Set<SprouteClass> by lazy { roundEnv.getRouteClasses() }
-    private val sproutePackages: Set<SproutePackage> by lazy { roundEnv.getRoutePackages() }
+    private val sprouteClasses: Set<SprouteClass> by lazy { roundEnv.generateRouteClasses() }
+    private val sproutePackages: Set<SproutePackage> by lazy { roundEnv.generateRoutePackages() }
 
     private val mergedKotlinParents: Set<SprouteParent> by lazy {
         sprouteClasses.toSortedSet() + sproutePackages.toSortedSet()
@@ -51,7 +51,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         if (roundEnv == null) return false
         this.roundEnv = roundEnv
 
-        sprouteRoots.putAll(roundEnv.getSprouteRoots())
+        ProcessedSprouteRoots.putAll(roundEnv.getSprouteRoots())
         generateSproutes()
         return true
     }

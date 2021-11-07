@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.models.objects
+package com.casadetasha.kexp.sproute.processor.models
 
 import com.casadetasha.kexp.sproute.annotations.*
 import com.casadetasha.kexp.sproute.processor.ktx.asKClass

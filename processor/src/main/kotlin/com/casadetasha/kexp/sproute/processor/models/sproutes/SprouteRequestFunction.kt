@@ -1,19 +1,18 @@
-package com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers
+package com.casadetasha.kexp.sproute.processor.models.sproutes
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
-import com.casadetasha.kexp.sproute.processor.models.Root
-import com.casadetasha.kexp.sproute.processor.models.Root.Companion.defaultRoot
-import com.casadetasha.kexp.sproute.processor.models.Root.Companion.sprouteRoots
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.VALID_EXTENSION_CLASSES
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.toRequestParamMemberNames
-import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getInstaRequestAnnotation
-import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getRequestMethodName
-import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.models.objects.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.VALID_EXTENSION_CLASSES
+import com.casadetasha.kexp.sproute.processor.models.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getInstaRequestAnnotation
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRequestMethodName
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRouteSegment
+import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots.getSprouteRoot
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteRoot
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -26,15 +25,7 @@ internal class SprouteRequestFunction(
     classRouteSegment: String
 ): Comparable<SprouteRequestFunction> {
 
-    private val sprouteRoot: Root by lazy {
-        if (sprouteRootKey == null) {
-            defaultRoot
-        } else {
-            sprouteRoots[sprouteRootKey] ?: processingEnvironment.printThenThrowError(
-                "@SprouteRoot annotation was not found for provided class root $sprouteRootKey"
-            )
-        }
-    }
+    private val sprouteRoot: SprouteRoot by lazy { getSprouteRoot(sprouteRootKey) }
 
     private val baseRoutePath: String by lazy {
         val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
@@ -52,16 +43,16 @@ internal class SprouteRequestFunction(
     val simpleName: String = kotlinFunction.simpleName
     val memberName: MemberName = kotlinFunction.memberName
     val params: List<MemberName> = kotlinFunction.parameters.toRequestParamMemberNames()
-    val receiver: MemberName? = kotlinFunction.receiver.apply { validateFunctionReceiver(this) }
+    val receiver: MemberName? = kotlinFunction.receiver.apply { failIfFunctionReceiverIsInvalid(this) }
 
-    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { validateReturnValue(this) }
+    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { failIfReturnValueIsInvalid(this) }
     val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()
 
     private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
     val requestMethodName: MemberName = MemberName(KotlinNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
 
-    private fun validateFunctionReceiver(memberName: MemberName?) {
+    private fun failIfFunctionReceiverIsInvalid(memberName: MemberName?) {
         when (memberName) {
             null -> return
             !in VALID_EXTENSION_CLASSES -> {
@@ -74,7 +65,7 @@ internal class SprouteRequestFunction(
         }
     }
 
-    private fun validateReturnValue(hasReturnValue: Boolean) {
+    private fun failIfReturnValueIsInvalid(hasReturnValue: Boolean) {
         if (hasReturnValue && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError(
             "Route $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND" +
                     " have a return type. If you want to access the ApplicationCall and return a value, add the" +
