@@ -1,7 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.generator.tree
 
-import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 
 internal class SprouteTree private constructor(val sprouteMap: Map<Authentication, SegmentNode>) {
 

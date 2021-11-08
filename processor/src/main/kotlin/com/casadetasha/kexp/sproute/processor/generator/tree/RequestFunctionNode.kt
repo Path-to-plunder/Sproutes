@@ -1,8 +1,8 @@
 package com.casadetasha.kexp.sproute.processor.generator.tree
 
-import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 
 internal data class RequestFunctionNode(
     val kotlinParent: SprouteParent,

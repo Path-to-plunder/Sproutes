@@ -1,10 +1,9 @@
 package com.casadetasha.kexp.sproute.processor
 
 import com.casadetasha.kexp.sproute.processor.source.RootedSourceFiles
-import com.casadetasha.kexp.sproute.processor.source.SourceFiles
 import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.*
-import com.tschuchort.compiletesting.SourceFile
+import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.INTERNAL_ERROR
+import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.OK
 import kotlin.test.Test
 
 class RootSprouteCompilationTest {

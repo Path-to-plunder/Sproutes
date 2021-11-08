@@ -1,6 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.post.routes
 
-import com.casadetasha.kexp.sproute.annotations.*
+import com.casadetasha.kexp.sproute.annotations.Get
+import com.casadetasha.kexp.sproute.annotations.Sproute
 
 @Sproute("/multi")
 class FirstStageRoute {

@@ -3,7 +3,6 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.sproute.processor.source.SourceFiles
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.*
-import com.tschuchort.compiletesting.SourceFile
 import kotlin.test.Test
 
 class SprouteAnnotationProcessorTest {
