@@ -1,18 +1,18 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes
+package com.casadetasha.kexp.sproute.processor.sproutes
 
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
 import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames.VALID_EXTENSION_CLASSES
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames.toRequestParamMemberNames
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getInstaRequestAnnotation
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRequestMethodName
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments.getSprouteRoot
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteSegment
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.VALID_EXTENSION_CLASSES
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getInstaRequestAnnotation
+import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getRequestMethodName
+import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getRouteSegment
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments.getSprouteRoot
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.RouteSegment
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -23,12 +23,12 @@ internal class SprouteRequestFunction(
     private val sprouteRootKey: TypeName? = null,
     kotlinFunction: KotlinFunction
 ): Comparable<SprouteRequestFunction> {
-    private val sprouteSegment: SprouteSegment by lazy { getSprouteRoot(sprouteRootKey) }
+    private val routeSegment: RouteSegment by lazy { getSprouteRoot(sprouteRootKey) }
 
-    private val baseRoutePath: String by lazy { sprouteSegment.getSproutePathForPackage(kotlinFunction.packageName) }
+    private val baseRoutePath: String by lazy { routeSegment.getSproutePathForPackage(kotlinFunction.packageName) }
 
     val authentication: Authentication by lazy {
-        sprouteSegment.authentication.createChildFromElement(kotlinFunction.element)
+        routeSegment.authentication.createChildFromElement(kotlinFunction.element)
     }
 
     private val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation).removeSuffix("/") }

@@ -12,7 +12,7 @@ internal class BoringRootedRoutes {
     @Get("/amended_segment")
     fun amendedSegmentGet() : String = "Boring rooted route slightly less boring amended route GET!"
 
-    @Get("/renamed_routes", includeClassRouteSegment = false)
+    @Get("/renamed_routes")
     fun renamedSegmentGet() : String =
         "Boring rooted route slightly less boring replaced route GET, estoy ahogado en un baaaaaaar!"
 }

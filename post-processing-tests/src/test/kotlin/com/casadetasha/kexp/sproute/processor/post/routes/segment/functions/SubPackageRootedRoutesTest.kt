@@ -10,13 +10,6 @@ import kotlin.test.Test
 class SubPackageRootedRoutesTest {
 
     @Test
-    fun `routes through to boring get`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/root/routes/segment/functions/request_routes").apply {
-            assertThat(response.content).isEqualTo("GOT from a sub package function with route in request.")
-        }
-    }
-
-    @Test
     fun `routes through to amended segment get`() = withConfiguredTestApplication {
         handleRequest(HttpMethod.Get, "/root/routes/segment/functions/sproute_routes").apply {
             assertThat(response.content).isEqualTo("GOT from a sub package function with route in sproute.")

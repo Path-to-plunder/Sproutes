@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.source
 
 import com.tschuchort.compiletesting.SourceFile
 
@@ -18,7 +18,7 @@ object AuthenticationSourceFiles {
             @Sproute("/route")
             @Authenticated
             class Route {
-                @Get("/get-a-route", includeClassRouteSegment = false)
+                @Get("/get-a-route")
                 fun get() = "get me"
             }
         """.trimIndent()

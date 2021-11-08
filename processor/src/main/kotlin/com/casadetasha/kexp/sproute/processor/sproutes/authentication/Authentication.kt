@@ -1,7 +1,7 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes.authentication
+package com.casadetasha.kexp.sproute.processor.sproutes.authentication
 
-import com.casadetasha.kexp.sproute.processor.models.Equality.GREATER
-import com.casadetasha.kexp.sproute.processor.models.Equality.LESSER
+import com.casadetasha.kexp.sproute.processor.values.Equality.GREATER
+import com.casadetasha.kexp.sproute.processor.values.Equality.LESSER
 import javax.lang.model.element.Element
 
 internal sealed class Authentication: Comparable<Authentication> {

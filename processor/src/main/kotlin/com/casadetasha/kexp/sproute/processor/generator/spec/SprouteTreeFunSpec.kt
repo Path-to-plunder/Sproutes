@@ -1,10 +1,12 @@
-package com.casadetasha.kexp.sproute.processor.generator
+package com.casadetasha.kexp.sproute.processor.generator.spec
 
-import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteNode
-import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
-import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames.GeneratedMethodNames
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames.MethodNames
+import com.casadetasha.kexp.sproute.processor.generator.beginNonParameterizedAuthFlow
+import com.casadetasha.kexp.sproute.processor.generator.beginParameterizedAuthFlow
+import com.casadetasha.kexp.sproute.processor.generator.tree.SegmentNode
+import com.casadetasha.kexp.sproute.processor.generator.tree.SprouteTree
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.GeneratedMethodNames
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 import java.util.*
@@ -20,7 +22,7 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
             .build()
     }
 
-    private fun FunSpec.Builder.amendSproutesFromMap(sprouteMap: SortedMap<Authentication, SprouteNode>)
+    private fun FunSpec.Builder.amendSproutesFromMap(sprouteMap: SortedMap<Authentication, SegmentNode>)
             : FunSpec.Builder = apply {
         sprouteMap.forEach {
             amendToFunSpecBuilder(
@@ -33,7 +35,7 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
     }
 
     private fun FunSpec.Builder.amendToFunSpecBuilder(
-        rootNode: SprouteNode,
+        rootNode: SegmentNode,
         authentication: Authentication
     ): FunSpec.Builder = apply {
         beginSetAuthenticationRequirements(authentication)
@@ -50,7 +52,7 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
         }
     }
 
-    private fun FunSpec.Builder.addSprouteSpecs(rootNode: SprouteNode): FunSpec.Builder = apply {
+    private fun FunSpec.Builder.addSprouteSpecs(rootNode: SegmentNode): FunSpec.Builder = apply {
         rootNode.sproutes.forEach {
             if (rootNode.sproutes.first() != it) addStatement("")
             amendSprouteSpec(

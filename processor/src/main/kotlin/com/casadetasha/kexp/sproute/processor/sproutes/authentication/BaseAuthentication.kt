@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes.authentication
+package com.casadetasha.kexp.sproute.processor.sproutes.authentication
 
 import javax.lang.model.element.Element
 

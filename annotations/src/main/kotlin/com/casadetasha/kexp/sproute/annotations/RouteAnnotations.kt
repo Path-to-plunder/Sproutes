@@ -8,7 +8,7 @@ annotation class Sproute(val routeSegment: String = "", val sprouteRoot: KClass<
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class SproutePackageRoot(val rootSprouteSegment: String = "", val appendSubPackagesAsSegments: Boolean)
+annotation class SproutePackageRoot(val rootSprouteSegment: String = "")
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)

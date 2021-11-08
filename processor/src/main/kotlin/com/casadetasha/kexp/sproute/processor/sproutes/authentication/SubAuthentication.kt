@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes.authentication
+package com.casadetasha.kexp.sproute.processor.sproutes.authentication
 
 import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated

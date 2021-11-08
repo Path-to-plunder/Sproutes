@@ -1,9 +1,9 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes.tree
+package com.casadetasha.kexp.sproute.processor.generator.tree
 
-import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
 
-internal class SprouteTree private constructor(val sprouteMap: Map<Authentication, SprouteNode>) {
+internal class SprouteTree private constructor(val sprouteMap: Map<Authentication, SegmentNode>) {
 
     class LazyLoader(
         private val kotlinParents: Set<SprouteParent>
@@ -19,12 +19,12 @@ internal class SprouteTree private constructor(val sprouteMap: Map<Authenticatio
             }.toSet()
         }
 
-        private val nodeMap: Map<Authentication, SprouteNode> by lazy {
-            HashMap<Authentication, SprouteNode>().apply {
+        private val nodeMap: Map<Authentication, SegmentNode> by lazy {
+            HashMap<Authentication, SegmentNode>().apply {
                 requestFunctionNodes.forEach {
                     val key = it.authentication
                     if (this[key] == null) {
-                        this[key] = SprouteNode("")
+                        this[key] = SegmentNode("")
                     }
 
                     this[key]!!.addBud(it.routeSegments, it)

@@ -1,11 +1,11 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes.tree
+package com.casadetasha.kexp.sproute.processor.generator.tree
 
 import com.casadetasha.kexp.sproute.processor.ktx.removeFirst
 import java.util.*
 
-internal class SprouteNode(val name: String): Comparable<SprouteNode> {
-    private val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
-    val sproutes: SortedSet<SprouteNode> get() { return sprouteMap.values.toSortedSet() }
+internal class SegmentNode(val name: String): Comparable<SegmentNode> {
+    private val sprouteMap: MutableMap<String, SegmentNode> = HashMap()
+    val sproutes: SortedSet<SegmentNode> get() { return sprouteMap.values.toSortedSet() }
 
     private val requestFunctionNodes: MutableSet<RequestFunctionNode> = HashSet()
     val sortedRequestFunctionNodes: Set<RequestFunctionNode> get() = requestFunctionNodes.toSortedSet()
@@ -26,11 +26,11 @@ internal class SprouteNode(val name: String): Comparable<SprouteNode> {
 
     private fun createNodeIfNotPresent(segmentName: String) {
         if (sprouteMap[segmentName] == null) {
-            sprouteMap[segmentName] = SprouteNode(segmentName)
+            sprouteMap[segmentName] = SegmentNode(segmentName)
         }
     }
 
-    override fun compareTo(other: SprouteNode): Int {
+    override fun compareTo(other: SegmentNode): Int {
         return this.name.compareTo(other.name)
     }
 }

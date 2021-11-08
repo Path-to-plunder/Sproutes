@@ -1,12 +1,12 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes
+package com.casadetasha.kexp.sproute.processor.sproutes
 
 import com.casadetasha.kexp.annotationparser.KotlinValue
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRootKey
-import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.AuthLazyLoader
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments.defaultSegmentKey
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.TrailingSprouteSegment
+import com.casadetasha.kexp.sproute.processor.sproutes.authentication.AuthLazyLoader
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments.defaultSegmentKey
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.TrailingRouteSegment
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 
@@ -25,12 +25,12 @@ internal class SproutePackage(
             val sprouteAnnotation: Sproute? = it.element.getAnnotation(Sproute::class.java)
             val sprouteRootKey = sprouteAnnotation?.getSprouteRootKey() ?: defaultSegmentKey
 
-            val segment = TrailingSprouteSegment(
+            val segment = TrailingRouteSegment(
                 routeSegment = sprouteAnnotation?.routeSegment ?: "",
-                parentRootKey = sprouteRootKey,
+                parentSegmentKey = sprouteRootKey,
                 segmentKey = ClassName(it.packageName, "kexp_sproute\$_${it.function.name}"),
                 authLazyLoader = AuthLazyLoader(sprouteRootKey, it.element)
-            ).apply { ProcessedSprouteSegments.put(this) }
+            ).apply { ProcessedRouteSegments.put(this) }
 
             SprouteRequestFunction(
                 sprouteRootKey = segment.segmentKey,

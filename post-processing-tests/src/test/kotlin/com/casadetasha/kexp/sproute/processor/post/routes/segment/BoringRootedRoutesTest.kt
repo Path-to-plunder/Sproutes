@@ -22,12 +22,4 @@ class BoringRootedRoutesTest {
             assertThat(response.content).isEqualTo("Boring rooted route slightly less boring amended route GET!")
         }
     }
-
-    @Test
-    fun `routes through to renamed segment get`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/root/renamed_routes").apply {
-            assertThat(response.content).isEqualTo(
-                "Boring rooted route slightly less boring replaced route GET, estoy ahogado en un baaaaaaar!")
-        }
-    }
 }

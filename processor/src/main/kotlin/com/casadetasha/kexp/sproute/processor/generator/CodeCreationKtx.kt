@@ -2,10 +2,10 @@ package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.ktx.ifNotEmpty
 import com.casadetasha.kexp.sproute.processor.ktx.orElse
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteRequestFunction
-import com.casadetasha.kexp.sproute.processor.models.KotlinNames
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteClass
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName

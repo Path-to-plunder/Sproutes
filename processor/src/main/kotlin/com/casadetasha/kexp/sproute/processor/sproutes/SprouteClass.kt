@@ -1,14 +1,14 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes
+package com.casadetasha.kexp.sproute.processor.sproutes
 
 import com.casadetasha.kexp.annotationparser.KotlinValue
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteSegment
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.RouteSegment
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import com.squareup.kotlinpoet.metadata.specs.ClassData
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal open class SprouteClass(
-    private val sprouteSegment: SprouteSegment,
+    private val routeSegment: RouteSegment,
     val classData: ClassData,
     val primaryConstructorParams: List<MemberName>?,
     functions: Set<KotlinValue.KotlinFunction>
@@ -21,7 +21,7 @@ internal open class SprouteClass(
         functions
             .map {
                 SprouteRequestFunction(
-                    sprouteRootKey = sprouteSegment.segmentKey,
+                    sprouteRootKey = routeSegment.segmentKey,
                     kotlinFunction = it
                 )
             }.toSet()

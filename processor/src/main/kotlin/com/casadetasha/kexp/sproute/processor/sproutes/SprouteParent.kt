@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.models.sproutes
+package com.casadetasha.kexp.sproute.processor.sproutes
 
 import com.squareup.kotlinpoet.MemberName
 

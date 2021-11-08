@@ -3,16 +3,16 @@ package com.casadetasha.kexp.sproute.processor
 import com.casadetasha.kexp.annotationparser.AnnotationParser
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
+import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge
 import com.casadetasha.kexp.sproute.processor.generator.FileGenerator
 import com.casadetasha.kexp.sproute.processor.ktx.generateRouteClasses
 import com.casadetasha.kexp.sproute.processor.ktx.generateRoutePackages
 import com.casadetasha.kexp.sproute.processor.ktx.getSprouteRoots
-import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments
+import com.casadetasha.kexp.sproute.processor.generator.tree.SprouteTree
+import com.casadetasha.kexp.sproute.processor.sproutes.SproutePackage
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteClass
+import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments
 import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -41,7 +41,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes() = mutableSetOf(
         Sproute::class.java.canonicalName,
         SproutePackageRoot::class.java.canonicalName
-    ) + SprouteRequestAnnotations.validRequestTypes.map { it.java.canonicalName }.toMutableList()
+    ) + SprouteRequestAnnotationBridge.validRequestTypes.map { it.java.canonicalName }.toMutableList()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment?): Boolean {
         AnnotationParser.setup(processingEnv)
@@ -51,7 +51,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         if (roundEnv == null) return false
         this.roundEnv = roundEnv
 
-        ProcessedSprouteSegments.putAll(roundEnv.getSprouteRoots())
+        ProcessedRouteSegments.putAll(roundEnv.getSprouteRoots())
         generateSproutes()
         return true
     }
