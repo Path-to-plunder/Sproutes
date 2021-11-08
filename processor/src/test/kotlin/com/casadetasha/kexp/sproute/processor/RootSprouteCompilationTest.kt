@@ -32,13 +32,13 @@ class RootSprouteCompilationTest {
     @Test
     fun `cyclical root source fails to compile`() {
         compilationResult = compileSource(RootedSourceFiles.cyclicalRootSource)
-        assertThat(compilationResult).hasExitCode(OK)
+        assertThat(compilationResult).hasExitCode(INTERNAL_ERROR)
     }
 
     @Test
     fun `cyclical root with gap source fails to compile`() {
         compilationResult = compileSource(RootedSourceFiles.cyclicalRootWithGapSource)
-        assertThat(compilationResult).hasExitCode(OK)
+        assertThat(compilationResult).hasExitCode(INTERNAL_ERROR)
     }
 
     @Test
