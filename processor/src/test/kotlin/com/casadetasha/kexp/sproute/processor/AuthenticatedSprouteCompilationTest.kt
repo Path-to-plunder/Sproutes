@@ -14,6 +14,12 @@ class AuthenticatedSprouteCompilationTest {
         assertThat(compilationResult).hasExitCode(OK)
     }
 
+    @Test
+    fun `Authenticated functions compiles with OK`() {
+        compileSource(AuthenticationSourceFiles.functionRouteSource)
+        assertThat(compilationResult).hasExitCode(OK)
+    }
+
     private fun compileSource(vararg sourceFiles: SourceFile) {
         compilationResult = KotlinCompilation().apply {
             sources = sourceFiles.toList()

@@ -2,7 +2,7 @@ package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteNode
 import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.SprouteTree
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
 import com.casadetasha.kexp.sproute.processor.models.KotlinNames.GeneratedMethodNames
 import com.casadetasha.kexp.sproute.processor.models.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
@@ -20,7 +20,7 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
             .build()
     }
 
-    private fun FunSpec.Builder.amendSproutesFromMap(sprouteMap: SortedMap<SprouteAuthentication, SprouteNode>)
+    private fun FunSpec.Builder.amendSproutesFromMap(sprouteMap: SortedMap<Authentication, SprouteNode>)
             : FunSpec.Builder = apply {
         sprouteMap.forEach {
             amendToFunSpecBuilder(
@@ -34,14 +34,14 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
 
     private fun FunSpec.Builder.amendToFunSpecBuilder(
         rootNode: SprouteNode,
-        authentication: SprouteAuthentication
+        authentication: Authentication
     ): FunSpec.Builder = apply {
         beginSetAuthenticationRequirements(authentication)
         addSprouteSpecs(rootNode)
         endSetAuthenticationRequirements(authentication)
     }
 
-    private fun FunSpec.Builder.beginSetAuthenticationRequirements(authentication: SprouteAuthentication)
+    private fun FunSpec.Builder.beginSetAuthenticationRequirements(authentication: Authentication)
             : FunSpec.Builder = apply {
         if (authentication.isAuthenticationRequested && authentication.hasAuthenticationParams) {
             beginParameterizedAuthFlow(authentication.authenticationParams)
@@ -60,7 +60,7 @@ internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {
         }
     }
 
-    private fun FunSpec.Builder.endSetAuthenticationRequirements(authentication: SprouteAuthentication): FunSpec.Builder =
+    private fun FunSpec.Builder.endSetAuthenticationRequirements(authentication: Authentication): FunSpec.Builder =
         apply {
             if (authentication.isAuthenticationRequested) endControlFlow()
         }

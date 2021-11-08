@@ -4,7 +4,7 @@ import com.casadetasha.kexp.sproute.annotations.Get
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.processor.post.SubPackageRouteRoot
 
-@Get("/request_routes")
+@Get("/request_routes2")
 @Sproute(sprouteRoot = SubPackageRouteRoot::class)
 fun getWithRouteInRequest() = "GOT from a sub package function with route in request."
 

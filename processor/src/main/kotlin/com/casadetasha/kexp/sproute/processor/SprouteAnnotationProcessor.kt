@@ -12,7 +12,7 @@ import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments
 import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
@@ -51,7 +51,7 @@ class SprouteAnnotationProcessor : AbstractProcessor() {
         if (roundEnv == null) return false
         this.roundEnv = roundEnv
 
-        ProcessedSprouteRoots.putAll(roundEnv.getSprouteRoots())
+        ProcessedSprouteSegments.putAll(roundEnv.getSprouteRoots())
         generateSproutes()
         return true
     }

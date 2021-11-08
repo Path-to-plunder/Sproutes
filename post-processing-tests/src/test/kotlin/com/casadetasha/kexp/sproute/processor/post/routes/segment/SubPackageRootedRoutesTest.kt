@@ -8,6 +8,7 @@ import io.ktor.server.testing.*
 import kotlin.test.Test
 
 class SubPackageRootedRoutesTest {
+
     @Test
     fun `routes through to boring get`() = withConfiguredTestApplication {
         handleRequest(HttpMethod.Get, "/root/routes/segment/routes").apply {
@@ -19,13 +20,6 @@ class SubPackageRootedRoutesTest {
     fun `routes through to amended segment get`() = withConfiguredTestApplication {
         handleRequest(HttpMethod.Get, "/root/routes/segment/routes/amended_segment").apply {
             assertThat(response.content).isEqualTo("Sub package route slightly less boring amended route GET!")
-        }
-    }
-
-    @Test
-    fun `routes through to renamed segment get`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Get, "/root/routes/segment/renamed_routes").apply {
-            assertThat(response.content).isEqualTo("Sub package route slightly less boring replaced route GET, oh ya ya ya yaaaa!")
         }
     }
 }

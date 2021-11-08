@@ -5,16 +5,16 @@ import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteRequestFunction
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.HttpRequestNode
+import com.casadetasha.kexp.sproute.processor.models.sproutes.tree.RequestFunctionNode
 import com.squareup.kotlinpoet.FunSpec
 import io.ktor.application.*
 import io.ktor.routing.*
 
-internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", httpRequestNode: HttpRequestNode, fullRoutePath: String) {
-    beginRequestControlFlow(requestRouteSegment, httpRequestNode.function)          //     get ("/path") {
-    beginCallBlock(httpRequestNode.function)                                        //       call.respond(
-    addMethodCall(httpRequestNode.kotlinParent, httpRequestNode.function, fullRoutePath)        //         Route().get()
-    endCallBlock(httpRequestNode.function)                                          //       )
+internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", requestFunctionNode: RequestFunctionNode, fullRoutePath: String) {
+    beginRequestControlFlow(requestRouteSegment, requestFunctionNode.function)          //     get ("/path") {
+    beginCallBlock(requestFunctionNode.function)                                        //       call.respond(
+    addMethodCall(requestFunctionNode.kotlinParent, requestFunctionNode.function, fullRoutePath)        //         Route().get()
+    endCallBlock(requestFunctionNode.function)                                          //       )
     endRequestControlFlow(requestRouteSegment)                          //     }
 }
 

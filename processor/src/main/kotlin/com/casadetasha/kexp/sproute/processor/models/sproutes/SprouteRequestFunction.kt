@@ -10,9 +10,9 @@ import com.casadetasha.kexp.sproute.processor.models.KotlinNames.toRequestParamM
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getInstaRequestAnnotation
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRequestMethodName
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.shouldIncludeClassRouteSegment
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots.getSprouteRoot
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteRoot
+import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments.getSprouteRoot
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteSegment
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -21,20 +21,14 @@ import io.ktor.application.*
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(
     private val sprouteRootKey: TypeName? = null,
-    kotlinFunction: KotlinFunction,
-    classRouteSegment: String
+    kotlinFunction: KotlinFunction
 ): Comparable<SprouteRequestFunction> {
+    private val sprouteSegment: SprouteSegment by lazy { getSprouteRoot(sprouteRootKey) }
 
-    private val sprouteRoot: SprouteRoot by lazy { getSprouteRoot(sprouteRootKey) }
+    private val baseRoutePath: String by lazy { sprouteSegment.getSproutePathForPackage(kotlinFunction.packageName) }
 
-    private val baseRoutePath: String by lazy {
-        val includeClassRouteSegment: Boolean = shouldIncludeClassRouteSegment(requestAnnotation)
-        val usableClassSegment: String = if (includeClassRouteSegment) classRouteSegment else ""
-        sprouteRoot.getSproutePathForPackage(kotlinFunction.packageName) + usableClassSegment
-    }
-
-    val sprouteAuthentication: SprouteAuthentication by lazy {
-        sprouteRoot.sprouteAuthentication
+    val authentication: Authentication by lazy {
+        sprouteSegment.authentication.createChildFromElement(kotlinFunction.element)
     }
 
     private val functionPathSegment: String by lazy { getRouteSegment(requestAnnotation).removeSuffix("/") }

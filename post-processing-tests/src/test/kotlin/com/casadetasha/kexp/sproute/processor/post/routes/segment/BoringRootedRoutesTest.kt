@@ -8,6 +8,7 @@ import io.ktor.server.testing.*
 import kotlin.test.Test
 
 class BoringRootedRoutesTest {
+
     @Test
     fun `routes through to boring get`() = withConfiguredTestApplication {
         handleRequest(HttpMethod.Get, "/root/routes").apply {

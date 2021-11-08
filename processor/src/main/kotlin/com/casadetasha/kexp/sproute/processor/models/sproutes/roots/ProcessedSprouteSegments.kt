@@ -6,33 +6,34 @@ import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 
-internal object ProcessedSprouteRoots {
-    private val sprouteRoots: MutableMap<TypeName, SprouteRoot> by lazy {
-        HashMap<TypeName, SprouteRoot>().apply { put(defaultSprouteRoot.childRootKey, defaultSprouteRoot) }
+internal object ProcessedSprouteSegments {
+    private val sprouteSegments: MutableMap<TypeName, SprouteSegment> by lazy {
+        HashMap<TypeName, SprouteSegment>().apply { put(defaultSprouteSegment.segmentKey, defaultSprouteSegment) }
     }
 
-    private val defaultSprouteRoot: SprouteRoot = DefaultSprouteSprouteRoot(Sproute::class.asTypeName())
+    private val defaultSprouteSegment: SprouteSegment = DefaultSprouteSprouteSegment(Sproute::class.asTypeName())
+    val defaultSegmentKey: TypeName = defaultSprouteSegment.segmentKey
 
-    fun put(sprouteRoot: SprouteRoot) {
-        sprouteRoots[sprouteRoot.childRootKey] = sprouteRoot
+    fun put(sprouteSegment: SprouteSegment) {
+        sprouteSegments[sprouteSegment.segmentKey] = sprouteSegment
     }
 
-    fun putAll(sprouteRootMap: Map<TypeName, SprouteRoot>) {
-        sprouteRoots.putAll(sprouteRootMap)
+    fun putAll(sprouteSegmentMap: Map<TypeName, SprouteSegment>) {
+        sprouteSegments.putAll(sprouteSegmentMap)
     }
 
-    fun getSprouteRoot(parentRootKey: TypeName?): SprouteRoot {
+    fun getSprouteRoot(parentRootKey: TypeName?): SprouteSegment {
         return if (parentRootKey == null) {
-            defaultSprouteRoot
+            defaultSprouteSegment
         } else{
-            sprouteRoots[parentRootKey]
+            sprouteSegments[parentRootKey]
                 ?: processingEnvironment.printThenThrowError(
                     "Sproute root $parentRootKey not found in sproute roots"
                             + " ( ${getHumanReadableSprouteRootList()} )")
         }
     }
 
-    fun getSprouteRootForChild(parentRootKey: TypeName?, childRootKey: TypeName): SprouteRoot {
+    fun getSprouteRootForChild(parentRootKey: TypeName?, childRootKey: TypeName): SprouteSegment {
         if (parentRootKey == childRootKey) {
             processingEnvironment.printThenThrowError("A Sproute cannot be its own parent")
         }
@@ -42,7 +43,8 @@ internal object ProcessedSprouteRoots {
         }
     }
 
-    private fun getHumanReadableSprouteRootList() = sprouteRoots.values
-        .map { it.childRootKey }
+    private fun getHumanReadableSprouteRootList() = sprouteSegments.values
+        .map { it.segmentKey }
         .joinToString(", ")
+
 }

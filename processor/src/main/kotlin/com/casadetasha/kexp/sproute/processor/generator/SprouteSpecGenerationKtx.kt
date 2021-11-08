@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.FunSpec
 internal fun FunSpec.Builder.amendSprouteSpec(node: SprouteNode, baseRouteSegment: String = "", fullParentRoute: String)
         : FunSpec.Builder = apply {
     val fullRoute = "$fullParentRoute/${node.name}"
-    if (node.sortedHttpRequestNodes.isEmpty() && node.sproutes.size == 1) {
+    if (node.sortedRequestFunctionNodes.isEmpty() && node.sproutes.size == 1) {
         return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
     }
 
@@ -45,15 +45,15 @@ private fun FunSpec.Builder.beginNodeControlFlow(routeSegment: String, fullRoute
 }
 
 private fun FunSpec.Builder.amendBudsFromNode(node: SprouteNode, fullRoute: String): FunSpec.Builder = apply {
-    node.sortedHttpRequestNodes.forEach {
-        if (node.sortedHttpRequestNodes.first() != it) addStatement("")
-        amendFunForBud(httpRequestNode = it, fullRoutePath = fullRoute)
+    node.sortedRequestFunctionNodes.forEach {
+        if (node.sortedRequestFunctionNodes.first() != it) addStatement("")
+        amendFunForBud(requestFunctionNode = it, fullRoutePath = fullRoute)
     }
 }
 
 internal fun FunSpec.Builder.amendSproutesFromNode(node: SprouteNode, fullRoute: String) = apply {
     node.sproutes.forEach {
-        if (node.sproutes.first() != it || node.sortedHttpRequestNodes.isNotEmpty()) addStatement("")
+        if (node.sproutes.first() != it || node.sortedRequestFunctionNodes.isNotEmpty()) addStatement("")
         amendSprouteSpec(it, baseRouteSegment = "", fullParentRoute = fullRoute)
     }
 }

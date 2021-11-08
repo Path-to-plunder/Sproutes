@@ -7,21 +7,21 @@ internal class SprouteNode(val name: String): Comparable<SprouteNode> {
     private val sprouteMap: MutableMap<String, SprouteNode> = HashMap()
     val sproutes: SortedSet<SprouteNode> get() { return sprouteMap.values.toSortedSet() }
 
-    private val httpRequestNodes: MutableSet<HttpRequestNode> = HashSet()
-    val sortedHttpRequestNodes: Set<HttpRequestNode> get() = httpRequestNodes.toSortedSet()
+    private val requestFunctionNodes: MutableSet<RequestFunctionNode> = HashSet()
+    val sortedRequestFunctionNodes: Set<RequestFunctionNode> get() = requestFunctionNodes.toSortedSet()
 
-    fun addBud(routeSegments: List<String>, httpRequestNode: HttpRequestNode) {
+    fun addBud(routeSegments: List<String>, requestFunctionNode: RequestFunctionNode) {
         if (routeSegments.isEmpty()) {
-            httpRequestNodes.add(httpRequestNode)
+            requestFunctionNodes.add(requestFunctionNode)
             return
         }
 
-        moveToNextNode(routeSegments.first(), routeSegments.removeFirst(), httpRequestNode)
+        moveToNextNode(routeSegments.first(), routeSegments.removeFirst(), requestFunctionNode)
     }
 
-    private fun moveToNextNode(nextSegment: String, pendingSegments: List<String>, httpRequestNode: HttpRequestNode) {
+    private fun moveToNextNode(nextSegment: String, pendingSegments: List<String>, requestFunctionNode: RequestFunctionNode) {
         createNodeIfNotPresent(nextSegment)
-        sprouteMap[nextSegment]!!.addBud(pendingSegments, httpRequestNode)
+        sprouteMap[nextSegment]!!.addBud(pendingSegments, requestFunctionNode)
     }
 
     private fun createNodeIfNotPresent(segmentName: String) {

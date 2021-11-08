@@ -4,14 +4,16 @@ import com.casadetasha.kexp.annotationparser.kxt.FileFacadeParser
 import com.casadetasha.kexp.annotationparser.kxt.getClassesAnnotatedWith
 import com.casadetasha.kexp.sproute.annotations.Sproute
 import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.models.KotlinNames.toRequestParamMemberNames
 import com.casadetasha.kexp.sproute.processor.models.SprouteRequestAnnotations.validRequestTypes
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteClass
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.AnnotatedSprouteRoot
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteRoots
-import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteRoot
+import com.casadetasha.kexp.sproute.processor.models.sproutes.SproutePackage
+import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.AuthLazyLoader
+import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.BaseAuthentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.*
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.AnnotatedSprouteSegment
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.ProcessedSprouteSegments
+import com.casadetasha.kexp.sproute.processor.models.sproutes.roots.SprouteSegment
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import javax.annotation.processing.ProcessingEnvironment
@@ -27,18 +29,18 @@ internal fun ProcessingEnvironment.printThenThrowError(errorMessage: String): No
     throw IllegalArgumentException(errorMessage)
 }
 
-internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteRoot> =
-    HashMap<TypeName, SprouteRoot>().apply {
+internal fun RoundEnvironment.getSprouteRoots(): Map<TypeName, SprouteSegment> =
+    HashMap<TypeName, SprouteSegment>().apply {
         getClassesAnnotatedWith(SproutePackageRoot::class).forEach {
             val className = it.className
             val annotation = it.element.getAnnotation(SproutePackageRoot::class.java)!!
 
-            this[className] = AnnotatedSprouteRoot(
-                childRootKey = it.className,
+            this[className] = AnnotatedSprouteSegment(
+                segmentKey = it.className,
                 packageName = className.packageName,
                 routeSegment = annotation.rootSprouteSegment,
                 canAppendPackage = annotation.appendSubPackagesAsSegments,
-                sprouteAuthentication = SprouteAuthentication.BaseAuthentication().createChildFromElement(it.element)
+                authentication = BaseAuthentication().createChildFromElement(it.element)
             )
         }
     }.toMap()
@@ -62,15 +64,20 @@ internal fun RoundEnvironment.generateRoutePackages(): Set<SproutePackage> {
 internal fun RoundEnvironment.generateRouteClasses(): Set<SprouteClass> =
     getClassesAnnotatedWith(Sproute::class)
         .map {
-            val classSprouteAnnotation: Sproute = it.element.getAnnotation(Sproute::class.java)
-            val sprouteRootKey = classSprouteAnnotation.getSprouteRootKey()
+            val sprouteAnnotation: Sproute = it.element.getAnnotation(Sproute::class.java)
+            val sprouteRootKey = sprouteAnnotation.getSprouteRootKey()
+
+            val segment = TrailingSprouteSegment(
+                routeSegment = sprouteAnnotation.routeSegment,
+                parentRootKey = sprouteRootKey,
+                segmentKey = it.className,
+                authLazyLoader = AuthLazyLoader(sprouteRootKey, it.element)
+            ).apply { ProcessedSprouteSegments.put(this) }
 
             SprouteClass(
-                childRootKey = it.className,
-                parentRootKey = sprouteRootKey,
                 classData = it.classData,
                 primaryConstructorParams = it.primaryConstructorParams?.toRequestParamMemberNames(),
-                classRouteSegment = classSprouteAnnotation.routeSegment,
                 functions = it.getFunctionsAnnotatedWith(*validRequestTypes.toTypedArray()),
-            ).apply { ProcessedSprouteRoots.put(this) }
+                sprouteSegment = segment
+            )
         }.toSet()

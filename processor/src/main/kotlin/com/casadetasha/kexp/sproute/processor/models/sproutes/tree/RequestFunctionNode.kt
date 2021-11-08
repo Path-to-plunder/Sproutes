@@ -1,13 +1,13 @@
 package com.casadetasha.kexp.sproute.processor.models.sproutes.tree
 
-import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteAuthentication
+import com.casadetasha.kexp.sproute.processor.models.sproutes.authentication.Authentication
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.models.sproutes.SprouteRequestFunction
 
-internal data class HttpRequestNode(
+internal data class RequestFunctionNode(
     val kotlinParent: SprouteParent,
     val function: SprouteRequestFunction
-    ) : Comparable<HttpRequestNode> {
+    ) : Comparable<RequestFunctionNode> {
 
     private val fullRoutePath: String = function.fullRoutePath
 
@@ -16,7 +16,7 @@ internal data class HttpRequestNode(
         .split("/")
     }
 
-    val authentication: SprouteAuthentication = function.sprouteAuthentication
+    val authentication: Authentication = function.authentication
 
-    override fun compareTo(other: HttpRequestNode): Int = function.simpleName.compareTo(other.function.simpleName)
+    override fun compareTo(other: RequestFunctionNode): Int = function.simpleName.compareTo(other.function.simpleName)
 }
