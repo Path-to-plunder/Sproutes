@@ -1,8 +1,9 @@
-package com.casadetasha.kexp.sproute.processor.models.objects
+package com.casadetasha.kexp.sproute.processor.values
 
 import com.casadetasha.kexp.sproute.processor.ktx.asCanonicalName
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationCallGetter
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames.MethodNames.applicationGetter
+import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationCallGetter
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationGetter
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
@@ -14,6 +15,12 @@ import io.ktor.util.pipeline.*
 import kotlin.reflect.KClass
 
 internal object KotlinNames {
+
+    val VALID_EXTENSION_CLASSES =
+        listOf(
+            ApplicationCall::class.toMemberName(),
+            Route::class.toMemberName()
+        )
 
     private object KtorMethodNames {
         // I'm not sure how to get the name of an overloaded generic method via reflection
@@ -48,12 +55,6 @@ internal object KotlinNames {
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    private val validParamMemberMap = mapOf(
-        Application::class.asCanonicalName() to applicationGetter,
-        ApplicationCall::class.asCanonicalName() to applicationCallGetter
-    )
-    private val validParameterTypes = validParamMemberMap.keys
-
     @OptIn(KotlinPoetMetadataPreview::class)
     fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
         return map { it.asCanonicalName() }
@@ -67,4 +68,10 @@ internal object KotlinNames {
             }
             .map { validParamMemberMap[it]!! }
     }
+
+    private val validParamMemberMap = mapOf(
+        Application::class.asCanonicalName() to applicationGetter,
+        ApplicationCall::class.asCanonicalName() to applicationCallGetter
+    )
+    private val validParameterTypes = validParamMemberMap.keys
 }

@@ -12,6 +12,6 @@ internal class SubPackageRootedRoutes {
     @Get("/amended_segment")
     fun amendedSegmentGet() : String = "Sub package route slightly less boring amended route GET!"
 
-    @Get("/renamed_routes", includeClassRouteSegment = false)
+    @Get("/renamed_routes")
     fun renamedSegmentGet() : String = "Sub package route slightly less boring replaced route GET, oh ya ya ya yaaaa!"
 }

@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor.models.objects
+package com.casadetasha.kexp.sproute.processor.values
 
 object Equality {
     const val LESSER = -1

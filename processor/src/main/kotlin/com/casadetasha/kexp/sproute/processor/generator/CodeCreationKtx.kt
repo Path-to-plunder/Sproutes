@@ -2,9 +2,10 @@ package com.casadetasha.kexp.sproute.processor.generator
 
 import com.casadetasha.kexp.sproute.processor.ktx.ifNotEmpty
 import com.casadetasha.kexp.sproute.processor.ktx.orElse
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteKotlinParent
-import com.casadetasha.kexp.sproute.processor.models.kotlin_wrappers.SprouteRequestFunction
-import com.casadetasha.kexp.sproute.processor.models.objects.KotlinNames
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteClass
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
@@ -74,12 +75,12 @@ internal fun FunSpec.Builder.beginNodeControlFlowWithoutRouteRef(routeSegment: S
 }
 
 internal fun FunSpec.Builder.addRouteClassMethodCallCode(
-    sprouteKotlinParent: SprouteKotlinParent, function: SprouteRequestFunction
+    sprouteKotlinParent: SprouteParent, function: SprouteRequestFunction
 ) = apply {
     addCode(
         CodeBlock.builder()
             .add("%M", sprouteKotlinParent.memberName)
-            .addMethodParameters((sprouteKotlinParent as SprouteKotlinParent.SprouteClass).primaryConstructorParams)
+            .addMethodParameters((sprouteKotlinParent as SprouteClass).primaryConstructorParams)
             .add(".%N", function.simpleName)
             .addMethodParameters(function.params)
             .build()

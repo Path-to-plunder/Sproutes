@@ -1,8 +1,8 @@
 package com.casadetasha.kexp.sproute.processor.post
 
 import com.casadetasha.kexp.sproute.annotations.Authenticated
-import com.casadetasha.kexp.sproute.annotations.SprouteRoot
+import com.casadetasha.kexp.sproute.annotations.Sproute
 
-@SprouteRoot("/authenticated_sproute_root")
+@Sproute("/authenticated_sproute_root")
 @Authenticated
 interface AuthenticatedSprouteRoot

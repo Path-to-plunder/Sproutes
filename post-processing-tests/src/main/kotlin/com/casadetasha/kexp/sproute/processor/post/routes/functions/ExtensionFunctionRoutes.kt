@@ -2,12 +2,12 @@ package com.casadetasha.kexp.sproute.processor.post.routes.functions
 
 import com.casadetasha.kexp.sproute.annotations.Get
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.annotations.SprouteRoot
+import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-@SprouteRoot("/extension_function_routes")
+@Sproute("/extension_function_routes")
 interface ExtensionFunctionRoot
 
 @Get("/application_call")

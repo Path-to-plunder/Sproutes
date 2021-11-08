@@ -1,6 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.post
 
-import com.casadetasha.kexp.sproute.annotations.SprouteRoot
+import com.casadetasha.kexp.sproute.annotations.Sproute
 
-@SprouteRoot("/root")
+@Sproute("/root")
 interface BoringRouteRoot

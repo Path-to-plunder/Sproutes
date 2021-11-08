@@ -1,4 +1,4 @@
-package com.casadetasha.kexp.sproute.processor
+package com.casadetasha.kexp.sproute.processor.source
 
 import com.tschuchort.compiletesting.SourceFile
 
@@ -12,7 +12,7 @@ object SourceFiles {
 
             @Sproute("/route")
             class Route {
-                @Get("/get-a-route", includeClassRouteSegment = false)
+                @Get("/get-a-route")
                 fun get() = "get me"
             }
         """.trimIndent()
@@ -24,22 +24,18 @@ object SourceFiles {
 
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import com.casadetasha.kexp.sproute.annotations.SprouteRoot
             import io.ktor.application.*
             import io.ktor.response.respond
 
-            @SprouteRoot("")
-            internal interface MyRoot
-
-            @Sproute("/route", MyRoot::class)
+            @Sproute("/route")
             class ParameterRoutes(application: Application) {
-                @Get("/get-a-string", includeClassRouteSegment = false)
+                @Get("/get-a-string")
                 fun getString() = "get me"
 
-                @Get("/get-a-string-with-call", includeClassRouteSegment = false)
+                @Get("/get-a-string-with-call")
                 fun getStringWithCall(call: ApplicationCall) = "get me"
 
-                @Get("/suspend-get-a-string-with-call", includeClassRouteSegment = false)
+                @Get("/suspend-get-a-string-with-call")
                 suspend fun suspendGetStringWithCall(call: ApplicationCall) = call.respond("get me")
             }
         """.trimIndent()
@@ -79,7 +75,7 @@ object SourceFiles {
 
             @Sproute("/route")
             class Route {
-                @Get("/get-a-route", includeClassRouteSegment = false)
+                @Get("/get-a-route")
                 fun innerGet() = "get me"
             }
 

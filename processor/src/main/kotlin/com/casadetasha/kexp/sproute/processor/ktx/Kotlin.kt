@@ -14,10 +14,6 @@ internal fun String.asSubPackageOf(classPackage: String) : String {
     return this.removePrefix(classPackage)
 }
 
-internal fun String.asMethod() : String {
-    return this.asPath().replace("/", "_")
-}
-
 internal fun <E> Collection<E>.removeFirst(): List<E> {
     return toMutableList().apply { removeFirstFromCollection() }
 }

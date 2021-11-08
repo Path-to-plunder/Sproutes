@@ -1,19 +1,21 @@
-package com.casadetasha.kexp.sproute.processor.generator
+package com.casadetasha.kexp.sproute.processor.generator.spec
 
-import com.casadetasha.kexp.sproute.processor.models.SprouteNode
+import com.casadetasha.kexp.sproute.processor.generator.beginNodeControlFlowWithRouteRef
+import com.casadetasha.kexp.sproute.processor.generator.beginNodeControlFlowWithoutRouteRef
+import com.casadetasha.kexp.sproute.processor.generator.tree.SegmentNode
 import com.squareup.kotlinpoet.FunSpec
 
-internal fun FunSpec.Builder.amendSprouteSpec(node: SprouteNode, baseRouteSegment: String = "", fullParentRoute: String)
+internal fun FunSpec.Builder.amendSprouteSpec(node: SegmentNode, baseRouteSegment: String = "", fullParentRoute: String)
         : FunSpec.Builder = apply {
     val fullRoute = "$fullParentRoute/${node.name}"
-    if (node.sortedBuds.isEmpty() && node.sproutes.size == 1) {
+    if (node.sortedRequestFunctionNodes.isEmpty() && node.sproutes.size == 1) {
         return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
     }
 
     amendNodeWithChildren(baseRouteSegment, node, fullRoute)
 }
 
-private fun FunSpec.Builder.amendFunForSingleSprouteNode(baseRouteSegment: String, node: SprouteNode, fullRoute: String)
+private fun FunSpec.Builder.amendFunForSingleSprouteNode(baseRouteSegment: String, node: SegmentNode, fullRoute: String)
         : FunSpec.Builder = apply {
     val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
     node.sproutes.forEach {
@@ -25,7 +27,7 @@ private fun FunSpec.Builder.amendFunForSingleSprouteNode(baseRouteSegment: Strin
     }
 }
 
-private fun FunSpec.Builder.amendNodeWithChildren(baseRouteSegment: String, node: SprouteNode, fullRoute: String)
+private fun FunSpec.Builder.amendNodeWithChildren(baseRouteSegment: String, node: SegmentNode, fullRoute: String)
         : FunSpec.Builder = apply {
     val routeSegment = "${baseRouteSegment}/${node.name}"
     beginNodeControlFlow(routeSegment = routeSegment, fullRoute = fullRoute)    // route("/this/next/") `/this/next`@ {
@@ -44,16 +46,16 @@ private fun FunSpec.Builder.beginNodeControlFlow(routeSegment: String, fullRoute
     }
 }
 
-private fun FunSpec.Builder.amendBudsFromNode(node: SprouteNode, fullRoute: String): FunSpec.Builder = apply {
-    node.sortedBuds.forEach {
-        if (node.sortedBuds.first() != it) addStatement("")
-        amendFunForBud(bud = it, fullRoutePath = fullRoute)
+private fun FunSpec.Builder.amendBudsFromNode(node: SegmentNode, fullRoute: String): FunSpec.Builder = apply {
+    node.sortedRequestFunctionNodes.forEach {
+        if (node.sortedRequestFunctionNodes.first() != it) addStatement("")
+        amendFunForBud(requestFunctionNode = it, fullRoutePath = fullRoute)
     }
 }
 
-internal fun FunSpec.Builder.amendSproutesFromNode(node: SprouteNode, fullRoute: String) = apply {
+internal fun FunSpec.Builder.amendSproutesFromNode(node: SegmentNode, fullRoute: String) = apply {
     node.sproutes.forEach {
-        if (node.sproutes.first() != it || node.sortedBuds.isNotEmpty()) addStatement("")
+        if (node.sproutes.first() != it || node.sortedRequestFunctionNodes.isNotEmpty()) addStatement("")
         amendSprouteSpec(it, baseRouteSegment = "", fullParentRoute = fullRoute)
     }
 }
