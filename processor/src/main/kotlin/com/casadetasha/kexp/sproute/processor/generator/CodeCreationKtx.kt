@@ -49,7 +49,7 @@ internal fun FunSpec.Builder.beginCallBlock(function: SprouteRequestFunction) = 
     }
     if (function.isApplicationCallExtensionMethod) {
         addCode(
-            "·%M.%M·{·",
+            "%M.%M·{·",
             KotlinNames.MethodNames.applicationCallGetter,
             KotlinNames.MethodNames.applyMethod
         )
