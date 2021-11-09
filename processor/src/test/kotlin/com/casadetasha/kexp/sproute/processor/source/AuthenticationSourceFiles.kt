@@ -10,9 +10,8 @@ object AuthenticationSourceFiles {
             import com.casadetasha.kexp.sproute.annotations.Authenticated
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import com.casadetasha.kexp.sproute.annotations.SprouteRoot
 
-            @SprouteRoot("/authenticated")
+            @Sproute("/authenticated")
             interface AuthenticatedRoot
 
             @Sproute("/route")
