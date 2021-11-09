@@ -37,17 +37,22 @@ internal class SprouteRequestFunction(
     val simpleName: String = kotlinFunction.simpleName
     val memberName: MemberName = kotlinFunction.memberName
     val params: List<MemberName> = kotlinFunction.parameters.toRequestParamMemberNames()
-    val receiver: MemberName? = kotlinFunction.receiver.apply { failIfFunctionReceiverIsInvalid(this) }
+    val receiver: MemberName? = kotlinFunction.receiver.apply {}
 
-    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue.apply { failIfReturnValueIsInvalid(this) }
     val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()
+    val hasReturnValue: Boolean = kotlinFunction.hasReturnValue
 
     private val requestAnnotation: Annotation = kotlinFunction.element.getInstaRequestAnnotation()
     private val requestMethodSimpleName: String = getRequestMethodName(requestAnnotation)
     val requestMethodName: MemberName = MemberName(KotlinNames.KtorPackageNames.ROUTING, requestMethodSimpleName)
 
-    private fun failIfFunctionReceiverIsInvalid(memberName: MemberName?) {
-        when (memberName) {
+    init {
+        failIfReceiverIsInvalid()
+        failIfIsApplicationCallKtxWithReturnValue()
+    }
+
+    private fun failIfReceiverIsInvalid() {
+        when (receiver) {
             null -> return
             !in VALID_EXTENSION_CLASSES -> {
                 val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
@@ -59,7 +64,7 @@ internal class SprouteRequestFunction(
         }
     }
 
-    private fun failIfReturnValueIsInvalid(hasReturnValue: Boolean) {
+    private fun failIfIsApplicationCallKtxWithReturnValue() {
         if (hasReturnValue && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError(
             "Route $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND" +
                     " have a return type. If you want to access the ApplicationCall and return a value, add the" +
