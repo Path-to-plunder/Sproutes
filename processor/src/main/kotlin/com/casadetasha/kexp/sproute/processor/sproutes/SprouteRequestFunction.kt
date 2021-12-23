@@ -1,11 +1,10 @@
 package com.casadetasha.kexp.sproute.processor.sproutes
 
+import com.casadetasha.kexp.annotationparser.AnnotationParser.printThenThrowError
 import com.casadetasha.kexp.annotationparser.KotlinValue.KotlinFunction
-import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
 import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getInstaRequestAnnotation
 import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getRequestMethodName
 import com.casadetasha.kexp.sproute.processor.annotation_bridge.SprouteRequestAnnotationBridge.getRouteSegment
-import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments.getSprouteRoot
@@ -56,7 +55,7 @@ internal class SprouteRequestFunction(
             null -> return
             !in VALID_EXTENSION_CLASSES -> {
                 val extensionClasses = VALID_EXTENSION_CLASSES.joinToString(", ") { it.canonicalName }
-                processingEnvironment.printThenThrowError(
+                printThenThrowError(
                     "Only [$extensionClasses] are supported as extension" +
                             " receivers for request methods. Found $this for route $fullRoutePath"
                 )
@@ -65,7 +64,7 @@ internal class SprouteRequestFunction(
     }
 
     private fun failIfIsApplicationCallKtxWithReturnValue() {
-        if (hasReturnValue && isApplicationCallExtensionMethod) processingEnvironment.printThenThrowError(
+        if (hasReturnValue && isApplicationCallExtensionMethod) printThenThrowError(
             "Route $fullRoutePath is invalid. Routes cannot both be an ApplicationCall Extension method AND" +
                     " have a return type. If you want to access the ApplicationCall and return a value, add the" +
                     " ApplicationCall as a method parameter."

@@ -1,10 +1,9 @@
 package com.casadetasha.kexp.sproute.processor.sproutes.authentication
 
+import com.casadetasha.kexp.annotationparser.AnnotationParser.printThenThrowError
 import com.casadetasha.kexp.sproute.annotations.Authenticated
 import com.casadetasha.kexp.sproute.annotations.Unauthenticated
-import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
 import com.casadetasha.kexp.sproute.processor.ktx.asVarArgs
-import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import javax.lang.model.element.Element
 
 internal class SubAuthentication constructor(
@@ -39,7 +38,7 @@ internal class SubAuthentication constructor(
 
     private fun validateAuthenticatedAnnotations() {
         if (elementAuthenticatedAnnotation != null && elementUnauthenticatedAnnotation != null) {
-            SprouteAnnotationProcessor.processingEnvironment.printThenThrowError(
+            printThenThrowError(
                 "Authenticated and Unauthenticated Annotations cannot be used together." +
                         " Cause: ${element.simpleName}."
             )

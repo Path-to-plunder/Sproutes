@@ -1,8 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.sproutes.segments
 
+import com.casadetasha.kexp.annotationparser.AnnotationParser.printThenThrowError
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor.Companion.processingEnvironment
-import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 
@@ -28,7 +27,7 @@ internal object ProcessedRouteSegments {
             defaultRouteSegment
         } else{
             routeSegments[parentSegmentKey]
-                ?: processingEnvironment.printThenThrowError(
+                ?: printThenThrowError(
                     "Sproute root $parentSegmentKey not found in sproute roots"
                             + " ( ${getHumanReadableSprouteRootList()} )")
         }
