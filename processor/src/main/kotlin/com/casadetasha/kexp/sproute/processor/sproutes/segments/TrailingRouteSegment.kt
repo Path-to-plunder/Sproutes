@@ -1,7 +1,6 @@
 package com.casadetasha.kexp.sproute.processor.sproutes.segments
 
-import com.casadetasha.kexp.sproute.processor.SprouteAnnotationProcessor
-import com.casadetasha.kexp.sproute.processor.ktx.printThenThrowError
+import com.casadetasha.kexp.annotationparser.AnnotationParser.printThenThrowError
 import com.casadetasha.kexp.sproute.processor.sproutes.authentication.AuthLazyLoader
 import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 import com.squareup.kotlinpoet.TypeName
@@ -35,8 +34,7 @@ internal class TrailingRouteSegment(
 
     override fun failIfChildSegmentIsCyclical(childSegmentKeys: List<TypeName>) {
         if (childSegmentKeys.contains(segmentKey)) {
-            SprouteAnnotationProcessor.processingEnvironment.printThenThrowError(
-                "Found cyclical sprouteRoot dependency for Sproute ($segmentKey)")
+            printThenThrowError("Found cyclical sprouteRoot dependency for Sproute ($segmentKey)")
         }
 
         getParentSegment(childSegmentKeys).failIfChildSegmentIsCyclical(childSegmentKeys + segmentKey)

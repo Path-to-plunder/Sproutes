@@ -19,7 +19,7 @@ internal fun Assert<KotlinCompilation.Result>.hasExitCode(exitCode: KotlinCompil
 internal fun compileSource(vararg sourceFiles: SourceFile): KotlinCompilation.Result {
     return KotlinCompilation().apply {
         sources = sourceFiles.toList()
-        annotationProcessors = listOf(SprouteAnnotationProcessor())
+        annotationProcessors = listOf(SprouteProcessor())
         inheritClassPath = true
         messageOutputStream = System.out
     }.compile()

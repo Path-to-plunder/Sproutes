@@ -5,7 +5,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode.*
 import kotlin.test.Test
 
-class SprouteAnnotationProcessorTest {
+class SprouteProcessorTest {
 
     private lateinit var compilationResult: KotlinCompilation.Result
 
