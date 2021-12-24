@@ -14,12 +14,12 @@ internal object ProcessedRouteSegments {
         LeadingRouteSegment.DefaultRouteSegment(Sproute::class.asTypeName())
     val defaultSegmentKey: TypeName = defaultRouteSegment.segmentKey
 
-    fun put(routeSegment: RouteSegment) {
-        routeSegments[routeSegment.segmentKey] = routeSegment
-    }
-
     fun putAll(routeSegmentMap: Map<TypeName, RouteSegment>) {
         routeSegments.putAll(routeSegmentMap)
+    }
+
+    fun put(routeSegment: RouteSegment) {
+        routeSegments[routeSegment.segmentKey] = routeSegment
     }
 
     fun getSprouteRoot(parentSegmentKey: TypeName?): RouteSegment {
