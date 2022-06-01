@@ -5,13 +5,12 @@ import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationCallGetter
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationGetter
 import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
+import kotlinx.metadata.KmValueParameter
 import kotlin.reflect.KClass
 
 internal object KotlinNames {
@@ -55,8 +54,7 @@ internal object KotlinNames {
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    @OptIn(KotlinPoetMetadataPreview::class)
-    fun List<ImmutableKmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
+    fun List<KmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
         return map { it.asCanonicalName() }
             .apply {
                 val containsInvalidParameter = any { it !in validParameterTypes }

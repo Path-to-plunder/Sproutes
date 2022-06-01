@@ -22,11 +22,9 @@ dependencies {
     implementation(project(":kexp:sproute:annotations"))
     implementation(project(":kexp:annotation-parser"))
 
-    implementation ("com.squareup:kotlinpoet-classinspector-elements:$kotlinpoetVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0")
     implementation("com.squareup:kotlinpoet:$kotlinpoetVersion")
     implementation("com.squareup:kotlinpoet-metadata:$kotlinpoetVersion")
-    implementation("com.squareup:kotlinpoet-metadata-specs:$kotlinpoetVersion")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")

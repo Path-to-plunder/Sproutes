@@ -2,15 +2,13 @@ package com.casadetasha.kexp.sproute.processor.ktx
 
 import com.casadetasha.kexp.sproute.annotations.*
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.metadata.ImmutableKmValueParameter
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import kotlinx.metadata.KmClassifier
+import kotlinx.metadata.KmValueParameter
 import javax.lang.model.type.MirroredTypeException
 import kotlin.reflect.KClass
 
-@OptIn(KotlinPoetMetadataPreview::class)
-internal fun ImmutableKmValueParameter.asCanonicalName(): String {
-    val clazz = type!!.classifier as KmClassifier.Class
+internal fun KmValueParameter.asCanonicalName(): String {
+    val clazz = type.classifier as KmClassifier.Class
     return clazz.name.replace("/", ".")
 }
 
