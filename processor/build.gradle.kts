@@ -20,7 +20,7 @@ repositories {
 // TODO: move version info to Kotlin file
 dependencies {
     implementation(project(":kexp:sproute:annotations"))
-    implementation(project(":kexp:annotation-parser"))
+    implementation("com.casadetasha:annotation-parser:0.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0")
     implementation("com.squareup:kotlinpoet:$kotlinpoetVersion")
