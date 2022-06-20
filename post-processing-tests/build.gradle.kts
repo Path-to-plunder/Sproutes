@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":kexp:sproute:annotations"))
-    kapt(project(":kexp:sproute:processor"))
+    implementation(project(":annotations"))
+    kapt(project(":processor"))
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
