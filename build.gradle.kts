@@ -1,7 +1,7 @@
 plugins {
     `java-library`
-    kotlin("jvm") version "1.5.21"
-    kotlin("kapt") version "1.5.30"
+    kotlin("jvm") version "1.7.0"
+    kotlin("kapt") version "1.7.0"
 }
 
 repositories {

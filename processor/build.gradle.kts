@@ -11,6 +11,8 @@ val ktorVersion: String by project
 val kotlinpoetVersion: String by project
 val googleAutoServiceVersion: String by project
 
+val assertKVersion: String by project
+
 plugins {
     `java-library`
     `maven-publish`
@@ -28,7 +30,7 @@ dependencies {
     implementation(project(":annotations"))
     implementation("com.casadetasha:annotation-parser:0.1.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
     implementation("com.squareup:kotlinpoet:$kotlinpoetVersion")
     implementation("com.squareup:kotlinpoet-metadata:$kotlinpoetVersion")
 
@@ -38,8 +40,8 @@ dependencies {
     implementation("com.google.auto.service:auto-service:$googleAutoServiceVersion")
     kapt("com.google.auto.service:auto-service:$googleAutoServiceVersion")
 
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.4")
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.24")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.9")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:$assertKVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 }
 
@@ -81,8 +83,8 @@ publishing {
             from(components["java"])
 
             group = "com.casadetasha"
-            artifactId = "sproutes"
-            version = "1.6.3-alpha"
+            artifactId = "sproutes-processor"
+            version = "1.6.3-alpha-1"
 
             artifact(sourcesJar.get())
             artifact(javadocJar.get())

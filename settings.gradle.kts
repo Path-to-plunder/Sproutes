@@ -1,4 +1,4 @@
-rootProject.name = "path-to-plunder"
+rootProject.name = "sproutes"
 include(
     "annotations",
     "processor",
