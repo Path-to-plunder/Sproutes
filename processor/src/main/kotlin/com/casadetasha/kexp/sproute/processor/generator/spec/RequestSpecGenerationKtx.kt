@@ -8,8 +8,8 @@ import com.casadetasha.kexp.sproute.processor.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteRequestFunction
 import com.squareup.kotlinpoet.FunSpec
-import io.ktor.application.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 
 internal fun FunSpec.Builder.amendFunForBud(requestRouteSegment: String = "", requestFunctionNode: RequestFunctionNode, fullRoutePath: String) {
     beginRequestControlFlow(requestRouteSegment, requestFunctionNode.function)                        //     get ("/path") {

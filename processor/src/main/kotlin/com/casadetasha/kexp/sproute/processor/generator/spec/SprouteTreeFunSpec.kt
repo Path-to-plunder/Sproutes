@@ -8,7 +8,7 @@ import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentica
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.GeneratedMethodNames
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames
 import com.squareup.kotlinpoet.FunSpec
-import io.ktor.application.*
+import io.ktor.server.application.*
 import java.util.*
 
 internal class SprouteTreeFunSpec(private val sprouteTree: SprouteTree) {

@@ -10,8 +10,8 @@ object RootedSourceFiles {
             
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @Sproute("/root")
             internal interface MyRoot
@@ -31,8 +31,8 @@ object RootedSourceFiles {
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
             import com.casadetasha.kexp.sproute.annotations.SproutePackageRoot
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @SproutePackageRoot("/package_root")
             internal interface MyRoot
@@ -51,8 +51,8 @@ object RootedSourceFiles {
             
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @Sproute("/root")
             internal interface MyRoot
@@ -76,8 +76,8 @@ object RootedSourceFiles {
             
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @Sproute("/first_chain", SecondChain::class)
             class FirstChain {
@@ -99,8 +99,8 @@ object RootedSourceFiles {
             
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @Sproute("/first_chain", ThirdChain::class)
             class FirstChain {
@@ -128,8 +128,8 @@ object RootedSourceFiles {
             
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
             
             @Sproute("/infinite_chain", InfiniteChain::class)
             class InfiniteChain {

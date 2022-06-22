@@ -35,7 +35,7 @@ dependencies {
     implementation("com.squareup:kotlinpoet-metadata:$kotlinpoetVersion")
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
 
     implementation("com.google.auto.service:auto-service:$googleAutoServiceVersion")
     kapt("com.google.auto.service:auto-service:$googleAutoServiceVersion")
@@ -84,7 +84,7 @@ publishing {
 
             group = "com.casadetasha"
             artifactId = "sproutes-processor"
-            version = "1.6.3-alpha-1"
+            version = "2.0.2-alpha-1"
 
             artifact(sourcesJar.get())
             artifact(javadocJar.get())

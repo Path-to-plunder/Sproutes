@@ -2,59 +2,51 @@ package com.casadetasha.kexp.sproute.processor.post.routes.functions
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.casadetasha.kexp.sproute.processor.post.withConfiguredTestApplication
-import io.ktor.http.*
-import io.ktor.http.HttpMethod.Companion.Get
-import io.ktor.server.testing.*
+import com.casadetasha.kexp.sproute.processor.post.configuredTestApplication
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlin.test.Test
 
 class RouteExtensionFunctionRoutesTests {
     @Test
-    fun `routes through with GET`() = withConfiguredTestApplication {
-        handleRequest(Get, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function GOTTED!")
-        }
+    fun `routes through with GET`() = configuredTestApplication {
+        val response = client.get("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function GOTTED!")
     }
 
     @Test
-    fun `routes through with POST`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Post, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function POSTED!")
-        }
+    fun `routes through with POST`() = configuredTestApplication {
+        val response = client.post("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function POSTED!")
     }
 
     @Test
-    fun `routes through with PUT`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Put, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function PUTTED!")
-        }
+    fun `routes through with PUT`() = configuredTestApplication {
+        val response = client.put("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function PUTTED!")
     }
 
     @Test
-    fun `routes through with PATCH`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Patch, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function PATCHED!")
-        }
+    fun `routes through with PATCH`() = configuredTestApplication {
+        val response = client.patch("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function PATCHED!")
     }
 
     @Test
-    fun `routes through with DELETE`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Delete, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function DELETED!")
-        }
+    fun `routes through with DELETE`() = configuredTestApplication {
+        val response = client.delete("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function DELETED!")
     }
 
     @Test
-    fun `routes through with HEAD`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Head, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function HEADED!")
-        }
+    fun `routes through with HEAD`() = configuredTestApplication {
+        val response = client.head("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function HEADED!")
     }
 
     @Test
-    fun `routes through with OPTIONS`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Options, "/route_extension_function_routes").apply {
-            assertThat(response.content).isEqualTo("Route Extension function OPTIONED!")
-        }
+    fun `routes through with OPTIONS`() = configuredTestApplication {
+        val response = client.options("/route_extension_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Route Extension function OPTIONED!")
     }
 }

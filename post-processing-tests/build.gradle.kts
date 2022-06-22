@@ -17,7 +17,7 @@ dependencies {
     kapt(project(":processor"))
 
     implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
 
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:$assertKVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")

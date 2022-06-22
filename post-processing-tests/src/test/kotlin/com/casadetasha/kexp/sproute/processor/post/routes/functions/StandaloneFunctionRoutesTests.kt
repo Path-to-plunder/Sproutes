@@ -2,59 +2,51 @@ package com.casadetasha.kexp.sproute.processor.post.routes.functions
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.casadetasha.kexp.sproute.processor.post.withConfiguredTestApplication
-import io.ktor.http.*
-import io.ktor.http.HttpMethod.Companion.Get
-import io.ktor.server.testing.*
+import com.casadetasha.kexp.sproute.processor.post.configuredTestApplication
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlin.test.Test
 
 class StandaloneFunctionRoutesTests {
     @Test
-    fun `routes through with GET`() = withConfiguredTestApplication {
-        handleRequest(Get, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function GOTTED!")
-        }
+    fun `routes through with GET`() = configuredTestApplication {
+        val response = client.get("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function GOTTED!")
     }
 
     @Test
-    fun `routes through with POST`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Post, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function POSTED!")
-        }
+    fun `routes through with POST`() = configuredTestApplication {
+        val response = client.post("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function POSTED!")
     }
 
     @Test
-    fun `routes through with PUT`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Put, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function PUTTED!")
-        }
+    fun `routes through with PUT`() = configuredTestApplication {
+        val response = client.put("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function PUTTED!")
     }
 
     @Test
-    fun `routes through with PATCH`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Patch, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function PATCHED!")
-        }
+    fun `routes through with PATCH`() = configuredTestApplication {
+        val response = client.patch("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function PATCHED!")
     }
 
     @Test
-    fun `routes through with DELETE`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Delete, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function DELETED!")
-        }
+    fun `routes through with DELETE`() = configuredTestApplication {
+        val response = client.delete("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function DELETED!")
     }
 
     @Test
-    fun `routes through with HEAD`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Head, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function HEADED!")
-        }
+    fun `routes through with HEAD`() = configuredTestApplication {
+        val response = client.head("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function HEADED!")
     }
 
     @Test
-    fun `routes through with OPTIONS`() = withConfiguredTestApplication {
-        handleRequest(HttpMethod.Options, "/standalone_function_routes").apply {
-            assertThat(response.content).isEqualTo("Standalone function OPTIONED!")
-        }
+    fun `routes through with OPTIONS`() = configuredTestApplication {
+        val response = client.options("/standalone_function_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Standalone function OPTIONED!")
     }
 }

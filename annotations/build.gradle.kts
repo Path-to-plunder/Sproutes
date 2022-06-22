@@ -52,7 +52,7 @@ publishing {
 
             group = "com.casadetasha"
             artifactId = "sproutes"
-            version = "1.6.3-alpha-1"
+            version = "2.0.2-alpha-1"
 
             artifact(sourcesJar.get())
             artifact(javadocJar.get())

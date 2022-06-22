@@ -2,64 +2,51 @@ package com.casadetasha.kexp.sproute.processor.post.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.casadetasha.kexp.sproute.processor.post.withConfiguredTestApplication
-import io.ktor.http.HttpMethod.Companion.Delete
-import io.ktor.http.HttpMethod.Companion.Get
-import io.ktor.http.HttpMethod.Companion.Head
-import io.ktor.http.HttpMethod.Companion.Options
-import io.ktor.http.HttpMethod.Companion.Patch
-import io.ktor.http.HttpMethod.Companion.Post
-import io.ktor.http.HttpMethod.Companion.Put
-import io.ktor.server.testing.*
+import com.casadetasha.kexp.sproute.processor.post.configuredTestApplication
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlin.test.Test
 
 class BoringRequestRoutesTest {
     @Test
-    fun `routes through with GET`() = withConfiguredTestApplication {
-        handleRequest(Get, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring GET.")
-        }
+    fun `routes through with GET`() = configuredTestApplication {
+        val response = client.get("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring GET.")
     }
 
     @Test
-    fun `routes through with POST`() = withConfiguredTestApplication {
-        handleRequest(Post, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring POST.")
-        }
+    fun `routes through with POST`() = configuredTestApplication {
+        val response = client.post("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring POST.")
     }
 
     @Test
-    fun `routes through with PUT`() = withConfiguredTestApplication {
-        handleRequest(Put, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring PUT.")
-        }
+    fun `routes through with PUT`() = configuredTestApplication {
+        val response = client.put("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring PUT.")
     }
 
     @Test
-    fun `routes through with PATCH`() = withConfiguredTestApplication {
-        handleRequest(Patch, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring PATCH.")
-        }
+    fun `routes through with PATCH`() = configuredTestApplication {
+        val response = client.patch("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring PATCH.")
     }
 
     @Test
-    fun `routes through with DELETE`() = withConfiguredTestApplication {
-        handleRequest(Delete, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring DELETE.")
-        }
+    fun `routes through with DELETE`() = configuredTestApplication {
+        val response = client.delete("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring DELETE.")
     }
 
     @Test
-    fun `routes through with HEAD`() = withConfiguredTestApplication {
-        handleRequest(Head, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring HEAD.")
-        }
+    fun `routes through with HEAD`() = configuredTestApplication {
+        val response = client.head("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring HEAD.")
     }
 
     @Test
-    fun `routes through with OPTIONS`() = withConfiguredTestApplication {
-        handleRequest(Options, "/boring_request_routes").apply {
-            assertThat(response.content).isEqualTo("Boring OPTIONS.")
-        }
+    fun `routes through with OPTIONS`() = configuredTestApplication {
+        val response = client.options("/boring_request_routes")
+        assertThat(response.bodyAsText()).isEqualTo("Boring OPTIONS.")
     }
 }

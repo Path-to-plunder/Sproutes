@@ -1,7 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.post.routes.functions
 
 import com.casadetasha.kexp.sproute.annotations.*
-import io.ktor.routing.*
+import io.ktor.server.routing.*
 
 @Get("/route_extension_function_routes")
 fun Route.getRouteExtensionFunction() = "Route Extension function GOTTED!"

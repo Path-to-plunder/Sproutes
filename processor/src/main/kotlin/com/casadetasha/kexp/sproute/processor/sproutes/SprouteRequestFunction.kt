@@ -15,7 +15,7 @@ import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toRequestParamM
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
-import io.ktor.application.*
+import io.ktor.server.application.*
 
 @OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(

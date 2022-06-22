@@ -24,8 +24,8 @@ object SourceFiles {
 
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
-            import io.ktor.response.respond
+            import io.ktor.server.application.*
+            import io.ktor.server.response.respond
 
             @Sproute("/route")
             class ParameterRoutes(application: Application) {
@@ -46,7 +46,7 @@ object SourceFiles {
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Get
-            import io.ktor.application.*
+            import io.ktor.server.application.*
 
             @Get("/function/route")
             fun functionGet() = "I'm a function!"
@@ -58,7 +58,7 @@ object SourceFiles {
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Get
-            import io.ktor.application.*
+            import io.ktor.server.application.*
 
             @Get("/function/route")
             fun functionGet() = "I'm a function!"
@@ -71,7 +71,7 @@ object SourceFiles {
 
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-            import io.ktor.application.*
+            import io.ktor.server.application.*
 
             @Sproute("/route")
             class Route {
@@ -104,7 +104,7 @@ object SourceFiles {
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Get
-            import io.ktor.routing.*
+            import io.ktor.server.routing.*
 
             @Get("/function/route")
             fun Route.functionGet() = this.let { "I'm a get function!" }
@@ -116,8 +116,8 @@ object SourceFiles {
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Get
-            import io.ktor.application.*
-            import io.ktor.response.*
+            import io.ktor.server.application.*
+            import io.ktor.server.response.*
 
             @Get("/function/route")
             suspend fun ApplicationCall.functionGet() { respond("I'm a get function!") }
@@ -129,7 +129,7 @@ object SourceFiles {
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Get
-            import io.ktor.application.*
+            import io.ktor.server.application.*
 
             @Get("/function/route")
             fun ApplicationCall.functionGet() = this.let { "I'm a get function!" }

@@ -5,10 +5,10 @@ import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationCallGetter
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationGetter
 import com.squareup.kotlinpoet.MemberName
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import kotlinx.metadata.KmValueParameter
 import kotlin.reflect.KClass
@@ -37,10 +37,10 @@ internal object KotlinNames {
     }
 
     object KtorPackageNames {
-        const val APPLICATION = "io.ktor.application"
-        const val AUTH = "io.ktor.auth"
-        const val RESPONSE = "io.ktor.response"
-        const val ROUTING = "io.ktor.routing"
+        const val APPLICATION = "io.ktor.server.application"
+        const val AUTH = "io.ktor.server.auth"
+        const val RESPONSE = "io.ktor.server.response"
+        const val ROUTING = "io.ktor.server.routing"
         const val KOTLIN = "kotlin"
     }
 

@@ -2,8 +2,8 @@ package com.casadetasha.kexp.sproute.processor.post.routes
 
 import com.casadetasha.kexp.sproute.annotations.Get
 import com.casadetasha.kexp.sproute.annotations.Sproute
-import io.ktor.application.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 
 
 @Sproute("/routes/parameterized")
