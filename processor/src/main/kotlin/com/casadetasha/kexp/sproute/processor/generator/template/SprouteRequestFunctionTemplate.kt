@@ -59,13 +59,6 @@ private fun CodeTemplate.addRouteExtensionPackageMethodCallCode(
     }
 }
 
-
-internal fun CodeTemplate.generateRequestControlFlow(
-    function: SprouteRequestFunction,
-    generateBody: CodeTemplate.() -> Unit
-) {
-}
-
 internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, generateBody: CodeTemplate.() -> Unit) {
     if (function.hasReturnValue) {
         generateControlFlowCode(
@@ -73,7 +66,7 @@ internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, ge
             KotlinNames.MethodNames.applicationCallGetter,
             KotlinNames.MethodNames.callRespondMethod,
             beginFlowString = "(·",
-            endFlowString = "·)·}"
+            endFlowString = "·)·}\n"
         ) { generateBody() }
     }
     if (function.isApplicationCallExtensionMethod) {
@@ -82,8 +75,12 @@ internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, ge
             KotlinNames.MethodNames.applicationCallGetter,
             KotlinNames.MethodNames.applyMethod,
             beginFlowString = "·{·",
-            endFlowString = "·}",
+            endFlowString = "·}·}\n",
         ) { generateBody() }
+    }
+    if (!function.hasReturnValue && !function.isApplicationCallExtensionMethod) {
+        generateBody()
+        generateCode("·}")
     }
 }
 
