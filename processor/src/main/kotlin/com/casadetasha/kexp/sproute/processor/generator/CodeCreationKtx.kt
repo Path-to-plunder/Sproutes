@@ -66,7 +66,7 @@ internal fun FunSpec.Builder.beginNodeControlFlowWithRouteRef(routeSegment: Stri
     )
 }
 
-internal fun FunSpec.Builder.beginNodeControlFlowWithoutRouteRef(routeSegment: String) = apply {
+internal fun FunSpec.Builder.generateNodeControlFlowWithoutRouteRef(routeSegment: String) = apply {
     beginControlFlow(
         "%M(%S)",
         KotlinNames.MethodNames.routeMethod,
@@ -141,7 +141,7 @@ internal fun FunSpec.Builder.addEndCurlyBrace() = apply { addStatement("·}") }
 
 private fun CodeBlock.Builder.addMethodParameters(methodParams: List<MemberName>?) = apply {
     methodParams.ifNotEmpty {
-        addMethodParams(it)
+        generateMethodParams(it)
     }.orElse {
         addEmptyMethodParamBrackets()
     }
@@ -149,7 +149,7 @@ private fun CodeBlock.Builder.addMethodParameters(methodParams: List<MemberName>
 
 private fun CodeBlock.Builder.addEmptyMethodParamBrackets() = apply { add("()") }
 
-private fun CodeBlock.Builder.addMethodParams(memberNames: List<MemberName>) = apply {
+private fun CodeBlock.Builder.generateMethodParams(memberNames: List<MemberName>) = apply {
     val memberParamString = memberNames.joinToString(", ") { "%M" }
     val parameters = "($memberParamString)"
     add(parameters, *memberNames.toTypedArray())

@@ -1,7 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.generator.spec
 
 import com.casadetasha.kexp.sproute.processor.generator.beginNodeControlFlowWithRouteRef
-import com.casadetasha.kexp.sproute.processor.generator.beginNodeControlFlowWithoutRouteRef
+import com.casadetasha.kexp.sproute.processor.generator.generateNodeControlFlowWithoutRouteRef
 import com.casadetasha.kexp.sproute.processor.generator.tree.SegmentNode
 import com.squareup.kotlinpoet.FunSpec
 
@@ -40,7 +40,7 @@ private fun FunSpec.Builder.beginNodeControlFlow(routeSegment: String, fullRoute
         : FunSpec.Builder = apply {
     val routeReference: String = fullRoute.trim()
     if (routeReference.isEmpty()) {
-        beginNodeControlFlowWithoutRouteRef(routeSegment)
+        generateNodeControlFlowWithoutRouteRef(routeSegment)
     } else {
         beginNodeControlFlowWithRouteRef(routeSegment, routeReference)
     }

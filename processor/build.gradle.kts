@@ -29,6 +29,7 @@ repositories {
 dependencies {
     implementation(project(":annotations"))
     implementation("com.casadetasha:annotation-parser:0.1.0")
+    implementation("com.casadetasha:kotlin-generation-dsl:0.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
     implementation("com.squareup:kotlinpoet:$kotlinpoetVersion")
