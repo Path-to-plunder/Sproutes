@@ -4,23 +4,23 @@ import com.casadetasha.kexp.generationdsl.dsl.CodeTemplate
 import com.casadetasha.kexp.sproute.processor.generator.tree.SegmentNode
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames
 
-internal fun CodeTemplate.generateSprouteSpec(
+internal fun CodeTemplate.generateSprouteSegment(
     node: SegmentNode,
     baseRouteSegment: String = "",
     fullParentRoute: String
 ) {
     val fullRoute = "$fullParentRoute/${node.name}"
     if (node.sortedRequestFunctionNodes.isEmpty() && node.sproutes.size == 1) {
-        return amendFunForSingleSprouteNode(baseRouteSegment, node, fullRoute)
+        return mergeNextSegmentAndContinueGenerating(baseRouteSegment, node, fullRoute)
     }
 
-    amendNodeWithChildren(baseRouteSegment, node, fullRoute)
+    generateSprouteContent(baseRouteSegment, node, fullRoute)
 }
 
-private fun CodeTemplate.amendFunForSingleSprouteNode(baseRouteSegment: String, node: SegmentNode, fullRoute: String) {
+private fun CodeTemplate.mergeNextSegmentAndContinueGenerating(baseRouteSegment: String, node: SegmentNode, fullRoute: String) {
     val aggregatedRouteSegment = "${baseRouteSegment}/${node.name}"
     node.sproutes.forEach {
-        generateSprouteSpec(
+        generateSprouteSegment(
             it,
             aggregatedRouteSegment,
             fullRoute
@@ -28,52 +28,50 @@ private fun CodeTemplate.amendFunForSingleSprouteNode(baseRouteSegment: String, 
     }
 }
 
-private fun CodeTemplate.amendNodeWithChildren(baseRouteSegment: String, node: SegmentNode, fullRoute: String) {
+private fun CodeTemplate.generateSprouteContent(baseRouteSegment: String, node: SegmentNode, fullRoute: String) {
     val routeSegment = "${baseRouteSegment}/${node.name}"
-    generateNodeControlFlow(routeSegment = routeSegment, fullRoute = fullRoute) {
-        generateBudsFromNode(node, fullRoute)
-        amendSproutesFromNode(node, fullRoute)
+    generateSprouteFlow(routeSegment = routeSegment, fullRoute = fullRoute) {
+        generateRequests(node, fullRoute)
+        generateSubSegments(node, fullRoute)
     }
 }
 
-internal fun CodeTemplate.amendSproutesFromNode(node: SegmentNode, fullRoute: String) {
+internal fun CodeTemplate.generateSubSegments(node: SegmentNode, fullRoute: String) {
     node.sproutes.forEach { segmentNode ->
         if (node.sproutes.first() != segmentNode || node.sortedRequestFunctionNodes.isNotEmpty()) {
-            generateNewLine()
-            generateNewLine()
+            generateNewLine(times = 2)
         }
-        generateSprouteSpec(segmentNode, baseRouteSegment = "", fullParentRoute = fullRoute)
+        generateSprouteSegment(segmentNode, baseRouteSegment = "", fullParentRoute = fullRoute)
     }
 }
 
-private fun CodeTemplate.generateBudsFromNode(node: SegmentNode, fullRoute: String) {
+private fun CodeTemplate.generateRequests(node: SegmentNode, fullRoute: String) {
     node.sortedRequestFunctionNodes.forEach { requestNode ->
-        generateFunForBud(requestFunctionNode = requestNode, fullRoutePath = fullRoute)
+        generateRequestBlock(requestFunctionNode = requestNode, fullRoutePath = fullRoute)
         if (node.sortedRequestFunctionNodes.last().function.simpleName != requestNode.function.simpleName) {
-            generateNewLine()
-            generateNewLine()
+            generateNewLine(times = 2)
         }
     }
 }
 
-private fun CodeTemplate.generateNodeControlFlow(
+private fun CodeTemplate.generateSprouteFlow(
     routeSegment: String,
     fullRoute: String,
     generateBody: CodeTemplate.() -> Unit
 ) {
     val routeReference: String = fullRoute.trim()
     if (routeReference.isEmpty()) {
-        generateNodeControlFlowWithoutRouteRef(routeSegment) {
+        generateSprouteFlowWithoutPath(routeSegment) {
             generateBody()
         }
     } else {
-        generateNodeControlFlowWithRouteRef(routeSegment, routeReference) {
+        generateSprouteFlowWithPath(routeSegment, routeReference) {
             generateBody()
         }
     }
 }
 
-internal fun CodeTemplate.generateNodeControlFlowWithRouteRef(
+internal fun CodeTemplate.generateSprouteFlowWithPath(
     routeSegment: String, routeReference: String,
     generateBody: CodeTemplate.() -> Unit
 ) {
@@ -86,7 +84,7 @@ internal fun CodeTemplate.generateNodeControlFlowWithRouteRef(
     ) { generateBody() }
 }
 
-internal fun CodeTemplate.generateNodeControlFlowWithoutRouteRef(
+internal fun CodeTemplate.generateSprouteFlowWithoutPath(
     routeSegment: String,
     generateBody: CodeTemplate.() -> Unit
 ) {

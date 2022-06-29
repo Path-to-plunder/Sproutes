@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.asTypeName
 import io.ktor.server.application.*
 import java.util.*
 
-internal fun FileTemplate.generateConfigureSproutesMethod(sprouteTree: SprouteTree) {
+internal fun FileTemplate.generateConfigureSproutesFunction(sprouteTree: SprouteTree) {
     generateFunction(
         name = GeneratedMethodNames.SPROUTE_CONFIGURATION,
         receiverType = Application::class.asTypeName()
@@ -26,35 +26,34 @@ internal fun FileTemplate.generateConfigureSproutesMethod(sprouteTree: SprouteTr
 
 internal fun CodeTemplate.generateSproutesFromMap(sprouteMap: SortedMap<Authentication, SegmentNode>) {
     sprouteMap.forEach {
-        generateSproute(
+        generateSproutesForSegment(
             authentication = it.key,
-            rootNode = it.value
+            segment = it.value
         )
 
         if (it.key != sprouteMap.lastKey()) generateNewLine()
     }
 }
 
-internal fun CodeTemplate.generateSproute(
-    rootNode: SegmentNode,
+internal fun CodeTemplate.generateSproutesForSegment(
+    segment: SegmentNode,
     authentication: Authentication
 ) {
     if (authentication.isAuthenticationRequested) {
         generateAuthenticatedFlow(authentication) {
-            generateSprouteSpecs(rootNode)
+            generateSproutesForSegment(segment)
         }
     } else {
-        generateSprouteSpecs(rootNode)
+        generateSproutesForSegment(segment)
     }
 }
 
-internal fun CodeTemplate.generateSprouteSpecs(rootNode: SegmentNode) {
-    rootNode.sproutes.forEach {
-        if (rootNode.sproutes.first() != it) {
-            generateNewLine()
-            generateNewLine()
+internal fun CodeTemplate.generateSproutesForSegment(segment: SegmentNode) {
+    segment.sproutes.forEach {
+        if (segment.sproutes.first() != it) {
+            generateNewLine(times = 2)
         }
-        generateSprouteSpec(
+        generateSprouteSegment(
             node = it,
             fullParentRoute = ""
         )

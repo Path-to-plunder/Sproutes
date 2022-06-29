@@ -14,54 +14,68 @@ import com.squareup.kotlinpoet.MemberName
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
-internal fun CodeTemplate.generateFunForBud(
+internal fun CodeTemplate.generateRequestBlock(
     requestFunctionNode: RequestFunctionNode,
     fullRoutePath: String
 ) {
     val function = requestFunctionNode.function
 
-    generateControlFlowCode("%M", function.requestMethodName, beginFlowString = "·{·", endFlowString ="" ) {
-        generateCallBlock(function) {
-            generateMethodCall(requestFunctionNode.kotlinParent, function, fullRoutePath)
+    generateRequestControlFlow(function) {
+        generateRequestCallBlock(function) {
+            generateSprouteMethodCall(requestFunctionNode.kotlinParent, function, fullRoutePath)
         }
     }
 }
 
-internal fun CodeTemplate.generateMethodCall(
+internal fun CodeTemplate.generateRequestControlFlow(
+    requestFunction: SprouteRequestFunction,
+    generateBody: () -> Unit
+) {
+    generateControlFlowCode(
+        prefix = "%M",
+        requestFunction.requestMethodName,
+        beginFlowString = "·{·",
+        endFlowString ="" )
+    {
+        generateBody()
+    }
+}
+
+internal fun CodeTemplate.generateSprouteMethodCall(
     sprouteKotlinParent: SprouteParent,
     function: SprouteRequestFunction,
     fullRoutePath: String
 ) {
     when (sprouteKotlinParent) {
-        is SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
-        is SproutePackage -> generateRouteStandaloneMethodCall(function, fullRoutePath)
+        is SprouteClass -> generateClassMethodCallCode(sprouteKotlinParent, function)
+        is SproutePackage -> generateStandaloneMethodCall(function, fullRoutePath)
     }
 }
 
-internal fun CodeTemplate.generateRouteStandaloneMethodCall(function: SprouteRequestFunction, fullRoutePath: String) =
+internal fun CodeTemplate.generateStandaloneMethodCall(function: SprouteRequestFunction, fullRoutePath: String) =
     apply {
         when (function.receiver) {
-            Route::class.toMemberName() -> addRouteExtensionStandaloneMethodCallCode(function, fullRoutePath)
-            ApplicationCall::class.toMemberName() -> addStandaloneMethodCallCode(function)
-            null -> addStandaloneMethodCallCode(function)
+            Route::class.toMemberName() -> generateRouteExtensionStandaloneMethodCallCode(function, fullRoutePath)
+            ApplicationCall::class.toMemberName() -> generateStandaloneMethodCallCode(function)
+            null -> generateStandaloneMethodCallCode(function)
         }
     }
 
-private fun CodeTemplate.addRouteExtensionStandaloneMethodCallCode(
+private fun CodeTemplate.generateRouteExtensionStandaloneMethodCallCode(
     function: SprouteRequestFunction,
     fullRoutePath: String
 ) {
     val routeReference = fullRoutePath.trim()
     if (routeReference.isBlank()) {
-        addRouteExtensionCodeWithoutRoute(function)
+        generateRouteExtensionCodeWithoutRoute(function)
     } else {
-        addRouteExtensionCodeWithRoute(function, routeReference)
+        generateRouteExtensionCodeWithRoute(function, routeReference)
     }
 }
 
 // All flows here end with an extra "·}". This is a hacky hack hack to avoid line wrapping. Ugh, fucking hack, I don't
 // like it but I don't know of a better way without replacing kotlin poet.
-internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, generateBody: CodeTemplate.() -> Unit) {
+internal fun CodeTemplate.generateRequestCallBlock(function: SprouteRequestFunction, generateBody: CodeTemplate.() -> Unit) {
     if (function.hasReturnValue) {
         generateControlFlowCode(
             "%M.%M",
@@ -86,7 +100,7 @@ internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, ge
     }
 }
 
-internal fun CodeTemplate.addRouteClassMethodCallCode(
+internal fun CodeTemplate.generateClassMethodCallCode(
     sprouteKotlinParent: SprouteParent, function: SprouteRequestFunction
 ) {
     generateCode("%M", sprouteKotlinParent.memberName)
@@ -113,12 +127,12 @@ private fun CodeTemplate.addEmptyMethodParamBrackets() {
     generateCode("()")
 }
 
-internal fun CodeTemplate.addStandaloneMethodCallCode(function: SprouteRequestFunction) {
+internal fun CodeTemplate.generateStandaloneMethodCallCode(function: SprouteRequestFunction) {
     generateCode("%M", function.memberName)
     addMethodParameters(function.params)
 }
 
-internal fun CodeTemplate.addRouteExtensionCodeWithoutRoute(function: SprouteRequestFunction) {
+internal fun CodeTemplate.generateRouteExtensionCodeWithoutRoute(function: SprouteRequestFunction) {
     generateCode(
         "%L%N.%M",
         "this@",
@@ -128,7 +142,7 @@ internal fun CodeTemplate.addRouteExtensionCodeWithoutRoute(function: SprouteReq
     addMethodParameters(function.params)
 }
 
-internal fun CodeTemplate.addRouteExtensionCodeWithRoute(function: SprouteRequestFunction, routeReference: String) {
+internal fun CodeTemplate.generateRouteExtensionCodeWithRoute(function: SprouteRequestFunction, routeReference: String) {
     generateCode(
         "%L%L.%M",
         "this@",
