@@ -34,20 +34,20 @@ internal fun CodeTemplate.generateMethodCall(
 ) {
     when (sprouteKotlinParent) {
         is SprouteClass -> addRouteClassMethodCallCode(sprouteKotlinParent, function)
-        is SproutePackage -> generateRoutePackageMethodCall(function, fullRoutePath)
+        is SproutePackage -> generateRouteStandaloneMethodCall(function, fullRoutePath)
     }
 }
 
-internal fun CodeTemplate.generateRoutePackageMethodCall(function: SprouteRequestFunction, fullRoutePath: String) =
+internal fun CodeTemplate.generateRouteStandaloneMethodCall(function: SprouteRequestFunction, fullRoutePath: String) =
     apply {
         when (function.receiver) {
-            Route::class.toMemberName() -> addRouteExtensionPackageMethodCallCode(function, fullRoutePath)
-            ApplicationCall::class.toMemberName() -> addPackageMethodCallCode(function)
-            null -> addPackageMethodCallCode(function)
+            Route::class.toMemberName() -> addRouteExtensionStandaloneMethodCallCode(function, fullRoutePath)
+            ApplicationCall::class.toMemberName() -> addStandaloneMethodCallCode(function)
+            null -> addStandaloneMethodCallCode(function)
         }
     }
 
-private fun CodeTemplate.addRouteExtensionPackageMethodCallCode(
+private fun CodeTemplate.addRouteExtensionStandaloneMethodCallCode(
     function: SprouteRequestFunction,
     fullRoutePath: String
 ) {
@@ -59,6 +59,8 @@ private fun CodeTemplate.addRouteExtensionPackageMethodCallCode(
     }
 }
 
+// All flows here end with an extra "·}". This is a hacky hack hack to avoid line wrapping. Ugh, fucking hack, I don't
+// like it but I don't know of a better way without replacing kotlin poet.
 internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, generateBody: CodeTemplate.() -> Unit) {
     if (function.hasReturnValue) {
         generateControlFlowCode(
@@ -66,7 +68,7 @@ internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, ge
             KotlinNames.MethodNames.applicationCallGetter,
             KotlinNames.MethodNames.callRespondMethod,
             beginFlowString = "(·",
-            endFlowString = "·)·}\n"
+            endFlowString = "·)·}"
         ) { generateBody() }
     }
     if (function.isApplicationCallExtensionMethod) {
@@ -75,7 +77,7 @@ internal fun CodeTemplate.generateCallBlock(function: SprouteRequestFunction, ge
             KotlinNames.MethodNames.applicationCallGetter,
             KotlinNames.MethodNames.applyMethod,
             beginFlowString = "·{·",
-            endFlowString = "·}·}\n",
+            endFlowString = "·}·}",
         ) { generateBody() }
     }
     if (!function.hasReturnValue && !function.isApplicationCallExtensionMethod) {
@@ -92,7 +94,6 @@ internal fun CodeTemplate.addRouteClassMethodCallCode(
     generateCode(".%N", function.simpleName)
     addMethodParameters(function.params)
 }
-
 
 private fun CodeTemplate.addMethodParameters(methodParams: List<MemberName>?) {
     methodParams.ifNotEmpty {
@@ -112,7 +113,7 @@ private fun CodeTemplate.addEmptyMethodParamBrackets() {
     generateCode("()")
 }
 
-internal fun CodeTemplate.addPackageMethodCallCode(function: SprouteRequestFunction) {
+internal fun CodeTemplate.addStandaloneMethodCallCode(function: SprouteRequestFunction) {
     generateCode("%M", function.memberName)
     addMethodParameters(function.params)
 }

@@ -32,25 +32,29 @@ private fun CodeTemplate.amendNodeWithChildren(baseRouteSegment: String, node: S
     val routeSegment = "${baseRouteSegment}/${node.name}"
     generateNodeControlFlow(routeSegment = routeSegment, fullRoute = fullRoute) {
         generateBudsFromNode(node, fullRoute)
-        amendSproutesFromNode(node, fullRoute)                                      // }
+        amendSproutesFromNode(node, fullRoute)
     }
 }
 
-
 internal fun CodeTemplate.amendSproutesFromNode(node: SegmentNode, fullRoute: String) {
     node.sproutes.forEach { segmentNode ->
-        if (node.sproutes.first() != segmentNode || node.sortedRequestFunctionNodes.isNotEmpty()) generateNewLine()
+        if (node.sproutes.first() != segmentNode || node.sortedRequestFunctionNodes.isNotEmpty()) {
+            generateNewLine()
+            generateNewLine()
+        }
         generateSprouteSpec(segmentNode, baseRouteSegment = "", fullParentRoute = fullRoute)
     }
 }
 
 private fun CodeTemplate.generateBudsFromNode(node: SegmentNode, fullRoute: String) {
-    node.sortedRequestFunctionNodes.forEach {
-        if (node.sortedRequestFunctionNodes.first() != it) generateNewLine()
-        generateFunForBud(requestFunctionNode = it, fullRoutePath = fullRoute)
+    node.sortedRequestFunctionNodes.forEach { requestNode ->
+        generateFunForBud(requestFunctionNode = requestNode, fullRoutePath = fullRoute)
+        if (node.sortedRequestFunctionNodes.last().function.simpleName != requestNode.function.simpleName) {
+            generateNewLine()
+            generateNewLine()
+        }
     }
 }
-
 
 private fun CodeTemplate.generateNodeControlFlow(
     routeSegment: String,
@@ -77,8 +81,9 @@ internal fun CodeTemplate.generateNodeControlFlowWithRouteRef(
         "%M(%S)·%L@",
         KotlinNames.MethodNames.routeMethod,
         "/${routeSegment.removePrefix("/")}",
-        "`$routeReference`"
-    ) {generateBody() }
+        "`$routeReference`",
+        endFlowString = "\n}"
+    ) { generateBody() }
 }
 
 internal fun CodeTemplate.generateNodeControlFlowWithoutRouteRef(
@@ -88,6 +93,7 @@ internal fun CodeTemplate.generateNodeControlFlowWithoutRouteRef(
     generateControlFlowCode(
         "%M(%S)",
         KotlinNames.MethodNames.routeMethod,
-        "/${routeSegment.removePrefix("/")}"
+        "/${routeSegment.removePrefix("/")}",
+        endFlowString = "\n}"
     ) { generateBody() }
 }

@@ -50,7 +50,10 @@ internal fun CodeTemplate.generateSproute(
 
 internal fun CodeTemplate.generateSprouteSpecs(rootNode: SegmentNode) {
     rootNode.sproutes.forEach {
-        if (rootNode.sproutes.first() != it) generateNewLine()
+        if (rootNode.sproutes.first() != it) {
+            generateNewLine()
+            generateNewLine()
+        }
         generateSprouteSpec(
             node = it,
             fullParentRoute = ""
@@ -61,11 +64,11 @@ internal fun CodeTemplate.generateSprouteSpecs(rootNode: SegmentNode) {
 internal fun CodeTemplate.generateAuthenticatedFlow(authentication: Authentication, generateFlowBody: () -> Unit) {
     val authParams = authentication.authenticationParams
     if (authentication.hasAuthenticationParams) {
-        generateControlFlowCode("%M(%L) ", MethodNames.authenticationScopeMethod, authParams) {
+        generateControlFlowCode("\n%M(%L) ", MethodNames.authenticationScopeMethod, authParams, endFlowString = "\n}") {
             generateFlowBody()
         }
     } else {
-        generateControlFlowCode("%M ", MethodNames.authenticationScopeMethod) {
+        generateControlFlowCode("\n%M ", MethodNames.authenticationScopeMethod, endFlowString = "\n}") {
             generateFlowBody()
         }
     }
