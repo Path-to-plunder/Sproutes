@@ -3,16 +3,13 @@ package com.casadetasha.kexp.sproute.processor.source
 import com.tschuchort.compiletesting.SourceFile
 
 object AuthenticationSourceFiles {
-    internal val boringRouteSource = SourceFile.kotlin(
+    internal val inlineAuthRouteSource = SourceFile.kotlin(
         "BoringRouteSource.kt", """
             package com.casadetasha
 
             import com.casadetasha.kexp.sproute.annotations.Authenticated
             import com.casadetasha.kexp.sproute.annotations.Get
             import com.casadetasha.kexp.sproute.annotations.Sproute
-
-            @Sproute("/authenticated")
-            interface AuthenticatedRoot
 
             @Sproute("/route")
             @Authenticated
@@ -23,7 +20,7 @@ object AuthenticationSourceFiles {
         """.trimIndent()
     )
 
-    internal val functionRouteSource = SourceFile.kotlin(
+    internal val inheritedAuthRouteSource = SourceFile.kotlin(
         "BoringRouteSource.kt", """
             package com.casadetasha
 

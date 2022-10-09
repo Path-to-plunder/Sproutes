@@ -11,13 +11,12 @@ import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSe
 import com.casadetasha.kexp.sproute.processor.sproutes.segments.RouteSegment
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.VALID_EXTENSION_CLASSES
-import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toSprouteParameters
+import com.casadetasha.kexp.sproute.processor.values.SprouteParameter
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 import io.ktor.server.application.*
 
-@OptIn(KotlinPoetMetadataPreview::class)
 internal class SprouteRequestFunction(
     private val sprouteRootKey: TypeName? = null,
     kotlinFunction: KotlinFunction
@@ -35,7 +34,8 @@ internal class SprouteRequestFunction(
 
     val simpleName: String = kotlinFunction.simpleName
     val memberName: MemberName = kotlinFunction.memberName
-    val params: List<MemberName> = kotlinFunction.parameters.toRequestParamMemberNames()
+    val params: List<SprouteParameter> by lazy { kotlinFunction.parameters.toSprouteParameters() }
+
     val receiver: MemberName? = kotlinFunction.receiver.apply {}
 
     val isApplicationCallExtensionMethod: Boolean = receiver == ApplicationCall::class.toMemberName()

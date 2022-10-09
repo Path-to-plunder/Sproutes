@@ -1,5 +1,9 @@
 package com.casadetasha.kexp.sproute.processor.values
 
+import com.casadetasha.kexp.annotationparser.AnnotationParser.printThenThrowError
+import com.casadetasha.kexp.annotationparser.KotlinParameter
+import com.casadetasha.kexp.sproute.annotations.PathParam
+import com.casadetasha.kexp.sproute.annotations.QueryParam
 import com.casadetasha.kexp.sproute.processor.ktx.asCanonicalName
 import com.casadetasha.kexp.sproute.processor.ktx.toMemberName
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationCallGetter
@@ -54,8 +58,15 @@ internal object KotlinNames {
         val applyMethod = MemberName(KtorPackageNames.KOTLIN, KtorMethodNames.APPLY)
     }
 
-    fun List<KmValueParameter>.toRequestParamMemberNames(): List<MemberName> {
-        return map { it.asCanonicalName() }
+    private val validParamMemberMap = mapOf(
+        Application::class.asCanonicalName() to SprouteMemberParameter(applicationGetter),
+        ApplicationCall::class.asCanonicalName() to SprouteMemberParameter(applicationCallGetter)
+    )
+
+    private val validParameterTypes = validParamMemberMap.keys
+
+    fun List<KmValueParameter>.toSprouteParameters(): List<SprouteParameter> =
+        map { it.asCanonicalName() }
             .apply {
                 val containsInvalidParameter = any { it !in validParameterTypes }
                 if (containsInvalidParameter) throw IllegalArgumentException(
@@ -65,11 +76,56 @@ internal object KotlinNames {
                 )
             }
             .map { validParamMemberMap[it]!! }
+
+    fun Collection<KotlinParameter>.toSprouteParameters(): List<SprouteParameter> =
+        apply {
+            val containsInvalidParameter = any { !it.isValidSprouteParameter() }
+            if (containsInvalidParameter) printThenThrowError(
+                "Only Strings annotated with @PathParam and the following parameters can be used for Route Classes" +
+                        " and Request methods: ${validParameterTypes.joinToString()}. Attempted to send parameters: " +
+                        " ${this@apply.joinToString(","){ it.kmParameter.name }}"
+            )
+        }
+            .map { it.toSprouteParam() }
+
+    private fun KotlinParameter.isValidSprouteParameter(): Boolean {
+        val canonicalName = kmParameter.asCanonicalName()
+        return canonicalName !in validParameterTypes || !isPathSprouteParameter() || !isQuerySprouteParameter()
     }
 
-    private val validParamMemberMap = mapOf(
-        Application::class.asCanonicalName() to applicationGetter,
-        ApplicationCall::class.asCanonicalName() to applicationCallGetter
-    )
-    private val validParameterTypes = validParamMemberMap.keys
+    private fun KotlinParameter.isPathSprouteParameter(): Boolean {
+        val canonicalName = kmParameter.asCanonicalName()
+        val hasPathParamAnnotation = element.getAnnotation(PathParam::class.java) != null
+        return hasPathParamAnnotation && canonicalName == String::class.asCanonicalName()
+    }
+
+    private fun KotlinParameter.isQuerySprouteParameter(): Boolean {
+        val canonicalName = kmParameter.asCanonicalName()
+        val hasQueryParamAnnotation = element.getAnnotation(QueryParam::class.java) != null
+        return hasQueryParamAnnotation && canonicalName == String::class.asCanonicalName()
+    }
+
+    private fun KotlinParameter.toSprouteParam(): SprouteParameter {
+        val isQueryParam = isQuerySprouteParameter()
+        val isPathParam = isPathSprouteParameter()
+
+        if(isQueryParam && isPathParam) {
+            printThenThrowError("Parameter ${kmParameter.name} is annotated as both a QueryParam and a" +
+                    " PathParam. Parameters cannot be both.")
+        }
+
+        if (isPathParam) {
+            val userSetKey = element.getAnnotation(PathParam::class.java)!!.paramKey
+            val paramKey = userSetKey.ifBlank { kmParameter.name }
+            return SproutePathParamParameter(paramKey = paramKey)
+        }
+
+        if (isQueryParam) {
+            val userSetKey = element.getAnnotation(QueryParam::class.java)!!.paramKey
+            val paramKey = userSetKey.ifBlank { kmParameter.name }
+            return SprouteQueryParamParameter(paramKey = paramKey)
+        }
+
+        return validParamMemberMap[kmParameter.asCanonicalName()]!!
+    }
 }

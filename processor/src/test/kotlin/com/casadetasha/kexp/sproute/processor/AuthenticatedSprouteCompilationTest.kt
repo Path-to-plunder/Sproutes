@@ -11,13 +11,13 @@ class AuthenticatedSprouteCompilationTest {
 
     @Test
     fun `Authenticated RouteRoot compiles with OK`() {
-        compilationResult = compileSource(AuthenticationSourceFiles.boringRouteSource)
+        compilationResult = compileSource(AuthenticationSourceFiles.inlineAuthRouteSource)
         assertThat(compilationResult).hasExitCode(OK)
     }
 
     @Test
     fun `Authenticated functions compiles with OK`() {
-        compilationResult = compileSource(AuthenticationSourceFiles.functionRouteSource)
+        compilationResult = compileSource(AuthenticationSourceFiles.inheritedAuthRouteSource)
         assertThat(compilationResult).hasExitCode(OK)
     }
 }

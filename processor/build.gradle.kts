@@ -28,7 +28,7 @@ repositories {
 // TODO: move version info to Kotlin file
 dependencies {
     implementation(project(":annotations"))
-    implementation("com.casadetasha:annotation-parser:0.1.0")
+    implementation("com.casadetasha:annotation-parser:0.2.1")
     implementation("com.casadetasha:kotlin-generation-dsl:0.2.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")

@@ -9,8 +9,12 @@ import com.casadetasha.kexp.sproute.processor.sproutes.SprouteClass
 import com.casadetasha.kexp.sproute.processor.sproutes.SproutePackage
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteRequestFunction
+import com.casadetasha.kexp.sproute.processor.values.*
 import com.casadetasha.kexp.sproute.processor.values.KotlinNames
-import com.squareup.kotlinpoet.MemberName
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.MethodNames.applicationCallGetter
+import com.casadetasha.kexp.sproute.processor.values.SprouteMemberParameter
+import com.casadetasha.kexp.sproute.processor.values.SprouteParameter
+import com.casadetasha.kexp.sproute.processor.values.SproutePathParamParameter
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -35,7 +39,7 @@ internal fun CodeTemplate.generateRequestControlFlow(
         prefix = "%M",
         requestFunction.requestMethodName,
         beginFlowString = "·{·",
-        endFlowString ="" )
+        endFlowString = "" )
     {
         generateBody()
     }
@@ -74,7 +78,7 @@ private fun CodeTemplate.generateRouteExtensionStandaloneMethodCallCode(
 }
 
 // All flows here end with an extra "·}". This is a hacky hack hack to avoid line wrapping. Ugh, fucking hack, I don't
-// like it but I don't know of a better way without replacing kotlin poet.
+// like it, but I don't know of a better way without replacing kotlin poet.
 internal fun CodeTemplate.generateRequestCallBlock(function: SprouteRequestFunction, generateBody: CodeTemplate.() -> Unit) {
     if (function.hasReturnValue) {
         generateControlFlowCode(
@@ -109,7 +113,7 @@ internal fun CodeTemplate.generateClassMethodCallCode(
     addMethodParameters(function.params)
 }
 
-private fun CodeTemplate.addMethodParameters(methodParams: List<MemberName>?) {
+private fun CodeTemplate.addMethodParameters(methodParams: List<SprouteParameter>?) {
     methodParams.ifNotEmpty {
         generateMethodParams(it)
     }.orElse {
@@ -117,11 +121,24 @@ private fun CodeTemplate.addMethodParameters(methodParams: List<MemberName>?) {
     }
 }
 
-private fun CodeTemplate.generateMethodParams(memberNames: List<MemberName>) {
-    val memberParamString = memberNames.joinToString(", ") { "%M" }
+private fun CodeTemplate.generateMethodParams(sprouteParams: List<SprouteParameter>) {
+    val memberParamString = sprouteParams.joinToString(", ") {
+        when (it) {
+            is SprouteMemberParameter -> "%M"
+            is SproutePathParamParameter -> "%M.parameters[\"${it.paramKey}\"]!!"
+            is SprouteQueryParamParameter -> "%M.request.queryParameters[\"${it.paramKey}\"]"
+        }
+    }
     val parameters = "($memberParamString)"
-    generateCode(parameters, *memberNames.toTypedArray())
+    generateCode(parameters, *sprouteParams.map{ it.getMemberName() }.toTypedArray())
 }
+
+private fun SprouteParameter.getMemberName() =
+    when (this) {
+        is SprouteMemberParameter -> memberName
+        is SproutePathParamParameter -> applicationCallGetter
+        is SprouteQueryParamParameter -> applicationCallGetter
+    }
 
 private fun CodeTemplate.addEmptyMethodParamBrackets() {
     generateCode("()")

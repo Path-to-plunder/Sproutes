@@ -14,7 +14,7 @@ import com.casadetasha.kexp.sproute.processor.sproutes.segments.LeadingRouteSegm
 import com.casadetasha.kexp.sproute.processor.sproutes.segments.ProcessedRouteSegments
 import com.casadetasha.kexp.sproute.processor.sproutes.segments.RouteSegment
 import com.casadetasha.kexp.sproute.processor.sproutes.segments.TrailingRouteSegment
-import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toRequestParamMemberNames
+import com.casadetasha.kexp.sproute.processor.values.KotlinNames.toSprouteParameters
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.metadata.KotlinPoetMetadataPreview
 
@@ -59,7 +59,7 @@ internal class SprouteKotlinInfo private constructor(
 
                     SprouteClass(
                         classData = it.classData,
-                        primaryConstructorParams = it.primaryConstructorParams?.toRequestParamMemberNames(),
+                        primaryConstructorParams = it.primaryConstructorParams?.toSprouteParameters(),
                         functions = it.getFunctionsAnnotatedWith(*SprouteRequestAnnotationBridge.validRequestTypes.toTypedArray()),
                         routeSegment = segment
                     )
