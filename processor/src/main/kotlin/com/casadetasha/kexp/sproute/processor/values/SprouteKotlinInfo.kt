@@ -29,7 +29,6 @@ internal class SprouteKotlinInfo private constructor(
             sproutePackageRoots = getSprouteRoots()
         )
 
-        @OptIn(KotlinPoetMetadataPreview::class)
         private fun getRoutePackages(): Set<SproutePackage> {
             return AnnotationParser.getFileFacadesForTopLevelFunctionsAnnotatedWith(SprouteRequestAnnotationBridge.validRequestTypes)
                 .map {

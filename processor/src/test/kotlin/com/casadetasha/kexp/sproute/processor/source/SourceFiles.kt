@@ -149,4 +149,50 @@ object SourceFiles {
             fun KClass<*>.functionGet() { "I'm a get function!" }
         """.trimIndent()
     )
+
+    internal val duplicateRouteDifferentRequestSource = SourceFile.kotlin(
+        "DuplicateRouteSource.kt", """
+            package com.casadetasha
+
+            import com.casadetasha.kexp.sproute.annotations.Get
+            import com.casadetasha.kexp.sproute.annotations.Post
+            import kotlin.reflect.KClass
+
+            @Get("/function/route")
+            fun functionGet() { "I'm a get function!" }
+
+            @Post("/function/route")
+            fun duplicateFunctionGet() { "I'm a post function!" }
+        """.trimIndent()
+    )
+
+    internal val duplicateRouteSource = SourceFile.kotlin(
+        "DuplicateRouteSource.kt", """
+            package com.casadetasha
+
+            import com.casadetasha.kexp.sproute.annotations.Get
+            import kotlin.reflect.KClass
+
+            @Get("/function/route")
+            fun functionGet() { "I'm a get function!" }
+
+            @Get("/function/route")
+            fun duplicateFunctionGet() { "I'm a get function!" }
+        """.trimIndent()
+    )
+
+    internal val duplicatePathParamRouteSource = SourceFile.kotlin(
+        "DuplicatePathParamRouteSource.kt", """
+            package com.casadetasha
+
+            import com.casadetasha.kexp.sproute.annotations.Get
+            import kotlin.reflect.KClass
+
+            @Get("/function/{param-name}/route")
+            fun functionGet() { "I'm a get function!" }
+
+            @Get("/function/{different-param-name}/route")
+            fun duplicateFunctionGet() { "I'm a get function!" }
+        """.trimIndent()
+    )
 }

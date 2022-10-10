@@ -1,6 +1,7 @@
 package com.casadetasha.kexp.sproute.processor.generator.tree
 
 import com.casadetasha.kexp.sproute.processor.sproutes.SprouteParent
+import com.casadetasha.kexp.sproute.processor.sproutes.SprouteTreeValidator
 import com.casadetasha.kexp.sproute.processor.sproutes.authentication.Authentication
 
 internal class SprouteTree private constructor(val sprouteMap: Map<Authentication, SegmentNode>) {
@@ -9,7 +10,11 @@ internal class SprouteTree private constructor(val sprouteMap: Map<Authenticatio
         private val kotlinParents: Set<SprouteParent>
     ) {
 
-        val value: SprouteTree by lazy { SprouteTree(nodeMap) }
+        val value: SprouteTree by lazy {
+            SprouteTree(nodeMap).apply {
+                SprouteTreeValidator(sprouteTree = this).checkForDuplicateRoutes()
+            }
+        }
 
         private val requestFunctionNodes: Set<RequestFunctionNode> by lazy {
             HashSet<RequestFunctionNode>().apply {
@@ -40,6 +45,8 @@ internal class SprouteTree private constructor(val sprouteMap: Map<Authenticatio
                         function = it
                     )
                 )
+            }.apply {
+
             }
         }
     }

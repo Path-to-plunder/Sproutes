@@ -68,4 +68,22 @@ class SprouteProcessorTest {
         compilationResult = compileSource(SourceFiles.returnValueApplicationCallExtensionFunctionSource)
         assertThat(compilationResult).hasExitCode(INTERNAL_ERROR)
     }
+
+    @Test
+    fun `compiling duplicate routes with different requests does not throw exception`() {
+        compilationResult = compileSource(SourceFiles.duplicateRouteDifferentRequestSource)
+        assertThat(compilationResult).hasExitCode(OK)
+    }
+
+    @Test
+    fun `compiling duplicate request and route pairings throws exception`() {
+        compilationResult = compileSource(SourceFiles.duplicateRouteSource)
+        assertThat(compilationResult).hasExitCode(INTERNAL_ERROR)
+    }
+
+    @Test
+    fun `compiling duplicate request and route pairings with different path param names throws exception`() {
+        compilationResult = compileSource(SourceFiles.duplicatePathParamRouteSource)
+        assertThat(compilationResult).hasExitCode(INTERNAL_ERROR)
+    }
 }
