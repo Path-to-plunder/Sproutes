@@ -58,12 +58,11 @@ internal class SprouteKotlinInfo private constructor(
 
                     SprouteClass(
                         classData = it.classData,
-                        primaryConstructorParams = it.primaryConstructorParams?.toSprouteParameters(),
+                        primaryConstructorParams = it.primaryConstructorKotlinParams?.toSprouteParameters(),
                         functions = it.getFunctionsAnnotatedWith(*SprouteRequestAnnotationBridge.validRequestTypes.toTypedArray()),
                         routeSegment = segment
                     )
                 }.toSet()
-
 
         private fun getSprouteRoots(): Map<TypeName, RouteSegment> =
             HashMap<TypeName, RouteSegment>().apply {

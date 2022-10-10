@@ -10,7 +10,13 @@ class MethodParamSprouteCompilationTest {
     private lateinit var compilationResult: KotlinCompilation.Result
 
     @Test
-    fun `Param Routes compile with OK`() {
+    fun `class param Routes compile with OK`() {
+        compilationResult = compileSource(MethodParamSourceFiles.classParamSource)
+        assertThat(compilationResult).hasExitCode(OK)
+    }
+
+    @Test
+    fun `method param Routes compile with OK`() {
         compilationResult = compileSource(MethodParamSourceFiles.methodParamSource)
         assertThat(compilationResult).hasExitCode(OK)
     }

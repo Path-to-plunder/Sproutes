@@ -65,18 +65,6 @@ internal object KotlinNames {
 
     private val validParameterTypes = validParamMemberMap.keys
 
-    fun List<KmValueParameter>.toSprouteParameters(): List<SprouteParameter> =
-        map { it.asCanonicalName() }
-            .apply {
-                val containsInvalidParameter = any { it !in validParameterTypes }
-                if (containsInvalidParameter) throw IllegalArgumentException(
-                    "Only the following parameters can be used for Route Classes and Request methods:" +
-                            " ${validParameterTypes.joinToString()}. Attempted to send parameters: " +
-                            " ${this@apply.joinToString()}"
-                )
-            }
-            .map { validParamMemberMap[it]!! }
-
     fun Collection<KotlinParameter>.toSprouteParameters(): List<SprouteParameter> =
         apply {
             val containsInvalidParameter = any { !it.isValidSprouteParameter() }
