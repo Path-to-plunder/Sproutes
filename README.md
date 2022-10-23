@@ -5,7 +5,7 @@
 Sproutes are a way to build scalable APIs in Ktor quickly.
 
 This means:
-* No manually writing configuration methods
+* No manually writing route methods
 * Hierarcichal routing (e.g. a "/customer" route could have a child "/orders" route)
   * Even when a project scales to the point of requiring routing to be split between classes
 * Authentication that passes to child routes
@@ -17,8 +17,8 @@ Sproutes manages this by converting an annotation shorthand into Ktor routes.
 Add the annotations and kapt processor to your gradle dependencies:
 
 ```kts
-    implementation("com.casadetasha:sproutes:2.1.2-beta-1")
-    kapt("com.casadetasha:sproutes-processor:2.1.2-beta-1")
+implementation("com.casadetasha:sproutes:2.1.2-beta-1")
+kapt("com.casadetasha:sproutes-processor:2.1.2-beta-1")
 ```
 
 (For instructions on setting up kapt, see https://kotlinlang.org/docs/kapt.html#using-in-gradle)
@@ -147,6 +147,8 @@ In the example above we've DRY'd up the "/customer" route for our `GET` and `POS
 
 The primary usefulness comes when we have shared code between methods. Let's take an example where we have a CustomerStore that we get from Kodein DI.
 
+#### With path parameters
+
 ```kt
 CustomerSproute.kt
 
@@ -155,8 +157,8 @@ class CustomerSproute(application: Application) {
     private val customerStore by application.closestDI().instance<CustomerStore>()
 
     @Get("/{id}")
-    suspend fun getCustomer(call: ApplicationCall): String {
-        val customer = customerStore.get(call.parameters["id"])
+    suspend fun getCustomer(@PathParam id: String): String {
+        val customer = customerStore.get(id)
         return "Found customer $customer"
     }
 
@@ -164,9 +166,28 @@ class CustomerSproute(application: Application) {
     fun createCustomer() = "Created customer ${customerStore.create()}"
 }
 ```
-_Note that we are passing both the `Application` into the `CustomerSproute` class and the `ApplicationCall` into the `getCustomer()` method. While the `Application` can be derived from the ApplicationCall, including the option for just the Application allows for a cleaner codebase when the call itself is not required_
 
-We've now created a request logic class that has everything it needs passed into it from our generated routing. The routing itself stays readable as well, as you can see in the generated output below:
+#### With query parameters
+
+```kt
+CustomerSproute.kt
+
+@Sproute("/customer")
+class CustomerSproute(application: Application) {
+    private val customerStore by application.closestDI().instance<CustomerStore>()
+
+    @Get
+    suspend fun getCustomer(@QueryParam id: String?): String {
+        val customer = customerStore.get(id!!)
+        return "Found customer $customer"
+    }
+
+    @Post
+    fun createCustomer() = "Created customer ${customerStore.create()}"
+}
+```
+
+We've now created a request logic class that has everything it needs passed into it from our generated routing. The routing itself stays readable as well, as you can see in the generated output from the @PathParam sample below:
 
 ```kt
 Sproutes.kt GENERATED
@@ -176,11 +197,26 @@ routing {
     post { call.respond( CustomerSproute(application).createCustomer() ) }
 
     route("/{id}") `/customer/{id}`@ {
-      `get` { CustomerSproute(application).getCustomer(call) }
+      `get` { call.respond( CustomerSproute(application).getCustomer(call.parameters["id"]!!) ) }
     }
   }
 }
 ```
+
+Note that both `@PathParam` and `@QueryParam` will look for a parameter matching the variable name. You can override this by manually passing in a name.
+
+```kt
+@Sproute("/customer")
+class CustomerSproute(application: Application) {
+private val customerStore by application.closestDI().instance<CustomerStore>()
+
+    @Get
+    suspend fun getCustomer(@QueryParam("id") queryId: String?): String {
+    }
+}
+```
+
+
 
 ## SprouteRoots
 `Sproutes` that are a path extension of `Sproute` can attach themselves by setting a `sprouteRoot`.
