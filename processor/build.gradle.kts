@@ -85,7 +85,7 @@ publishing {
 
             group = "com.casadetasha"
             artifactId = "sproutes-processor"
-            version = "2.0.2-alpha-1"
+            version = "2.1.2-beta-1"
 
             artifact(sourcesJar.get())
             artifact(javadocJar.get())
