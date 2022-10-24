@@ -2,12 +2,11 @@
 
 ## Overview
 
-Sproutes are a way to build scalable APIs in Ktor quickly.
+Sproutes are annotated endpoints that allow you to quickly build scalable APIs in Ktor.
 
 This means:
 * No manually writing route methods
 * Hierarcichal routing (e.g. a "/customer" route could have a child "/orders" route)
-  * Even when a project scales to the point of requiring routing to be split between classes
 * Authentication that passes to child routes
 * A generated map of all routes
 
