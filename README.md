@@ -13,7 +13,7 @@ This means:
 Sproutes manages this by converting an annotation shorthand into Ktor routes.
 
 ## Setup
-Add the annotations and kapt processor to your gradle dependencies:
+Add the annotations and kapt processor to your gradle dependencies of a ktor project:
 
 ```kts
 implementation("com.casadetasha:sproutes:2.1.2-beta-1")
